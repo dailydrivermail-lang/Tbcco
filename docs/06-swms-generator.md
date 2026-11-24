@@ -53,3 +53,35 @@ Issue publishes **exactly the latest draft** a reviewer looked at. To tailor wor
 - The library is deterministic: no AI-written content, so nothing is invented. A later version can have Claude propose job-specific steps from the scope for the reviewer to accept.
 - Tailoring is done by editing JSON. An edit screen in the portal is the natural next step.
 - Some head contractors require their own SWMS template. Note it on the request; v1 produces our format only.
+
+## Guided job assessment (how a SWMS request is taken)
+
+The portal's "Request a SWMS" is a guided assessment, not a form. It takes about 3 to 4 minutes.
+
+1. **Job type.** Drainage, hot water, gasfitting, roof plumbing or general plumbing. This picks the SWMS template and the question path.
+2. **Site and timing.** Address, state, start date, one-line scope, building age (which decides whether asbestos questions appear).
+3. **Key risks.** One question at a time. Each answer decides what comes next, so a hot water swap is never asked about trenches. A panel beside the questions shows, live, the high-risk work categories triggered, the licences the crew needs, and anything that must be sorted out before issue.
+4. **Quick checks.** Box ticks (induction, test and tag, first aid kit...) on one screen, with "Yes to all remaining".
+5. **Crew and plant.** Pick people from the register; their licences and tickets are checked against this job as at the start date.
+6. **Review and send.** The key answers are replayed and must be confirmed before sending.
+
+### Question priority
+
+| Priority | Meaning | How it's asked |
+|---|---|---|
+| **Key** | Changes what the SWMS says, or whether the job can go ahead (trench depth and support, fall protection, confined space entry, asbestos, who does electrical work, traffic management, dust control) | One at a time, flagged "take a moment", with the reason shown; replayed for confirmation at the end |
+| **Standard** | Shapes the SWMS but is easy to answer | One at a time, no fuss |
+| **Quick** | Box tick | All together; a "no" becomes a note for the reviewer |
+
+"Not sure" is always allowed on a key question. It takes the higher-risk path and raises a blocker, so nobody is pushed into guessing.
+
+### What an answer can do
+
+Switch on a hazard module · tick a r 291 category · add a **site-specific control** to a SWMS step (for example "trench shield installed before entry") · require a licence on the crew (ARCtick, restricted electrical, HRWL WP) · add plant · raise a **blocker** (must be resolved before issue; the client sees it too) · raise a **check** for the reviewer (staff only) · **stop** ("this needs a licensed asbestos removalist first").
+
+### Where it lives
+
+- `swms/library/assessment.yaml`: the question tree (job types, questions, conditions, effects). **Not yet reviewed by Ivana.**
+- `swms/assessment.py` and `portal/static/js/assessment-engine.js`: the same evaluation logic for server and browser. A test runs 480 random cases through both and requires identical results. The server re-evaluates every submission.
+- On acceptance the answers are saved as `04_Jobs/<JobID>_…/assessment.json` and drive the Jobs row, the SWMS steps, and a "Site-specific information" table in the PDF.
+- Staff can re-open a pending request or a job's assessment (Edit answers / Edit assessment) to record what the client confirms by phone, then re-draft.

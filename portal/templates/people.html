@@ -1,38 +1,54 @@
 {% extends "base.html" %}
-{% from "_macros.html" import badge, verified, when with context %}
-{% block title %}People &amp; licences · {{ v.name }}{% endblock %}
+{% from "_macros.html" import icon, pill, verified, when, page_head, empty with context %}
+{% block title %}People and licences · {{ v.name }}{% endblock %}
 {% block content %}
-<div class="pagehead">
-  <h2>People &amp; licences</h2>
-  <p class="muted">Everyone who works on your sites, and the licences, tickets and training we hold for them. Something wrong or missing? <a href="{{ url_for('portal.upload', client_id=v.client_id) }}">Send us a copy</a>.</p>
-</div>
-{% for pv in v.people %}
-<section class="card person">
-  <div class="personhead">
-    <div>
-      <h3>{{ pv.person['Full name'] }}</h3>
-      <p class="muted small">{{ pv.person['Roles'] or '' }}{% if pv.person['Person type'] %} · {{ pv.person['Person type'] }}{% endif %}{% if pv.person['States worked'] %} · {{ pv.person['States worked'] }}{% endif %}</p>
-    </div>
-    {% if not pv.credentials %}<span class="badge info">No records yet</span>{% elif pv.worst in ('CURRENT','NO EXPIRY') %}<span class="badge ok">Up to date</span>{% else %}{{ badge(pv.worst) }}{% endif %}
+{% call page_head('People and licences', 'Everyone who works on your sites, with the licences, tickets and training we hold for them.', 'People and licences') %}
+  <a class="btn btn-secondary" href="{{ url_for('portal.upload', client_id=v.client_id) }}">{{ icon('upload') }}Send a document</a>
+{% endcall %}
+{% if v.people %}
+<div class="toolbar" data-filter="people">
+  <label class="search"><span class="visually-hidden">Search people</span>{{ icon('search') }}<input class="input" type="search" placeholder="Search by name or role" data-filter-search></label>
+  <div class="segmented" role="radiogroup" aria-label="Filter">
+    <button type="button" class="segmented-item is-on" data-filter-status="all">All <span class="num">{{ v.people|length }}</span></button>
+    <button type="button" class="segmented-item" data-filter-status="attention">Needs attention <span class="num">{{ v.people|selectattr('attention')|list|length }}</span></button>
+    <button type="button" class="segmented-item" data-filter-status="ok">Up to date</button>
   </div>
+</div>
+<div data-filter-list="people">
+{% for pv in v.people %}
+<details class="person" {{ 'open' if pv.attention }} data-search="{{ (pv.person['Full name'] ~ ' ' ~ (pv.person['Roles'] or ''))|lower }}" data-status="{{ 'attention' if pv.attention else 'ok' }}">
+  <summary>
+    <span class="avatar">{{ pv.person['Full name']|initials }}</span>
+    <div class="grow"><strong>{{ pv.person['Full name'] }}</strong><span>{{ pv.person['Roles'] or 'No role recorded' }}</span></div>
+    <div class="meta">
+      {% if pv.person['Person type'] %}<span class="chip">{{ pv.person['Person type'] }}</span>{% endif %}
+      {% if pv.person['States worked'] %}<span class="chip">{{ pv.person['States worked']|replace(';', ' + ') }}</span>{% endif %}
+      <span class="chip">{{ pv.credentials|length }} record{{ '' if pv.credentials|length == 1 else 's' }}</span>
+      {% if not pv.credentials %}<span class="pill pill-info">No records yet</span>{% elif pv.worst in ('CURRENT','NO EXPIRY') %}<span class="pill pill-ok">Up to date</span>{% else %}{{ pill(pv.worst) }}{% endif %}
+    </div>
+    {{ icon('chevron-down', 'chev') }}
+  </summary>
   {% if pv.credentials %}
-  <table class="list">
-    <thead><tr><th>Licence / ticket</th><th>Number</th><th>Expiry</th><th>Status</th><th>Document</th></tr></thead>
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>Licence, ticket or training</th><th>Number</th><th>Expiry</th><th>Status</th><th>Document</th></tr></thead>
     <tbody>
     {% for c in pv.credentials %}
     <tr>
-      <td data-label="Licence / ticket">{{ short_label(c) }}</td>
-      <td data-label="Number">{{ c.number }}</td>
-      <td data-label="Expiry">{% if c.expiry %}{{ fmt_date(c.expiry) }} <span class="muted small">({{ when(c) }})</span>{% elif c.status == 'NO EXPIRY' %}—{% else %}<span class="muted">needed</span>{% endif %}</td>
-      <td data-label="Status">{{ badge(c.status) }}</td>
+      <td><strong>{{ short_label(c) }}</strong></td>
+      <td data-label="Number" class="num">{{ c.number or '—' }}</td>
+      <td data-label="Expiry" class="num nowrap">{% if c.expiry %}{{ fmt_date(c.expiry) }} <span class="muted small">({{ when(c) }})</span>{% elif c.status == 'NO EXPIRY' %}<span class="muted">Doesn't expire</span>{% else %}<span class="muted">Needed</span>{% endif %}</td>
+      <td data-label="Status">{{ pill(c.status) }}</td>
       <td data-label="Document">{{ verified(v.verification.get(c.item_id)) }}</td>
     </tr>
     {% endfor %}
     </tbody>
-  </table>
-  {% endif %}
-</section>
-{% else %}
-<section class="card"><p class="muted">No people on your register yet. Send us your staff list and we'll set it up.</p></section>
+  </table></div>
+  {% else %}<div class="empty">{{ icon('file') }}<strong>No records on file</strong>Send us their licences and tickets.</div>{% endif %}
+</details>
 {% endfor %}
+<div class="card" data-filter-empty hidden>{{ empty('search', 'No one matches', 'Try a different name or filter.') }}</div>
+</div>
+{% else %}
+<div class="card">{{ empty('users', 'No people on your register yet', 'Send us your staff list and we\'ll set it up.') }}</div>
+{% endif %}
 {% endblock %}

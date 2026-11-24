@@ -10,7 +10,7 @@ A small web app on top of the existing registers. **The Excel register stays the
 | **People & licences** | Every active worker, their licences, tickets and training, expiry status, and whether we've checked the document |
 | **Insurance** | Their policies and their subbies' certificates of currency |
 | **Jobs & SWMS** | Jobs and SWMS status. **An issued SWMS can only be downloaded once the register says `Issued` and `Reviewed by` is filled in**, and the PDF is in `04_Jobs/<JobID>_…/Issued/`. That's the human-review gate. |
-| **Request a SWMS** | Job form (site, scope, start, hazard ticks, building age, workers, plant). Submitting starts the 24-hour clock. |
+| **Request a SWMS** | Guided job assessment: pick the job type, answer only the questions that job triggers, pick the crew, confirm the key answers. Submitting starts the 24-hour clock. See `docs/06-swms-generator.md`. |
 | **Reports** | Anything we put in `09_Client_Reports` (monthly, quarterly, register snapshots) |
 | **Upload** | Phone photos or PDFs go to `01_Intake_Inbox/portal/`, tagged with type and who it's for. They show as "Received" until we move the file to `_processed`. |
 

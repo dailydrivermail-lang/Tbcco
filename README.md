@@ -44,12 +44,12 @@ python -m engine.build_templates      # regenerate templates + data-model doc
 python examples/make_demo.py          # demo clients in examples/demo/
 python -m swms draft --client-dir examples/demo/C000_Demo-Plumbing-Pty-Ltd --job J0002
 python -m portal.run --demo           # portal at http://127.0.0.1:8080 (demo logins printed)
-python -m pytest -q                   # 36 tests
+python -m pytest -q                   # 44 tests
 ```
 
 ## Roadmap
 
 - **Phase 1 (weeks 1-4):** ✅ rules library v1 · ✅ data model + folder structure · ✅ intake (Forms spec, bulk sheet, Claude extraction) · ✅ register + expiry engine + draft alerts · ✅ SWMS generator v1 (library pending Ivana's review) · ⏭ Ivana verifies the rules · ⏭ 3 pilot clients
 - **Phase 2:** quarterly pack builder (PDF), chemical/incident registers in use, ops dashboard, gap analysis vs head contractor requirements
-- **Phase 3:** hardening, ✅ client portal v1 (local; Azure Australia East to go live), case study template, broker renewal pack
+- **Phase 3:** hardening, ✅ client portal v2 (redesigned; guided SWMS job assessment) (local; Azure Australia East to go live), case study template, broker renewal pack
 - **Later:** asbestos removal rules, more states, Plus tier (Xero read-only), automated Claude extraction via the API

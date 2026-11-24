@@ -231,6 +231,10 @@
           "Barricade or tape off the work area; keep occupants and public out"
         ],
         [
+          "I",
+          "Site-specific: property occupied. Barricade the work area, keep access routes clear and tell the occupier each day what is isolated"
+        ],
+        [
           "A",
           "Complete principal contractor / client site induction and sign in"
         ],
@@ -241,6 +245,10 @@
         [
           "A",
           "Check access routes; keep work area tidy and remove trip hazards"
+        ],
+        [
+          "A",
+          "Live sewer: plug or divert flows before cutting in; treat all waste as infectious; wash before eating or drinking"
         ]
       ],
       "residual": "L",
@@ -283,6 +291,10 @@
         [
           "E",
           "Avoid disturbing suspect material; reroute pipework where possible"
+        ],
+        [
+          "E",
+          "Site-specific: suspect asbestos material is left undisturbed; pipework and fixings routed around it"
         ],
         [
           "A",
@@ -374,6 +386,10 @@
         [
           "Eng",
           "Keep spoil, materials and plant at least 1 m back from the edge (more for deep trenches or poor ground)"
+        ],
+        [
+          "Eng",
+          "Site-specific: trench shield or shoring installed before entry, and workers stay inside the protected zone"
         ],
         [
           "A",
@@ -676,6 +692,10 @@
   "flags": [
     {
       "severity": "check",
+      "text": "[Job assessment] Own crew operating earthmoving plant: confirm the operator's competency (ticket or verification of competency)."
+    },
+    {
+      "severity": "check",
       "text": "Alex Sample: Crystalline silica exposure prevention - 10830NAT (ACT mandatory): missing."
     },
     {
@@ -704,11 +724,119 @@
     },
     {
       "severity": "check",
+      "text": "[Possible asbestos] ACT: the rules for asbestos work without a removal licence are stricter than the 10 m2 model threshold. Confirm what this worker may do (pending legal review)."
+    },
+    {
+      "severity": "check",
       "text": "[Traffic and mobile plant] Work on or next to a road needs a traffic guidance scheme or traffic management plan from the road authority's accredited provider. Confirm who supplies it."
     }
   ],
-  "prepared_at": "2026-11-24T08:52",
+  "prepared_at": "2026-11-24T10:04",
   "reviewed_by": "",
   "issued_at": "",
-  "review_note": ""
+  "review_note": "",
+  "assessment": [
+    {
+      "label": "Excavation depth",
+      "answer": "Deeper than 1.5 m",
+      "priority": "key",
+      "unsure": false
+    },
+    {
+      "label": "Trench support",
+      "answer": "Trench shield or shoring",
+      "priority": "key",
+      "unsure": false
+    },
+    {
+      "label": "Ground conditions",
+      "answer": "Firm clay or rock",
+      "priority": "standard",
+      "unsure": false
+    },
+    {
+      "label": "Near structures",
+      "answer": "No",
+      "priority": "standard",
+      "unsure": false
+    },
+    {
+      "label": "Before You Dig",
+      "answer": "Yes, plans in hand",
+      "priority": "key",
+      "unsure": false
+    },
+    {
+      "label": "Services near the dig",
+      "answer": "None known",
+      "priority": "standard",
+      "unsure": false
+    },
+    {
+      "label": "How it's dug",
+      "answer": "Excavator or other machine",
+      "priority": "standard",
+      "unsure": false
+    },
+    {
+      "label": "Machine operator",
+      "answer": "One of our crew",
+      "priority": "standard",
+      "unsure": false
+    },
+    {
+      "label": "Live sewer or stormwater",
+      "answer": "Yes",
+      "priority": "standard",
+      "unsure": false
+    },
+    {
+      "label": "Entering a pit or chamber",
+      "answer": "No, everything is done from outside",
+      "priority": "key",
+      "unsure": false
+    },
+    {
+      "label": "Roads and traffic",
+      "answer": "A private driveway or car park",
+      "priority": "key",
+      "unsure": false
+    },
+    {
+      "label": "Occupied during work",
+      "answer": "Yes",
+      "priority": "standard",
+      "unsure": false
+    },
+    {
+      "label": "Disturbing existing materials",
+      "answer": "Yes",
+      "priority": "key",
+      "unsure": false
+    },
+    {
+      "label": "What's known about asbestos",
+      "answer": "Not tested, we'll treat it as asbestos",
+      "priority": "key",
+      "unsure": false
+    },
+    {
+      "label": "Amount of asbestos affected",
+      "answer": "None, we'll work around it",
+      "priority": "key",
+      "unsure": false
+    },
+    {
+      "label": "Cutting concrete or masonry",
+      "answer": "No",
+      "priority": "standard",
+      "unsure": false
+    },
+    {
+      "label": "Flame or welding",
+      "answer": "No, press-fit or other cold joints",
+      "priority": "standard",
+      "unsure": false
+    }
+  ]
 }

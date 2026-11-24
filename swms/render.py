@@ -96,6 +96,24 @@ def build_story(doc: SwmsDoc) -> list:
         cells.append(row)
     story.append(grid(cells, [W / 2, W / 2], header=False))
 
+    if doc.assessment:
+        story.append(Paragraph("Site-specific information (from the job assessment)", H2))
+        rows = [[Paragraph(x, PW) for x in ("Question", "Answer", "Question", "Answer")]]
+        items = sorted(doc.assessment, key=lambda d: d["priority"] != "key")
+        half = (len(items) + 1) // 2
+        for i in range(half):
+            row = []
+            for d in (items[i], items[i + half] if i + half < len(items) else None):
+                if d:
+                    star = "<b>Key:</b> " if d["priority"] == "key" else ""
+                    col = ' color="#a3221c"' if d.get("unsure") else ""
+                    row += [Paragraph(f"{star}{e(d['label'])}", PS), Paragraph(f"<font{col}><b>{e(d['answer'])}</b></font>", PS)]
+                else:
+                    row += ["", ""]
+            rows.append(row)
+        story.append(grid(rows, [W * 0.2, W * 0.3, W * 0.2, W * 0.3]))
+        story.append(Paragraph("Controls marked \"Site-specific\" in the work steps come from these answers.", PS))
+
     story.append(Paragraph("2. People, licences and competencies", H2))
     data = [[Paragraph(x, PW) for x in ("Worker", "Licence / ticket / training", "Status", "Detail")]]
     for c in doc.competencies:

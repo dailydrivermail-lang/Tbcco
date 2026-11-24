@@ -16,6 +16,7 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 from engine import expiry_engine as ee
+from swms import assessment, model
 from engine import schema
 from engine.register_io import append_rows, load_rules, next_id, read_sheet
 
@@ -59,6 +60,10 @@ class PersonView:
     credentials: list = field(default_factory=list)
 
     @property
+    def attention(self) -> bool:
+        return not self.credentials or self.worst in ("EXPIRED", "DUE 7", "DUE 30", "MISSING DATE")
+
+    @property
     def worst(self) -> str:
         s = [c.status for c in self.credentials] or ["CURRENT"]
         return min(s, key=lambda x: STATUS_ORDER.index(x) if x in STATUS_ORDER else 99)
@@ -82,6 +87,22 @@ class ClientView:
     @property
     def name(self) -> str:
         return self.business.get("Trading name") or self.business.get("Legal name") or self.client_id
+
+    @property
+    def tracked(self) -> int:
+        return sum(1 for i in self.items if i.sheet in ("Credentials", "Insurances"))
+
+    @property
+    def score(self) -> int:
+        """Percent of tracked licences, tickets and insurances that are current (not expired, date known)."""
+        n = self.tracked
+        return round(100 * (n - self.count("EXPIRED", "MISSING DATE")) / n) if n else 100
+
+    @property
+    def upcoming_groups(self) -> list:
+        up = self.upcoming
+        return [("Next 7 days", [i for i in up if i.status == "DUE 7"]), ("8 to 30 days", [i for i in up if i.status == "DUE 30"]),
+                ("31 to 60 days", [i for i in up if i.status == "DUE 60"])]
 
     def count(self, *statuses, sheets=("Credentials", "Insurances")) -> int:
         return sum(1 for i in self.items if i.status in statuses and i.sheet in sheets)
@@ -242,6 +263,20 @@ def accept_swms_request(cdir: Path, request_id: str, staff: str) -> str:
     reg = ee.find_register(cdir)
     wb = load_workbook(reg)
     job_id = next_id([r.get("Job ID") for r in read_sheet(wb, "Jobs")], "J")
+    if rec.get("kind") == "assessment":
+        row = {"Job ID": job_id, **assessment.jobs_row(rec, hazard_columns()), "SWMS status": "Requested",
+               "SWMS requested at": dt.datetime.fromisoformat(rec["submitted_at"]),
+               "Notes": f"Portal assessment {request_id}. {rec.get('notes', '')}".strip()}
+        append_rows(wb["Jobs"], [row])
+        wb.save(reg)
+        folder = model.job_folder(cdir, row)
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "assessment.json").write_text(json.dumps(_assessment_core(rec, request_id), indent=2), encoding="utf-8")
+        rec.update({"status": "Accepted", "job_id": job_id, "accepted_by": staff,
+                    "accepted_at": dt.datetime.now().isoformat(timespec="seconds")})
+        p.write_text(json.dumps(rec, indent=2), encoding="utf-8")
+        _cache.clear()
+        return job_id
     row = {"Job ID": job_id, "Client job ref": rec.get("client_ref"), "Site address": rec.get("site_address"),
            "State": rec.get("state"), "Principal / head contractor": rec.get("head_contractor"),
            "Scope of work": rec.get("scope"), "Start date": dt.date.fromisoformat(rec["start_date"]) if rec.get("start_date") else None,
@@ -257,6 +292,132 @@ def accept_swms_request(cdir: Path, request_id: str, staff: str) -> str:
                 "accepted_at": dt.datetime.now().isoformat(timespec="seconds")})
     p.write_text(json.dumps(rec, indent=2), encoding="utf-8")
     return job_id
+
+
+# ---------------------------------------------------------------------------
+# Guided job assessment
+# ---------------------------------------------------------------------------
+
+def hazard_columns() -> dict[str, str]:
+    hz, _ = model.load_library()
+    return {k: m["job_column"] for k, m in hz.items() if m.get("job_column")}
+
+
+def _assessment_core(rec: dict, request_id: str = "") -> dict:
+    return {"job_type": rec.get("job_type"), "site": rec.get("site") or {}, "answers": rec.get("answers") or {},
+            "crew": rec.get("crew") or [], "plant_other": rec.get("plant_other", ""), "notes": rec.get("notes", ""),
+            "request_id": request_id or rec.get("request_id", ""), "submitted_by": rec.get("submitted_by", ""),
+            "submitted_at": rec.get("submitted_at", "")}
+
+
+def clean_assessment(payload: dict, valid_people: set[str]) -> tuple[dict | None, list[str]]:
+    """Validate a browser payload. Returns (record fields, errors). Everything is re-derived server side."""
+    errors = []
+    if not isinstance(payload, dict):
+        return None, ["The form didn't arrive properly. Please try again."]
+    spec = assessment.load_spec()
+    jt = str(payload.get("job_type") or "")
+    if jt not in {j["id"] for j in spec["job_types"]}:
+        errors.append("Choose a job type.")
+    raw = payload.get("site") if isinstance(payload.get("site"), dict) else {}
+    site = {k: str(raw.get(k) or "").strip()[:500] for k in ("site_address", "state", "start_date", "scope", "building_age",
+                                                              "head_contractor", "client_ref")}
+    if not site["site_address"]:
+        errors.append("Add the site address.")
+    if site["state"] not in ("ACT", "NSW"):
+        errors.append("Choose ACT or NSW.")
+    try:
+        dt.date.fromisoformat(site["start_date"])
+    except ValueError:
+        errors.append("Add the start date.")
+    if not site["scope"]:
+        errors.append("Describe the job in a sentence.")
+    if site["building_age"] not in {b["v"] for b in spec["building_ages"]}:
+        errors.append("Say when the building was built.")
+    answers = payload.get("answers") if isinstance(payload.get("answers"), dict) else {}
+    rec = {"kind": "assessment", "job_type": jt, "site": site, "answers": answers,
+           "crew": [c for c in (payload.get("crew") or []) if isinstance(c, str) and c in valid_people][:50],
+           "plant_other": str(payload.get("plant_other") or "").strip()[:300], "notes": str(payload.get("notes") or "").strip()[:2000]}
+    if not errors:
+        d = assessment.evaluate_record(rec)
+        rec["answers"] = d["clean"]            # drop anything that isn't a visible question with a valid option
+        if d["missing"]:
+            errors.append(f"{len(d['missing'])} question(s) still need an answer.")
+    rec.update({"site_address": site["site_address"], "state": site["state"], "start_date": site["start_date"],
+                "scope": site["scope"], "job_title": assessment.job_title(jt)})
+    return rec, errors
+
+
+def load_swms_request(cdir: Path, request_id: str) -> dict | None:
+    if not re.fullmatch(r"R\d{14}[0-9a-f]{4}", request_id or ""):
+        return None
+    p = requests_dir(cdir) / f"{request_id}.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
+
+
+def update_swms_request(cdir: Path, request_id: str, fields: dict):
+    rec = load_swms_request(cdir, request_id)
+    if not rec or rec.get("status") != "Pending":
+        raise ValueError("That request can no longer be edited.")
+    rec.update(fields)
+    (requests_dir(cdir) / f"{request_id}.json").write_text(json.dumps(rec, indent=2), encoding="utf-8")
+
+
+def job_assessment(cdir: Path, job: dict) -> dict | None:
+    return model.load_job_assessment(cdir, job)
+
+
+def save_job_assessment(cdir: Path, job: dict, rec: dict, editor: str):
+    """Staff edit after the job is on the register: rewrite assessment.json and the Jobs row it drives."""
+    from swms.__main__ import _update_job
+    core = _assessment_core(rec)
+    old = model.load_job_assessment(cdir, job) or {}
+    core.update({"request_id": old.get("request_id", ""), "submitted_by": old.get("submitted_by", ""),
+                 "submitted_at": old.get("submitted_at", ""), "edited_by": editor,
+                 "edited_at": dt.datetime.now().isoformat(timespec="seconds")})
+    folder = model.job_folder(cdir, job)          # keep the existing folder even if the address changes
+    _update_job(cdir, str(job["Job ID"]), assessment.jobs_row(rec, hazard_columns()))
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / "assessment.json").write_text(json.dumps(core, indent=2), encoding="utf-8")
+    _cache.clear()
+
+
+def assessment_summary(rec: dict) -> dict | None:
+    if rec.get("kind") != "assessment":
+        return None
+    hz, _ = model.load_library()
+    d = assessment.evaluate_record(rec)
+    return {"hazards": [hz[h]["title"] for h in d["hazards"]], "stops": len(d["stops"]), "blockers": len(d["blockers"]),
+            "checks": len(d["checks"])}
+
+
+def assessment_boot(view: "ClientView", is_staff: bool, prefill: dict | None, today: dt.date) -> dict:
+    hz, tk = model.load_library()
+    people = []
+    for pv in view.people:
+        p = pv.person
+        name = str(p.get("Full name") or "")
+        people.append({"id": str(p.get("Person ID")), "name": name, "initials": initials(name), "roles": str(p.get("Roles") or ""),
+                       "creds": [{"code": c.kind, "expiry": c.expiry.isoformat() if c.expiry else None,
+                                  "no_expiry": c.status == "NO EXPIRY"} for c in pv.credentials]})
+    codes = {c["code"] for m in hz.values() for c in (m.get("competencies") or [])}
+    codes |= {e["need"]["code"] for q in assessment.load_spec()["questions"] for e in q["effects"] if "need" in e}
+    states = sorted({x.strip().upper() for x in str(view.business.get("States operated") or "").replace(",", ";").split(";")}
+                    & {"ACT", "NSW"})
+    return {
+        "client_id": view.client_id, "today": today.isoformat(), "is_staff": is_staff, "states": states, "people": people,
+        "spec": assessment.client_spec(include_checks=is_staff), "prefill": prefill,
+        "req": {"modules": {k: {"title": m["title"], "hrcw": m.get("hrcw"), "competencies": m.get("competencies") or []}
+                            for k, m in hz.items()},
+                "licences": tk["licences"], "template_licence": {t["id"]: t.get("licence", []) for t in tk["templates"]},
+                "hrcw_all": model.HRCW_ALL, "any_one": sorted(model.ANY_ONE), "optional": ["ELEC_RESTRICTED"],
+                "cred_names": {c: ee.short_label(c) for c in codes}},
+    }
+
+
+def initials(name: str) -> str:
+    parts = [w for w in re.split(r"[^A-Za-z0-9]+", str(name or "")) if w]
+    return (parts[0][0] + (parts[1][0] if len(parts) > 1 else "")).upper() if parts else "?"
 
 
 def load_rules_cached(_cache_box={}):

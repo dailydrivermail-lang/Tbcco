@@ -1,25 +1,42 @@
 {% extends "base.html" %}
-{% block title %}Upload · {{ v.name }}{% endblock %}
+{% from "_macros.html" import icon, page_head, empty with context %}
+{% block title %}Send documents · {{ v.name }}{% endblock %}
 {% block content %}
-<div class="pagehead"><h2>Send us documents</h2>
-<p class="muted">Photos from your phone are fine. Make sure the whole card is in frame and readable. We'll check each one and add it to your register.</p></div>
-<form method="post" enctype="multipart/form-data" class="card form">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <input type="hidden" name="ref" value="{{ ref }}">
-  <label class="drop">Files (PDF, photo, Word or Excel; up to 25 MB each)
-    <input type="file" name="files" multiple required accept="{{ accept }},image/*">
-  </label>
-  <div class="cols">
-    <label>What is it? <select name="doc_type">{% for d in doc_types %}<option>{{ d }}</option>{% endfor %}</select></label>
-    <label>Who or what is it for? <input name="about" value="{{ about }}" placeholder="e.g. Sam Smith, or the jetter"></label>
-  </div>
-  <button class="btn primary">Upload</button>
-</form>
-{% if uploads %}
-<section class="card"><h3>Recently sent</h3>
-<table class="list"><thead><tr><th>File</th><th>What</th><th>Sent</th><th>Status</th></tr></thead><tbody>
-{% for u in uploads %}<tr><td data-label="File">{{ u.original }}</td><td data-label="What">{{ u.doc_type }}{% if u.about %} · {{ u.about }}{% endif %}</td><td data-label="Sent">{{ u.at.replace('T',' ')[:16] }}</td>
-<td data-label="Status"><span class="chip {{ 'ok' if u.processed else 'muted' }}">{{ 'Added to register' if u.processed else 'Received' }}</span></td></tr>{% endfor %}
-</tbody></table></section>
-{% endif %}
+{{ page_head('Send documents', 'Photos from your phone are fine. We check each one and add it to your register, usually within 2 business days.', 'Send documents') }}
+<div class="grid grid-3-2">
+  <form method="post" enctype="multipart/form-data" class="card card-pad stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="ref" value="{{ ref }}">
+    <label class="dropzone" data-dropzone>
+      {{ icon('upload') }}
+      <strong>Choose files or drop them here</strong>
+      <span class="muted small">PDF, photo, Word or Excel. Up to 25 MB each.</span>
+      <input type="file" name="files" multiple required accept="{{ accept }},image/*">
+    </label>
+    <ul class="filelist" data-filelist hidden></ul>
+    <div class="field-row">
+      <label class="field"><span class="field-label">What is it?</span><select class="input" name="doc_type">{% for d in doc_types %}<option>{{ d }}</option>{% endfor %}</select></label>
+      <label class="field"><span class="field-label">Who or what is it for?</span><input class="input" name="about" value="{{ about }}" placeholder="For example: Sam Smith, or the jetter"></label>
+    </div>
+    <div><button class="btn btn-primary">{{ icon('upload') }}Upload</button></div>
+  </form>
+  <aside class="card card-pad">
+    <h2 class="card-title">{{ icon('info') }}A good photo</h2>
+    <ul class="plainlist muted">
+      <li>The whole card or page is in frame</li>
+      <li>Name, number and expiry date are readable</li>
+      <li>Both sides of a card if there's writing on the back</li>
+      <li>For insurance, the certificate of currency, not the invoice</li>
+    </ul>
+  </aside>
+</div>
+<section class="card">
+  <div class="card-head"><h2 class="card-title">Recently sent</h2></div>
+  {% if uploads %}
+  <div class="table-wrap"><table class="table"><thead><tr><th>File</th><th>What</th><th>Sent</th><th>Status</th></tr></thead><tbody>
+  {% for u in uploads %}<tr><td><strong>{{ u.original }}</strong></td><td data-label="What">{{ u.doc_type }}{% if u.about %} · {{ u.about }}{% endif %}</td><td data-label="Sent" class="num nowrap">{{ u.at.replace('T',' ')[:16] }}</td>
+  <td data-label="Status"><span class="pill pill-{{ 'ok' if u.processed else 'info' }}">{{ 'Added to register' if u.processed else 'Received' }}</span></td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}{{ empty('upload', 'Nothing sent yet', '') }}{% endif %}
+</section>
 {% endblock %}

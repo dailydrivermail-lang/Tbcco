@@ -1,27 +1,32 @@
 {% extends "base.html" %}
+{% from "_macros.html" import icon, page_head, empty with context %}
 {% block title %}Inbox · Staff{% endblock %}
 {% block content %}
-<div class="pagehead"><h2>Inbox</h2><p class="muted">SWMS requests and uploads from the portal. Process uploads with the extraction prompt, then move the file to <code>01_Intake_Inbox/_processed</code>. Log your minutes in the Time Log.</p></div>
+{{ page_head('Inbox', 'SWMS requests and uploads from the portal, newest first. Log your minutes in the Time Log.') }}
 <section class="card">
 {% if items %}
-<table class="list"><thead><tr><th>Client</th><th>Type</th><th>Details</th><th>Received</th><th></th></tr></thead><tbody>
+<ul class="rows">
 {% for it in items %}{% set r = it.r %}
-<tr>
-  <td data-label="Client"><a href="{{ url_for('portal.dashboard', client_id=it.cid) }}">{{ it.cid }}</a></td>
+<li>
   {% if it.kind == 'swms' %}
-  <td data-label="Type"><span class="chip warn">SWMS request</span></td>
-  <td data-label="Details"><strong>{{ r.site_address }}</strong> ({{ r.state }}), starts {{ r.start_date }}<br><span class="small">{{ r.scope[:140] }}</span></td>
-  <td data-label="Received">{{ r.submitted_at.replace('T',' ')[:16] }}</td>
-  <td><form method="post" action="{{ url_for('portal.staff_accept_request', client_id=it.cid, request_id=r.request_id) }}">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn small">Add to Jobs register</button></form></td>
+  <span class="stat-icon">{{ icon('clipboard') }}</span>
+  <div class="grow"><strong>{{ r.site_address }}</strong> <span class="muted">({{ r.state }})</span> <span class="pill pill-warn">SWMS request</span><br>
+    <span class="muted small"><a href="{{ url_for('portal.dashboard', client_id=it.cid) }}">{{ it.cid }}</a> · {{ r.job_title or 'Request' }} · starts {{ r.start_date }} · received {{ r.submitted_at.replace('T',' ')[:16] }}</span><br>
+    <span class="small">{{ (r.scope or '')[:160] }}</span>
+    {% if it.summary %}<div class="meta">{% for h in it.summary.hazards %}<span class="chip chip-warn">{{ h }}</span>{% endfor %}{% if it.summary.stops %}<span class="chip chip-bad">Specialist needed first</span>{% endif %}{% if it.summary.blockers %}<span class="chip chip-bad">{{ it.summary.blockers }} to sort out</span>{% endif %}{% if it.summary.checks %}<span class="chip">{{ it.summary.checks }} to confirm</span>{% endif %}</div>{% endif %}
+  </div>
+  {% if r.kind == 'assessment' %}<a class="btn btn-secondary btn-sm" href="{{ url_for('portal.swms_request', client_id=it.cid, request=r.request_id) }}">{{ icon('pencil') }}Edit answers</a>{% endif %}
+  <form method="post" action="{{ url_for('portal.staff_accept_request', client_id=it.cid, request_id=r.request_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-primary btn-sm">Add to Jobs register</button></form>
   {% else %}
-  <td data-label="Type"><span class="chip muted">Upload</span></td>
-  <td data-label="Details">{{ r.original }}<br><span class="small muted">{{ r.doc_type }}{% if r.about %} · {{ r.about }}{% endif %}{% if r.ref %} · re {{ r.ref }}{% endif %} · <code>01_Intake_Inbox/portal/{{ r.stored_as }}</code></span></td>
-  <td data-label="Received">{{ r.at.replace('T',' ')[:16] }}</td><td></td>
+  <span class="stat-icon">{{ icon('upload') }}</span>
+  <div class="grow"><strong>{{ r.original }}</strong> <span class="pill pill-neutral">Upload</span><br>
+    <span class="muted small"><a href="{{ url_for('portal.dashboard', client_id=it.cid) }}">{{ it.cid }}</a> · {{ r.doc_type }}{% if r.about %} · {{ r.about }}{% endif %}{% if r.ref %} · re {{ r.ref }}{% endif %} · received {{ r.at.replace('T',' ')[:16] }}</span><br>
+    <code>01_Intake_Inbox/portal/{{ r.stored_as }}</code></div>
   {% endif %}
-</tr>
+</li>
 {% endfor %}
-</tbody></table>
-{% else %}<p class="muted">Inbox zero.</p>{% endif %}
+</ul>
+{% else %}{{ empty('inbox', 'Inbox zero', 'Nothing waiting from clients.') }}{% endif %}
 </section>
 {% endblock %}

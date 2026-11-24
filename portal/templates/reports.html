@@ -1,12 +1,16 @@
 {% extends "base.html" %}
+{% from "_macros.html" import icon, page_head, empty with context %}
 {% block title %}Reports · {{ v.name }}{% endblock %}
 {% block content %}
-<div class="pagehead"><h2>Reports</h2><p class="muted">Monthly summaries, quarterly compliance packs and register snapshots. Ready to hand to a head contractor, inspector or broker.</p></div>
+{{ page_head('Reports', 'Monthly summaries, quarterly compliance packs and register snapshots, ready to hand to a head contractor, inspector or broker.', 'Reports') }}
 <section class="card">
 {% if reports %}
-<table class="list"><thead><tr><th>Document</th><th>Type</th><th>Date</th><th>Size</th></tr></thead><tbody>
-{% for r in reports %}<tr><td data-label="Document"><a href="{{ url_for('portal.report_download', client_id=v.client_id, rel=r.rel) }}">{{ r.name }}</a></td><td data-label="Type">{{ r.folder }}</td><td data-label="Date">{{ r.modified.strftime('%d %b %Y') }}</td><td data-label="Size">{{ r.size_kb }} KB</td></tr>{% endfor %}
-</tbody></table>
-{% else %}<p class="muted">Nothing here yet.</p>{% endif %}
+<div class="table-wrap"><table class="table"><thead><tr><th>Document</th><th>Type</th><th>Date</th><th>Size</th><th></th></tr></thead><tbody>
+{% for r in reports %}<tr>
+  <td><div class="cell-main"><span class="stat-icon">{{ icon('file') }}</span><div><a href="{{ url_for('portal.report_download', client_id=v.client_id, rel=r.rel) }}"><strong>{{ r.name }}</strong></a></div></div></td>
+  <td data-label="Type">{{ r.folder }}</td><td data-label="Date" class="num nowrap">{{ r.modified.strftime('%d %b %Y') }}</td><td data-label="Size" class="num">{{ r.size_kb }} KB</td>
+  <td class="right"><a class="btn btn-secondary btn-sm" href="{{ url_for('portal.report_download', client_id=v.client_id, rel=r.rel) }}">{{ icon('download') }}Download</a></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}{{ empty('file', 'No reports yet', 'Your first monthly summary will appear here.') }}{% endif %}
 </section>
 {% endblock %}

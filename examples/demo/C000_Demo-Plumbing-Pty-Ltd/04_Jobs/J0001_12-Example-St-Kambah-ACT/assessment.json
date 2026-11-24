@@ -1,0 +1,52 @@
+{
+  "kind": "assessment",
+  "job_type": "drainage",
+  "site": {
+    "site_address": "12 Example St, Kambah ACT",
+    "state": "ACT",
+    "start_date": "2026-11-21",
+    "scope": "Replace sewer line under driveway, new boundary trap",
+    "building_age": "pre1990",
+    "head_contractor": "Example Builders",
+    "client_ref": "DP-1042"
+  },
+  "answers": {
+    "exc_depth": "gt15",
+    "exc_support": "shield",
+    "exc_ground": "stable",
+    "exc_adjacent": "no",
+    "exc_byda": "have",
+    "exc_services": [
+      "none"
+    ],
+    "exc_method": "machine",
+    "exc_operator": "own",
+    "sew_live": "yes",
+    "sew_entry": "no",
+    "sur_road": "private",
+    "sur_occupied": "yes",
+    "asb_disturb": "yes",
+    "asb_known": "assume",
+    "asb_amount": "avoid",
+    "sil_cut": "no",
+    "hot_any": "no",
+    "q_induct": "yes",
+    "q_toolbox": "yes",
+    "q_ppe": "yes",
+    "q_firstaid": "yes",
+    "q_tag": "yes",
+    "q_rcd": "yes",
+    "q_sds": "yes",
+    "q_rpe": "yes",
+    "q_ladder": "yes",
+    "q_prestart": "yes"
+  },
+  "crew": [
+    "P001",
+    "P002"
+  ],
+  "plant_other": "Plate compactor",
+  "notes": "",
+  "submitted_by": "pat@example.com",
+  "submitted_at": "2026-11-18T09:15:00"
+}

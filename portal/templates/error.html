@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import icon with context %}
 {% block content %}
-<section class="card narrow"><h1>{{ code }}</h1><p>{{ message }}</p><p><a href="{{ url_for('portal.home') }}">Back to the portal</a></p></section>
+<div class="card"><div class="empty">{{ icon('alert-triangle') }}<strong>{{ message }}</strong><p class="small">Error {{ code }}. <a href="{{ url_for('portal.home') }}">Back to the portal</a></p></div></div>
 {% endblock %}

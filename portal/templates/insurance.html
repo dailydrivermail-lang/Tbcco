@@ -1,30 +1,33 @@
 {% extends "base.html" %}
-{% from "_macros.html" import badge, verified, when with context %}
+{% from "_macros.html" import icon, pill, verified, when, page_head, empty with context %}
 {% block title %}Insurance · {{ v.name }}{% endblock %}
 {% block content %}
 {% macro ins_table(items) %}
-<table class="list">
-  <thead><tr><th>Holder</th><th>Policy</th><th>Number</th><th>Expiry</th><th>Status</th><th>Document</th></tr></thead>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Policy</th><th>Policy number</th><th>Expiry</th><th>Status</th><th>Certificate</th></tr></thead>
   <tbody>
   {% for i in items %}
   <tr>
-    <td data-label="Holder">{{ i.holder_name }}</td>
-    <td data-label="Policy">{{ short_label(i) }}</td>
-    <td data-label="Number">{{ i.number }}</td>
-    <td data-label="Expiry">{{ fmt_date(i.expiry) or 'needed' }}{% if i.expiry %} <span class="muted small">({{ when(i) }})</span>{% endif %}</td>
-    <td data-label="Status">{{ badge(i.status) }}</td>
-    <td data-label="Document">{{ verified(v.verification.get(i.item_id)) }}</td>
+    <td><div class="cell-main"><span class="stat-icon">{{ icon('shield') }}</span><div><strong>{{ short_label(i) }}</strong><span>{{ i.holder_name }}</span></div></div></td>
+    <td data-label="Policy number" class="num">{{ i.number or '—' }}</td>
+    <td data-label="Expiry" class="num nowrap">{{ fmt_date(i.expiry) or 'Needed' }}{% if i.expiry %} <span class="muted small">({{ when(i) }})</span>{% endif %}</td>
+    <td data-label="Status">{{ pill(i.status) }}</td>
+    <td data-label="Certificate">{{ verified(v.verification.get(i.item_id)) }}</td>
   </tr>
   {% endfor %}
   </tbody>
-</table>
+</table></div>
 {% endmacro %}
-<div class="pagehead"><h2>Insurance</h2>
-<p class="muted">Your policies and your subcontractors' certificates of currency. We chase subbies for renewals from 60 days out.</p></div>
-<section class="card"><h3>Your policies</h3>
-{% set own = v.insurances('Client') %}{% if own %}{{ ins_table(own) }}{% else %}<p class="muted">No policies on file yet. Upload your certificates of currency.</p>{% endif %}
+{% call page_head('Insurance', 'Your policies and your subcontractors\' certificates of currency. We chase renewals from 60 days out.', 'Insurance') %}
+  <a class="btn btn-secondary" href="{{ url_for('portal.upload', client_id=v.client_id) }}">{{ icon('upload') }}Send a certificate</a>
+{% endcall %}
+{% set own = v.insurances('Client') %}{% set subs_i = v.insurances('Subcontractor') %}
+<section class="card">
+  <div class="card-head"><h2 class="card-title">Your policies</h2><span class="muted small">{{ own|length }} on file</span></div>
+  {% if own %}{{ ins_table(own) }}{% else %}{{ empty('shield', 'No policies on file', 'Upload your certificates of currency.') }}{% endif %}
 </section>
-<section class="card"><h3>Subcontractors</h3>
-{% set subs_i = v.insurances('Subcontractor') %}{% if subs_i %}{{ ins_table(subs_i) }}{% else %}<p class="muted">No subcontractor certificates on file.</p>{% endif %}
+<section class="card">
+  <div class="card-head"><h2 class="card-title">Subcontractors</h2><span class="muted small">{{ subs_i|length }} on file</span></div>
+  {% if subs_i %}{{ ins_table(subs_i) }}{% else %}{{ empty('shield', 'No subcontractor certificates on file', '') }}{% endif %}
 </section>
 {% endblock %}

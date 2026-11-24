@@ -41,9 +41,19 @@ BANNER = ('<div class="demobar">Demo site · fictional data · forms are not sav
 def seed_inbox(clients_root: Path):
     """Give the staff inbox something to show."""
     cdir = data.client_dir(clients_root, "C000")
-    data.save_swms_request(cdir, {"site_address": "7 Demo Cres, Gungahlin ACT", "state": "ACT", "start_date": "2026-12-02",
-                                  "scope": "Stormwater relocation, 1.8 m trench along boundary", "hz_trench": True,
-                                  "hz_traffic": True, "building_age": "2004 or later", "submitted_by": "pat@example.com"})
+    rec, errors = data.clean_assessment({
+        "job_type": "drainage",
+        "site": {"site_address": "7 Demo Cres, Gungahlin ACT", "state": "ACT", "start_date": "2026-12-02",
+                 "scope": "Stormwater relocation along the boundary", "building_age": "post2003"},
+        "answers": {"exc_depth": "gt15", "exc_support": "undecided", "exc_ground": "loose", "exc_adjacent": "yes", "exc_byda": "lodged",
+                    "exc_services": ["gas"], "exc_method": "machine", "exc_operator": "own", "sew_live": "no", "sew_entry": "no",
+                    "sur_road": "public", "sur_tgs": "none", "sur_occupied": "no", "sil_cut": "yes", "sil_method": "wet", "hot_any": "no",
+                    **{q: "yes" for q in ("q_induct", "q_toolbox", "q_ppe", "q_firstaid", "q_tag", "q_rcd", "q_sds", "q_rpe",
+                                          "q_ladder", "q_prestart")}},
+        "crew": ["P001"], "plant_other": "", "notes": ""}, {"P001", "P002", "P003"})
+    assert not errors, errors
+    rec["submitted_by"] = "pat@example.com"
+    data.save_swms_request(cdir, rec)
     (data.upload_dir(cdir) / "2026-11-24_101500_abc123_white_card_jo.jpg").write_bytes(b"\xff\xd8\xff demo")
     data.record_upload(cdir, {"at": "2026-11-24T10:15:00", "by": "pat@example.com", "original": "white card jo.jpg",
                               "stored_as": "2026-11-24_101500_abc123_white_card_jo.jpg", "doc_type": "White Card",
@@ -122,15 +132,21 @@ def write(rel_url: str, content: bytes | str):
 
 
 def page_shell(app, title: str, body: str) -> str:
-    css = "/static/portal.css"
+    sprite = (ROOT / "portal" / "templates" / "_icons.html").read_text(encoding="utf-8")
     return f"""<!doctype html>
 <html lang="en-AU"><head><meta name="robots" content="noindex, nofollow"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>{title}</title>
-<link rel="stylesheet" href="{css}"></head>
-<body>{BANNER}
-<header class="top"><div class="wrap top-inner"><a class="brand" href="/"><span class="mark" aria-hidden="true">✓</span> Compliance portal</a></div></header>
-<main class="wrap">{body}</main>
-<footer class="wrap foot">All names, licence numbers and companies on this site are made up.</footer>
+<link rel="stylesheet" href="/static/portal.css"></head>
+<body>{BANNER}{sprite}
+<div class="auth">
+  <section class="auth-brand">
+    <span class="brand"><span class="brand-mark"><svg class="icon"><use href="#i-shield-check"/></svg></span><span>Compliance Portal</span></span>
+    <h1>Audit-ready, without the paperwork.</h1>
+    <p>A working preview of the portal our clients use, filled with a made-up plumbing business.</p>
+    <p class="auth-foot">All names, licence numbers and companies on this site are made up.</p>
+  </section>
+  <section class="auth-form"><div class="inner">{body}</div></section>
+</div>
 </body></html>"""
 
 
@@ -178,23 +194,24 @@ def main(argv=None):
             total += len(pages) + len(binaries)
             print(f"{prefix}: {len(pages)} pages, {len(binaries)} files")
 
-        write("/", page_shell(app, "Compliance portal demo", """
-<section class="card narrow">
-  <h1>Compliance portal: demo</h1>
-  <p class="muted">A working preview of the portal our clients use, filled with a made-up plumbing business. Pick a view:</p>
-  <p><a class="btn primary" href="/client/c/C000/">Client view</a></p>
-  <p class="muted small">What a trade business owner sees: what's expired, what's coming up, what we need from them, SWMS and reports.</p>
-  <p><a class="btn" href="/staff-view/staff/">Staff view</a></p>
-  <p class="muted small">What our team sees: every client by risk, plus the inbox of uploads and SWMS requests.</p>
-</section>"""))
+        arrow = '<svg class="icon"><use href="#i-chevron-right"/></svg>'
+        write("/", page_shell(app, "Compliance Portal demo", f"""
+<h2>Pick a view</h2>
+<p class="muted">Nothing you do here is saved.</p>
+<div class="choice-cards">
+  <a class="choice-card" href="/client/c/C000/"><span class="wz-type-icon"><svg class="icon"><use href="#i-users"/></svg></span>
+    <span><strong>Client view</strong><span>What a trade business owner sees</span></span>{arrow}</a>
+  <a class="choice-card" href="/client/c/C000/swms-request/"><span class="wz-type-icon"><svg class="icon"><use href="#i-clipboard"/></svg></span>
+    <span><strong>Try the SWMS job assessment</strong><span>Guided questions that adapt to the job</span></span>{arrow}</a>
+  <a class="choice-card" href="/staff-view/staff/"><span class="wz-type-icon"><svg class="icon"><use href="#i-building"/></svg></span>
+    <span><strong>Staff view</strong><span>Every client by risk, plus the inbox</span></span>{arrow}</a>
+</div>"""))
         write("/demo-not-saved/", page_shell(app, "Demo: not saved", """
-<section class="card narrow">
-  <h1>Demo mode</h1>
-  <p>Nothing was sent or saved. This preview has no back end.</p>
-  <p class="muted">In the real portal, uploads go straight to our team for checking, and SWMS requests start the 24-hour turnaround.</p>
-  <p><a class="btn" href="/">Demo home</a></p>
-</section>"""))
-        write("/404.html", page_shell(app, "Not found", '<section class="card narrow"><h1>Not found</h1><p><a href="/">Demo home</a></p></section>'))
+<h2>Demo mode</h2>
+<p class="muted">Nothing was sent or saved. This preview has no back end.</p>
+<p class="muted">In the real portal, uploads and job assessments go straight to our team, and a SWMS request starts the 24-hour turnaround.</p>
+<div class="choice-cards"><a class="btn btn-primary btn-lg" href="/">Back to the demo</a></div>"""))
+        write("/404.html", page_shell(app, "Not found", '<h2>Page not found</h2><div class="choice-cards"><a class="btn btn-primary" href="/">Demo home</a></div>'))
         write("/robots.txt", "User-agent: *\nDisallow: /\n")
         write("/_headers", "/*\n  X-Robots-Tag: noindex, nofollow\n  X-Frame-Options: DENY\n  X-Content-Type-Options: nosniff\n"
                            "  Referrer-Policy: same-origin\n"

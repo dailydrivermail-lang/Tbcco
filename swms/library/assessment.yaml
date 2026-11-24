@@ -1,0 +1,890 @@
+# Guided SWMS job assessment: plumbing, ACT + NSW.  v1 (not yet reviewed by Ivana).
+#
+# The client (or staff, on the phone) picks a job type, then answers only the questions that job triggers.
+# Each answer can open follow-up questions, switch on a hazard module in the SWMS, add a site-specific
+# control, require a licence, or raise something for the reviewer.
+#
+# Question fields
+#   id, section      section groups questions; a job type lists the sections it uses, in order
+#   priority         key      = changes what the SWMS says or whether the job can proceed. Asked one at a time,
+#                               with the reason shown, and replayed for confirmation before sending.
+#                    standard = shapes the SWMS but is easy to answer.
+#                    quick    = box tick. Asked together on one screen; "no" raises a note for the reviewer.
+#   short            label used in summaries and in the SWMS
+#   ask, why         the question, and (for key questions) why the answer matters
+#   type             choice | multi | yesno | yesno_unsure        (quick questions are always yes / no / not sure)
+#   when             show only if true:  {q: id, in: [values]}  ·  {all: [...]}  ·  {any: [...]}  ·  {not: {...}}
+#                    q can be another question, or job_type / state / building_age
+#   effects          list of {if: [answer values], when: {...}, ...outcomes}
+#       hazard: <module in hazards.yaml>     switch the module on
+#       hrcw: [index]                        tick a r 291 category (index into HRCW_ALL in swms/model.py)
+#       control: {step, h, text}             add a site-specific control to a SWMS step (h = hierarchy code)
+#       need: {code, who}                    credential someone on the crew must hold (who: any | all)
+#       licence: plumbing | drainage | gas   trade licence the job needs
+#       plant: text                          add to plant and equipment
+#       blocker: text                        must be resolved before the SWMS can be issued (shown to the client too)
+#       check: text                          reviewer must confirm (internal)
+#       stop: text                           this SWMS cannot cover the work as described (shown prominently)
+#
+# Rule of thumb used throughout: "not sure" is always allowed on key questions. It takes the higher-risk path
+# and raises a blocker, so nobody is pushed into guessing.
+
+job_types:
+  - id: drainage
+    title: Sewer and stormwater drainage
+    blurb: New or replacement drains, sewer repairs, relining, stormwater, boundary traps
+    icon: waves
+    template: drainage
+    minutes: 4
+    sections: [excavation, sewer, surroundings, materials, cutting, hotworks]
+  - id: hot_water
+    title: Hot water system
+    blurb: Replace or install electric, gas, heat pump or solar hot water
+    icon: thermometer
+    template: hot_water
+    minutes: 3
+    sections: [hot_water, heights, materials, hotworks]
+  - id: gas
+    title: Gasfitting
+    blurb: Gas pipework, appliance connections, leak repairs, LPG
+    icon: flame
+    template: gas_fitting
+    minutes: 3
+    sections: [gas, excavation, materials, cutting, hotworks, surroundings]
+  - id: roof
+    title: Roof plumbing
+    blurb: Gutters, downpipes, flashings, box gutters, roof sheeting
+    icon: home
+    template: roof_plumbing
+    minutes: 3
+    sections: [heights, roof, materials, hotworks, surroundings]
+  - id: general
+    title: General plumbing
+    blurb: Fit-outs, fixtures, pipework, repairs and maintenance
+    icon: wrench
+    template: general
+    minutes: 3
+    sections: [general, heights, excavation, sewer, materials, cutting, hotworks, surroundings]
+
+section_titles:
+  excavation: Digging and trenching
+  sewer: Live sewer and enclosed spaces
+  surroundings: Around the work area
+  materials: Existing building materials
+  cutting: Cutting and drilling
+  hotworks: Hot works
+  hot_water: The hot water unit
+  heights: Working at height
+  gas: The gas work
+  roof: The roof
+  general: Where the work is
+
+building_ages:
+  - {v: pre1990, label: "Before 1990"}
+  - {v: 1990to2003, label: "1990 to 2003"}
+  - {v: post2003, label: "2004 or later"}
+  - {v: unknown, label: "Not sure"}
+
+questions:
+  # ------------------------------------------------------------------ general: where the work is
+  - id: gen_where
+    section: general
+    priority: key
+    short: Where the work is
+    ask: Where will the work take place?
+    why: The location decides most of the risk. Roof and ceiling spaces bring falls and hidden cables; under-floor and plant areas bring cramped access.
+    type: multi
+    options:
+      - {v: wet, label: "Kitchen, bathroom or laundry"}
+      - {v: underfloor, label: "Under the floor or in a crawl space"}
+      - {v: ceiling, label: "Ceiling or roof space"}
+      - {v: roof, label: "On the roof"}
+      - {v: outside, label: "Outside at ground level"}
+      - {v: plant, label: "Plant room, riser or commercial services area"}
+    effects:
+      - if: [underfloor]
+        control: {step: setup, h: A, text: "Under-floor work: check ventilation, lighting and a clear way out before entering; a second person stays in contact"}
+        check: "Under-floor or crawl-space work: confirm it is not a confined space (restricted entry, risk of unsafe atmosphere). If it is, the confined space module is needed."
+      - if: [ceiling]
+        control: {step: setup, h: A, text: "Ceiling space: walk only on joists or crawl boards; treat all cables as live; avoid the space in extreme heat"}
+      - if: [plant]
+        check: "Plant room or riser: confirm the building manager's isolation and permit requirements."
+
+  - id: gen_gas
+    section: general
+    priority: key
+    short: Gas work involved
+    ask: Does the job touch gas pipework or a gas appliance?
+    why: Gas work needs a gasfitting licence and its own isolation and testing steps.
+    type: yesno
+    effects:
+      - {if: [yes], hazard: gas, licence: gas}
+
+  - id: gen_elec
+    section: general
+    priority: key
+    short: Electrical disconnection
+    ask: Will anything electrical be disconnected or reconnected (for example a hot water unit, pump or appliance)?
+    why: Only a licensed person can do electrical work. We need to know who.
+    type: choice
+    options:
+      - {v: none, label: "No electrical work"}
+      - {v: electrician, label: "Yes, a licensed electrician will do it"}
+      - {v: restricted, label: "Yes, our plumber holds a restricted electrical licence"}
+      - {v: unsure, label: "Yes, but not arranged yet"}
+    effects:
+      - {if: [electrician, restricted, unsure], hazard: electrical}
+      - {if: [restricted], need: {code: ELEC_RESTRICTED, who: any}}
+      - {if: [unsure], blocker: "Electrical disconnection and reconnection: who will do it has not been arranged."}
+
+  - id: gen_walls
+    section: general
+    priority: standard
+    short: Cutting into walls or floors
+    ask: Will you cut or drill into walls, floors or ceilings?
+    type: yesno
+    effects:
+      - if: [yes]
+        control: {step: power_tools, h: A, text: "Locate cables and pipes with a detector before cutting or drilling into walls, floors or ceilings"}
+
+  # ------------------------------------------------------------------ hot water
+  - id: hw_new
+    section: hot_water
+    priority: key
+    short: New unit
+    ask: What type of unit is going in?
+    why: The energy source decides which licences, isolations and tests the SWMS has to cover.
+    type: choice
+    options:
+      - {v: electric, label: "Electric storage"}
+      - {v: gas_storage, label: "Gas storage"}
+      - {v: gas_cf, label: "Gas continuous flow"}
+      - {v: heatpump, label: "Heat pump"}
+      - {v: solar, label: "Solar (roof collectors)"}
+    effects:
+      - {if: [gas_storage, gas_cf], hazard: gas, licence: gas}
+
+  - id: hw_old
+    section: hot_water
+    priority: standard
+    short: Unit being removed
+    ask: What is being removed?
+    type: choice
+    options:
+      - {v: none, label: "Nothing, it's a new install"}
+      - {v: electric, label: "Electric unit"}
+      - {v: gas, label: "Gas unit"}
+      - {v: solar, label: "Solar unit"}
+    effects:
+      - {if: [gas], hazard: gas, licence: gas}
+
+  - id: hw_elec
+    section: hot_water
+    priority: key
+    short: Electrical disconnect / reconnect
+    ask: Who disconnects and reconnects the electrical supply?
+    why: Electrical work on a hard-wired unit must be done by a licensed person. This is one of the most common gaps on hot water jobs.
+    type: choice
+    when:
+      any:
+        - {q: hw_new, in: [electric, heatpump, solar]}
+        - {q: hw_old, in: [electric, solar]}
+    options:
+      - {v: electrician, label: "A licensed electrician"}
+      - {v: restricted, label: "Our plumber, who holds a restricted electrical licence"}
+      - {v: plug, label: "Plug-in unit, no hard wiring touched"}
+      - {v: unsure, label: "Not arranged yet"}
+    effects:
+      - {if: [electrician, restricted, unsure], hazard: electrical}
+      - {if: [restricted], need: {code: ELEC_RESTRICTED, who: any}}
+      - {if: [unsure], blocker: "Electrical disconnection and reconnection: who will do it has not been arranged."}
+
+  - id: hw_refrig
+    section: hot_water
+    priority: key
+    short: Refrigerant pipework
+    ask: Is it a sealed all-in-one heat pump, or a split system with refrigerant pipework to connect?
+    why: Connecting refrigerant pipework needs a refrigerant handling licence (ARCtick).
+    type: choice
+    when: {q: hw_new, in: [heatpump]}
+    options:
+      - {v: sealed, label: "Sealed all-in-one unit"}
+      - {v: split, label: "Split system, refrigerant pipework to connect", tag: "Licence needed"}
+      - {v: unsure, label: "Not sure"}
+    effects:
+      - {if: [split], need: {code: ARCTICK_RHL, who: any}, hrcw: [9]}
+      - {if: [unsure], blocker: "Heat pump type not confirmed (sealed or split). A split system needs a refrigerant handling licence."}
+
+  - id: hw_location
+    section: hot_water
+    priority: key
+    short: Where the unit goes
+    ask: Where is the new unit going?
+    why: Roof and roof-space installs bring fall risks and heavy lifts at height, which need their own controls.
+    type: choice
+    options:
+      - {v: ground, label: "Outside at ground level"}
+      - {v: inside, label: "Inside (cupboard, laundry, garage)"}
+      - {v: roofspace, label: "In the roof space"}
+      - {v: roof, label: "On the roof", tag: "High-risk work"}
+
+  - id: hw_move
+    section: hot_water
+    priority: standard
+    short: Moving the unit
+    ask: How will the units be moved in and out?
+    type: choice
+    options:
+      - {v: trolley, label: "Trolley on level ground"}
+      - {v: stairs, label: "Carried, including stairs or steps"}
+      - {v: lift, label: "Crane, hoist or other lifting equipment"}
+      - {v: unsure, label: "Not planned yet"}
+    effects:
+      - if: [stairs]
+        control: {step: manual_handling, h: A, text: "Units carried on stairs: stair-climbing trolley or two people minimum; empty the old unit fully first"}
+      - if: [lift]
+        plant: "Crane or hoist"
+        check: "Lifting equipment in use: confirm who slings and directs the load (dogging is high risk work) and that there is a lift plan."
+      - {if: [unsure], check: "How the hot water units will be moved has not been planned. Storage tanks weigh 60 to 150 kg."}
+
+  # ------------------------------------------------------------------ gas
+  - id: gas_work
+    section: gas
+    priority: key
+    short: Type of gas work
+    ask: What is the gas work?
+    why: Leak repairs and alterations on live systems carry more risk than new, uncharged pipework.
+    type: choice
+    options:
+      - {v: new, label: "New pipework, not yet connected to supply"}
+      - {v: alter, label: "Altering or extending existing pipework"}
+      - {v: appliance, label: "Connecting or replacing an appliance"}
+      - {v: leak, label: "Finding and repairing a leak", tag: "Higher risk"}
+    effects:
+      - {if: [new, alter, appliance, leak], hazard: gas, licence: gas}
+      - if: [leak]
+        control: {step: gas_isolate, h: A, text: "Leak repair: isolate supply first; ventilate; no ignition sources or electrical switching until the area is confirmed gas-free"}
+
+  - id: gas_isolate
+    section: gas
+    priority: key
+    short: Gas isolation
+    ask: Can the gas be fully isolated for the whole job?
+    why: Working on charged gas pipework is a different, higher-risk task that the standard steps don't cover.
+    type: choice
+    when: {q: gas_work, in: [alter, appliance, leak]}
+    options:
+      - {v: yes, label: "Yes, isolated at the meter or cylinder"}
+      - {v: partial, label: "No, part of the system must stay live"}
+      - {v: unsure, label: "Not sure"}
+    effects:
+      - {if: [partial], blocker: "Part of the gas system stays live during the work. A specific procedure is needed; the standard isolation steps don't cover it."}
+      - {if: [unsure], blocker: "Not confirmed whether the gas can be fully isolated."}
+
+  - id: gas_space
+    section: gas
+    priority: key
+    short: Enclosed area
+    ask: Is any of the gas work indoors, below ground or in an enclosed space?
+    why: Gas collects in enclosed and low areas. That changes ventilation and gas-detection requirements.
+    type: yesno
+    effects:
+      - if: [yes]
+        control: {step: gas_isolate, h: Eng, text: "Enclosed area: ventilate before and during work; use a gas detector; keep a clear exit"}
+
+  - id: gas_type
+    section: gas
+    priority: standard
+    short: Gas type
+    ask: Natural gas or LPG?
+    type: choice
+    options:
+      - {v: ng, label: "Natural gas"}
+      - {v: lpg, label: "LPG"}
+    effects:
+      - {if: [lpg], check: "LPG work: confirm the gasfitter's licence class covers LPG (ACT: LPG gasfitter class; NSW: LPG category)."}
+
+  - id: gas_pressure
+    section: gas
+    priority: standard
+    short: Pressure above 21 kPa
+    ask: Is the operating pressure above 21 kPa?
+    type: yesno_unsure
+    effects:
+      - {if: [yes, unsure], when: {q: state, in: [ACT]}, check: "ACT: gasfitting above 21 kPa needs the advanced gasfitter class. Confirm the licence class."}
+
+  # ------------------------------------------------------------------ excavation
+  - id: exc_depth
+    section: excavation
+    priority: key
+    short: Excavation depth
+    ask: How deep is the deepest trench or hole on the job?
+    why: Past 1.5 m, trench work is high-risk construction work and the sides must be supported before anyone goes in. Collapses kill quickly and without warning.
+    type: choice
+    options:
+      - {v: none, label: "No digging"}
+      - {v: lt1, label: "Under 1 m"}
+      - {v: 1to15, label: "1 m to 1.5 m"}
+      - {v: gt15, label: "Deeper than 1.5 m", tag: "High-risk work"}
+      - {v: unsure, label: "Not sure yet"}
+    effects:
+      - {if: [gt15, unsure], hazard: trench}
+      - {if: [unsure], blocker: "Excavation depth not known. Treated as deeper than 1.5 m until confirmed."}
+      - if: [1to15]
+        check: "Trench of 1 m to 1.5 m: not high-risk construction work by depth, but collapse can still injure. Confirm the ground and whether support is needed."
+      - if: [lt1, 1to15]
+        control: {step: setup, h: A, text: "Shallow excavation: keep spoil back from the edge, barricade or cover it when unattended, and locate services before digging"}
+
+  - id: exc_support
+    section: excavation
+    priority: key
+    short: Trench support
+    ask: How will the trench be made safe before anyone gets in?
+    why: This is the control that prevents a burial. The SWMS has to name the actual method, and the crew has to have the gear on site.
+    type: choice
+    when: {q: exc_depth, in: [gt15, unsure]}
+    options:
+      - {v: shield, label: "Trench shield or shoring"}
+      - {v: batter, label: "Benching or battering the sides back"}
+      - {v: noentry, label: "Nobody enters: all work done from the surface"}
+      - {v: undecided, label: "Not decided yet"}
+    effects:
+      - if: [shield]
+        plant: "Trench shield or shoring"
+        control: {step: excavate, h: Eng, text: "Site-specific: trench shield or shoring installed before entry, and workers stay inside the protected zone"}
+      - if: [batter]
+        control: {step: excavate, h: Eng, text: "Site-specific: sides benched or battered to a safe angle for the ground conditions before entry"}
+        check: "Benching or battering chosen: confirm there is room on site and the angle suits the soil."
+      - if: [noentry]
+        control: {step: excavate, h: E, text: "Site-specific: no person enters the trench; pipe laid and jointed from the surface"}
+      - {if: [undecided], blocker: "Trench support method not decided for a trench deeper than 1.5 m."}
+
+  - id: exc_ground
+    section: excavation
+    priority: standard
+    short: Ground conditions
+    ask: What is the ground like?
+    type: choice
+    when: {q: exc_depth, in: [1to15, gt15, unsure]}
+    options:
+      - {v: stable, label: "Firm clay or rock"}
+      - {v: loose, label: "Sand, loose soil or old fill"}
+      - {v: wet, label: "Wet ground or water in the trench"}
+      - {v: unknown, label: "Don't know"}
+    effects:
+      - {if: [loose, wet, unknown], check: "Ground is loose, wet or unknown: confirm the trench support suits it; consider geotechnical advice."}
+      - if: [wet]
+        control: {step: excavate, h: Eng, text: "Site-specific: control water in the trench (pump out, divert); re-inspect the sides after pumping or rain"}
+
+  - id: exc_adjacent
+    section: excavation
+    priority: standard
+    short: Near structures
+    ask: Is the trench close to a building, wall, slab or other structure (within about its own depth)?
+    type: yesno_unsure
+    when: {q: exc_depth, in: [1to15, gt15, unsure]}
+    effects:
+      - {if: [yes, unsure], check: "Excavation near a structure: risk of undermining footings. Confirm whether engineering advice is needed."}
+
+  - id: exc_byda
+    section: excavation
+    priority: key
+    short: Before You Dig
+    ask: Have you lodged a Before You Dig enquiry and got the plans back?
+    why: Hitting a gas main or power cable is the other way excavation kills. The plans have to be on site before the first cut.
+    type: choice
+    when: {q: exc_depth, in: [lt1, 1to15, gt15, unsure]}
+    options:
+      - {v: have, label: "Yes, plans in hand"}
+      - {v: lodged, label: "Lodged, waiting on plans"}
+      - {v: no, label: "Not yet"}
+    effects:
+      - {if: [lodged], check: "Before You Dig plans not yet received. Confirm they are on site before digging starts."}
+      - {if: [no], blocker: "Before You Dig enquiry not lodged."}
+
+  - id: exc_services
+    section: excavation
+    priority: standard
+    short: Services near the dig
+    ask: Which services are in or near the dig area?
+    type: multi
+    when: {q: exc_depth, in: [lt1, 1to15, gt15, unsure]}
+    options:
+      - {v: gas, label: "Gas"}
+      - {v: power, label: "Electricity"}
+      - {v: water, label: "Water main"}
+      - {v: comms, label: "Telecommunications"}
+      - {v: none, label: "None known"}
+      - {v: unknown, label: "Don't know yet"}
+    effects:
+      - if: [gas]
+        hrcw: [8]
+        control: {step: services, h: A, text: "Site-specific: gas service near the dig. Hand dig or vacuum excavate to expose it; follow the asset owner's conditions"}
+      - if: [power]
+        hrcw: [10]
+        control: {step: services, h: A, text: "Site-specific: underground electricity near the dig. Hand dig or vacuum excavate to expose it; treat as live"}
+      - {if: [unknown], check: "Services near the dig not yet known: confirm from the Before You Dig plans."}
+
+  - id: exc_method
+    section: excavation
+    priority: standard
+    short: How it's dug
+    ask: How will it be dug?
+    type: choice
+    when: {q: exc_depth, in: [lt1, 1to15, gt15, unsure]}
+    options:
+      - {v: hand, label: "By hand"}
+      - {v: vac, label: "Vacuum excavation"}
+      - {v: machine, label: "Excavator or other machine"}
+    effects:
+      - {if: [machine], hazard: traffic, plant: "Excavator"}
+      - {if: [vac], plant: "Vacuum excavator"}
+
+  - id: exc_operator
+    section: excavation
+    priority: standard
+    short: Machine operator
+    ask: Who operates the machine?
+    type: choice
+    when: {q: exc_method, in: [machine]}
+    options:
+      - {v: own, label: "One of our crew"}
+      - {v: hire, label: "Hired with an operator"}
+      - {v: undecided, label: "Not decided"}
+    effects:
+      - {if: [own], check: "Own crew operating earthmoving plant: confirm the operator's competency (ticket or verification of competency)."}
+      - {if: [hire], check: "Hired plant with operator: get the operator's SWMS or add them to this one, and sight their competency."}
+      - {if: [undecided], check: "Excavator operator not decided."}
+
+  # ------------------------------------------------------------------ live sewer and enclosed spaces
+  - id: sew_live
+    section: sewer
+    priority: standard
+    short: Live sewer or stormwater
+    ask: Will you cut into or connect to a live sewer or stormwater line?
+    type: yesno
+    when:
+      any:
+        - {q: job_type, in: [drainage]}
+        - {q: gen_where, in: [outside, underfloor, plant]}
+    effects:
+      - if: [yes]
+        control: {step: setup, h: A, text: "Live sewer: plug or divert flows before cutting in; treat all waste as infectious; wash before eating or drinking"}
+
+  - id: sew_entry
+    section: sewer
+    priority: key
+    short: Entering a pit or chamber
+    ask: Will anyone need to climb into a manhole, pit, tank, chamber or similar enclosed space?
+    why: Sewer gases can knock a person out in seconds, and rescuers often become the next casualties. Entry needs a permit, gas testing, a standby person and a rescue plan.
+    type: choice
+    when:
+      any:
+        - {q: job_type, in: [drainage]}
+        - {q: gen_where, in: [outside, underfloor, plant]}
+    options:
+      - {v: no, label: "No, everything is done from outside"}
+      - {v: yes, label: "Yes", tag: "High-risk work"}
+      - {v: unsure, label: "Possibly, not sure yet"}
+    effects:
+      - {if: [yes, unsure], hazard: confined}
+      - {if: [unsure], blocker: "Not confirmed whether anyone will enter a pit, manhole or chamber."}
+
+  - id: cs_ready
+    section: sewer
+    priority: key
+    short: Standby and rescue
+    ask: Are a trained standby person, a calibrated gas detector and rescue equipment arranged for the entry?
+    why: These three are the difference between a routine entry and a fatality. Calling 000 is not a rescue plan.
+    type: choice
+    when: {q: sew_entry, in: [yes, unsure]}
+    options:
+      - {v: all, label: "Yes, all three"}
+      - {v: some, label: "Some, not all"}
+      - {v: none, label: "Not yet"}
+    effects:
+      - {if: [some, none], blocker: "Confined space entry: standby person, gas detector and rescue equipment are not all arranged."}
+
+  - id: cs_owner
+    section: sewer
+    priority: standard
+    short: Asset owner
+    ask: Who owns the pit or chamber?
+    type: choice
+    when: {q: sew_entry, in: [yes, unsure]}
+    options:
+      - {v: private, label: "The property owner"}
+      - {v: utility, label: "A water utility or council"}
+      - {v: unsure, label: "Not sure"}
+    effects:
+      - {if: [utility, unsure], check: "Entry to a utility or council asset: confirm the asset owner's authorisation and entry conditions."}
+
+  # ------------------------------------------------------------------ working at height
+  - id: ht_fall
+    section: heights
+    priority: key
+    short: Fall of more than 2 m
+    ask: Could anyone fall more than 2 m?
+    why: Falls are the biggest killer in construction. Over 2 m it is high-risk construction work and the SWMS must say exactly what stops the fall.
+    type: choice
+    when:
+      any:
+        - {q: job_type, in: [roof]}
+        - {q: hw_location, in: [roof, roofspace]}
+        - {q: hw_new, in: [solar]}
+        - {q: gen_where, in: [roof, ceiling]}
+    options:
+      - {v: no, label: "No, all work is under 2 m"}
+      - {v: yes, label: "Yes", tag: "High-risk work"}
+      - {v: unsure, label: "Not sure"}
+    effects:
+      - {if: [yes, unsure], hazard: height}
+      - {if: [unsure], blocker: "Not confirmed whether anyone could fall more than 2 m. Treated as work at height until confirmed."}
+
+  - id: ht_control
+    section: heights
+    priority: key
+    short: Fall protection
+    ask: What will stop a fall?
+    why: The law sets an order. Solid barriers (scaffold, edge protection) come first; a harness is the last resort; a ladder alone is not fall protection for roof work.
+    type: choice
+    when: {q: ht_fall, in: [yes, unsure]}
+    options:
+      - {v: scaffold, label: "Scaffold"}
+      - {v: edge, label: "Edge protection or guard rails"}
+      - {v: ewp, label: "Elevating work platform"}
+      - {v: harness, label: "Harness system", hint: "Last resort"}
+      - {v: ladder, label: "Ladder only"}
+      - {v: undecided, label: "Not decided yet"}
+    effects:
+      - if: [scaffold]
+        plant: "Scaffold"
+        control: {step: height_work, h: Eng, text: "Site-specific: scaffold with guard rails and toe boards; check the handover certificate before use"}
+      - if: [edge]
+        plant: "Roof edge protection"
+        control: {step: height_work, h: Eng, text: "Site-specific: edge protection installed before roof access and removed last"}
+      - if: [ewp]
+        plant: "Elevating work platform"
+        control: {step: height_work, h: Eng, text: "Site-specific: work from an EWP; harness attached in boom-type platforms; ground checked for stability"}
+      - if: [harness]
+        control: {step: height_work, h: Eng, text: "Site-specific: harness system with rated anchor points; rescue plan in place; nobody works alone"}
+        check: "Harness chosen as fall control: confirm why scaffold, edge protection or an EWP isn't practicable, and that anchors and a rescue plan exist."
+        need: {code: WORK_AT_HEIGHTS, who: all}
+      - {if: [ladder], blocker: "Fall control is 'ladder only' for work where a person could fall more than 2 m. Choose scaffold, edge protection, an EWP or a harness system."}
+      - {if: [undecided], blocker: "Fall protection method not decided."}
+
+  - id: ht_scaffold
+    section: heights
+    priority: standard
+    short: Who erects the scaffold
+    ask: Who is putting the scaffold up?
+    type: choice
+    when: {q: ht_control, in: [scaffold]}
+    options:
+      - {v: licensed, label: "A licensed scaffolder"}
+      - {v: builder, label: "It's already there (builder's scaffold)"}
+      - {v: own, label: "Our own crew"}
+    effects:
+      - {if: [own], check: "Own crew erecting scaffold: a high risk work licence is needed where a person or object could fall more than 4 m."}
+      - {if: [builder], check: "Using the builder's scaffold: sight the handover certificate and confirm it suits roof-edge work."}
+
+  - id: ht_ewp
+    section: heights
+    priority: standard
+    short: EWP type
+    ask: What kind of platform?
+    type: choice
+    when: {q: ht_control, in: [ewp]}
+    options:
+      - {v: scissor, label: "Scissor lift"}
+      - {v: boom_small, label: "Boom lift, boom under 11 m"}
+      - {v: boom_large, label: "Boom lift, boom 11 m or more", tag: "Licence needed"}
+      - {v: unsure, label: "Not sure"}
+    effects:
+      - {if: [boom_large], need: {code: HRWL_WP, who: any}}
+      - {if: [scissor, boom_small], check: "EWP under 11 m: no high risk work licence needed, but confirm operator training (for example a yellow card)."}
+      - {if: [unsure], blocker: "EWP type not confirmed. A boom of 11 m or more needs a high risk work licence (class WP)."}
+
+  - id: ht_power
+    section: heights
+    priority: key
+    short: Overhead power lines
+    ask: Are overhead power lines or the electrical service line within reach of the work, ladders or long materials?
+    why: Long gutters, downpipes and ladders are how roof plumbers contact live lines. The network operator sets the clearances.
+    type: yesno_unsure
+    when: {q: ht_fall, in: [yes, unsure]}
+    effects:
+      - if: [yes, unsure]
+        hrcw: [10]
+        control: {step: height_work, h: I, text: "Site-specific: overhead lines nearby. Keep people, ladders and materials outside the network operator's clearance distance; carry long items horizontally"}
+        check: "Overhead power lines near the work: confirm clearances with the network operator (line covers or isolation may be needed)."
+
+  # ------------------------------------------------------------------ roof
+  - id: roof_surface
+    section: roof
+    priority: key
+    short: Roof material
+    ask: What is the roof made of?
+    why: Brittle sheeting and skylights give way without warning, and old fibre-cement roofing may contain asbestos.
+    type: choice
+    options:
+      - {v: metal, label: "Metal sheeting"}
+      - {v: tile, label: "Tiles"}
+      - {v: brittle, label: "Fibre cement, polycarbonate or skylights", tag: "Fragile"}
+      - {v: unsure, label: "Not sure"}
+    effects:
+      - if: [brittle, unsure]
+        control: {step: height_work, h: Eng, text: "Site-specific: fragile roofing. Never walk on the sheets; use crawl boards over supports and mesh or covers at skylights"}
+      - {if: [unsure], check: "Roof material not known: confirm whether any of it is fragile."}
+      - if: [brittle, unsure]
+        when: {q: building_age, in: [pre1990, 1990to2003, unknown]}
+        check: "Fibre-cement roofing on a pre-2004 building may be asbestos cement. Confirm before any cutting, drilling or removal."
+
+  - id: roof_pitch
+    section: roof
+    priority: standard
+    short: Steep or slippery roof
+    ask: Is the roof steep, or likely to be wet, mossy or slippery?
+    type: yesno
+    effects:
+      - if: [yes]
+        control: {step: height_work, h: A, text: "Site-specific: steep or slippery roof. Use roof ladders or a work platform; no work when wet"}
+
+  - id: roof_lift
+    section: roof
+    priority: standard
+    short: Getting materials up
+    ask: How do materials get onto the roof?
+    type: choice
+    options:
+      - {v: hand, label: "Passed up by hand in short lengths"}
+      - {v: hoist, label: "Material hoist or crane"}
+      - {v: scaffold, label: "Loaded from the scaffold"}
+    effects:
+      - {if: [hoist], plant: "Material hoist or crane", check: "Hoist or crane in use: confirm who slings and directs loads (dogging is high risk work)."}
+
+  # ------------------------------------------------------------------ existing materials (asbestos)
+  - id: asb_disturb
+    section: materials
+    priority: key
+    short: Disturbing existing materials
+    ask: Will you cut, drill, break or remove any existing building materials or old pipework?
+    why: Buildings from before 2004 can contain asbestos in sheeting, eaves, old flues, pipe lagging, vinyl floors and cement pipes. Fibres released by one cut can cause disease decades later.
+    type: yesno_unsure
+    when: {q: building_age, in: [pre1990, 1990to2003, unknown]}
+
+  - id: asb_known
+    section: materials
+    priority: key
+    short: What's known about asbestos
+    ask: What do you know about asbestos in the work area?
+    why: If nothing has been checked, the safe and legal default is to treat suspect material as asbestos.
+    type: choice
+    when: {q: asb_disturb, in: [yes, unsure]}
+    options:
+      - {v: clear, label: "A register or test shows none in the work area"}
+      - {v: present, label: "Asbestos is confirmed in the work area"}
+      - {v: assume, label: "Not tested, we'll treat it as asbestos"}
+      - {v: unknown, label: "Don't know"}
+    effects:
+      - {if: [present, assume, unknown], hazard: asbestos}
+      - {if: [clear], check: "Client says a register or test shows no asbestos in the work area: sight the document."}
+      - {if: [unknown], blocker: "Asbestos status of the work area not known for a pre-2004 building."}
+
+  - id: asb_amount
+    section: materials
+    priority: key
+    short: Amount of asbestos affected
+    ask: How much asbestos-containing material would the work disturb?
+    why: Small amounts of bonded material can sometimes be handled by a trained tradesperson. Larger amounts, or anything crumbly, must go to a licensed asbestos removalist.
+    type: choice
+    when: {q: asb_known, in: [present, assume, unknown]}
+    options:
+      - {v: avoid, label: "None, we'll work around it"}
+      - {v: small, label: "A small amount of bonded material", hint: "Under 10 m², for example one sheet or a pipe section"}
+      - {v: large, label: "More than 10 m² of bonded material"}
+      - {v: friable, label: "Crumbly, damaged or lagging-type material"}
+      - {v: unsure, label: "Not sure"}
+    effects:
+      - if: [avoid]
+        control: {step: asb_identify, h: E, text: "Site-specific: suspect asbestos material is left undisturbed; pipework and fixings routed around it"}
+      - if: [small]
+        when: {q: state, in: [ACT]}
+        check: "ACT: confirm the worker may disturb or remove this asbestos without a removal licence. ACT rules are stricter than the 10 m² model threshold (pending legal review)."
+      - {if: [large, friable], stop: "This amount or type of asbestos must be removed by a licensed asbestos removalist before the plumbing work. Our SWMS can cover your work after the area is cleared, not the removal itself."}
+      - {if: [unsure], blocker: "Amount and type of asbestos affected not known."}
+
+  # ------------------------------------------------------------------ cutting (silica)
+  - id: sil_cut
+    section: cutting
+    priority: standard
+    short: Cutting concrete or masonry
+    ask: Will you cut, core-drill, chase or grind concrete, brick, tile or stone?
+    type: yesno
+    effects:
+      - {if: [yes], hazard: silica}
+
+  - id: sil_method
+    section: cutting
+    priority: key
+    short: Dust control
+    ask: How will the dust be controlled?
+    why: Silica dust causes silicosis, which can't be cured. Dry cutting with no dust control is not acceptable on any job.
+    type: choice
+    when: {q: sil_cut, in: [yes]}
+    options:
+      - {v: wet, label: "Wet cutting"}
+      - {v: extract, label: "On-tool dust extraction with an H-class vacuum"}
+      - {v: both, label: "Both"}
+      - {v: none, label: "Neither"}
+    effects:
+      - if: [wet, both]
+        control: {step: silica, h: Eng, text: "Site-specific: wet cutting with continuous water feed"}
+      - if: [extract, both]
+        plant: "H-class vacuum"
+        control: {step: silica, h: Eng, text: "Site-specific: on-tool extraction connected to an H-class vacuum"}
+      - {if: [none], blocker: "No dust control selected for cutting concrete or masonry. Wet cutting or on-tool extraction is required."}
+
+  # ------------------------------------------------------------------ hot works
+  - id: hot_any
+    section: hotworks
+    priority: standard
+    short: Flame or welding
+    ask: Will you braze, weld or solder with a flame?
+    type: choice
+    options:
+      - {v: no, label: "No, press-fit or other cold joints"}
+      - {v: yes, label: "Yes"}
+    effects:
+      - {if: [yes], hazard: hotworks}
+
+  - id: hot_combust
+    section: hotworks
+    priority: key
+    short: Combustibles near the flame
+    ask: Is there anything that could catch near the flame, such as timber framing, insulation, wall cavities or dry grass?
+    why: Most hot-work fires start inside a wall or roof cavity and are found after the crew has left.
+    type: yesno_unsure
+    when: {q: hot_any, in: [yes]}
+    effects:
+      - if: [yes, unsure]
+        control: {step: hotwork, h: A, text: "Site-specific: combustibles nearby. Heat mat behind every joint, wet down the area, extinguisher in hand, and stay on fire watch for at least 30 minutes"}
+
+  - id: hot_permit
+    section: hotworks
+    priority: standard
+    short: Hot work permit
+    ask: Does the site require a hot work permit?
+    type: yesno_unsure
+    when: {q: hot_any, in: [yes]}
+    effects:
+      - {if: [yes], control: {step: hotwork, h: A, text: "Site-specific: hot work permit obtained from the site before starting, and closed out after the fire watch"}}
+      - {if: [unsure], check: "Not known whether the site requires a hot work permit."}
+
+  # ------------------------------------------------------------------ surroundings
+  - id: sur_road
+    section: surroundings
+    priority: key
+    short: Roads and traffic
+    ask: Is any of the work on or beside a road, footpath or driveway that stays in use?
+    why: Work beside live traffic needs a traffic guidance scheme from an accredited provider. It can't be improvised with a few cones.
+    type: choice
+    options:
+      - {v: no, label: "No"}
+      - {v: private, label: "A private driveway or car park"}
+      - {v: public, label: "A public road or footpath", tag: "High-risk work"}
+    effects:
+      - {if: [private, public], hazard: traffic}
+
+  - id: sur_tgs
+    section: surroundings
+    priority: key
+    short: Traffic management
+    ask: Who is providing the traffic management?
+    why: Without it, the work can't legally start, and the road authority may need notice.
+    type: choice
+    when: {q: sur_road, in: [public]}
+    options:
+      - {v: builder, label: "The head contractor"}
+      - {v: provider, label: "A traffic management company we've engaged"}
+      - {v: none, label: "Not arranged yet"}
+    effects:
+      - {if: [builder], check: "Head contractor provides traffic management: sight their traffic guidance scheme."}
+      - {if: [none], blocker: "Work on a public road or footpath: traffic management has not been arranged."}
+
+  - id: sur_occupied
+    section: surroundings
+    priority: standard
+    short: Occupied during work
+    ask: Will the property be occupied or open to the public while you work?
+    type: yesno
+    effects:
+      - if: [yes]
+        control: {step: setup, h: I, text: "Site-specific: property occupied. Barricade the work area, keep access routes clear and tell the occupier each day what is isolated"}
+
+  # ------------------------------------------------------------------ quick checks (box ticks)
+  - id: q_induct
+    priority: quick
+    short: Site induction
+    ask: Everyone on the job has done, or will do, the site induction
+    no_flag: "Site induction not confirmed for all workers."
+  - id: q_toolbox
+    priority: quick
+    short: SWMS briefing
+    ask: The crew will be talked through the SWMS before starting, and will sign it
+    no_flag: "Crew briefing on the SWMS not confirmed."
+  - id: q_ppe
+    priority: quick
+    short: Standard PPE
+    ask: Boots, hi-vis, gloves, eye and hearing protection are available for everyone
+    no_flag: "Standard PPE not confirmed as available."
+  - id: q_firstaid
+    priority: quick
+    short: First aid kit
+    ask: A stocked first aid kit is on site or in the vehicle
+    no_flag: "First aid kit not confirmed on site."
+  - id: q_tag
+    priority: quick
+    short: Test and tag
+    ask: Power tools and leads have been tested and tagged in the last 3 months
+    no_flag: "Test and tag of tools and leads not confirmed as current."
+  - id: q_rcd
+    priority: quick
+    short: Safety switch
+    ask: A portable safety switch (RCD) is used for plug-in tools
+    no_flag: "Portable RCD use not confirmed."
+  - id: q_sds
+    priority: quick
+    short: Safety data sheets
+    ask: Safety data sheets are on hand for the glues, primers and gases you'll use
+    no_flag: "Safety data sheets not confirmed as available on site."
+  - id: q_ext
+    priority: quick
+    short: Fire extinguisher
+    ask: A fire extinguisher will be within reach of the hot work
+    when: {q: hot_any, in: [yes]}
+    no_flag: "Fire extinguisher for hot work not confirmed."
+  - id: q_rpe
+    priority: quick
+    short: Fit-tested respirators
+    ask: Fit-tested P2 respirators are available for everyone exposed to dust
+    when:
+      any:
+        - {q: sil_cut, in: [yes]}
+        - {q: asb_known, in: [present, assume, unknown]}
+    no_flag: "Fit-tested P2 respirators not confirmed for dust or asbestos work."
+  - id: q_ladder
+    priority: quick
+    short: Trench access
+    ask: A ladder or other safe way in and out of the trench will be on site
+    when:
+      all:
+        - {q: exc_depth, in: [1to15, gt15, unsure]}
+        - {not: {q: exc_support, in: [noentry]}}
+    no_flag: "Safe access into the trench not confirmed."
+  - id: q_prestart
+    priority: quick
+    short: Plant pre-start
+    ask: The machine gets a recorded pre-start check each day
+    when: {q: exc_method, in: [machine]}
+    no_flag: "Daily plant pre-start check not confirmed."

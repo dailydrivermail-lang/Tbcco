@@ -1,27 +1,36 @@
 {% extends "base.html" %}
+{% from "_macros.html" import icon, page_head, empty with context %}
 {% block title %}All clients · Staff{% endblock %}
 {% block content %}
-<div class="pagehead"><h2>All clients</h2><p class="muted">Live from each client's register. Sorted red first. Items from rules not yet legally reviewed count here but are hidden from clients.</p></div>
+{{ page_head('All clients', 'Live from each client\'s register, highest risk first. Counts include items from rules not yet legally reviewed, which clients don\'t see.') }}
+<div class="stats cols-5">
+  <div class="stat"><span class="stat-icon">{{ icon('building') }}</span><div><strong>{{ totals.clients }}</strong><span>Clients</span></div></div>
+  <div class="stat {{ 'is-bad' if totals.red }}"><span class="stat-icon">{{ icon('alert-triangle') }}</span><div><strong>{{ totals.red }}</strong><span>Red</span></div></div>
+  <div class="stat {{ 'is-warn' if totals.amber }}"><span class="stat-icon">{{ icon('clock') }}</span><div><strong>{{ totals.amber }}</strong><span>Amber</span></div></div>
+  <div class="stat {{ 'is-info' if totals.requests }}"><span class="stat-icon">{{ icon('clipboard') }}</span><div><strong>{{ totals.requests }}</strong><span>SWMS requests waiting</span></div></div>
+  <div class="stat {{ 'is-info' if totals.uploads }}"><span class="stat-icon">{{ icon('inbox') }}</span><div><strong>{{ totals.uploads }}</strong><span>Uploads to process</span></div></div>
+</div>
 <section class="card">
-<table class="list">
-<thead><tr><th>Client</th><th>Status</th><th>Expired</th><th>Due ≤30d</th><th>Missing</th><th>New uploads</th><th>SWMS requests</th><th>Register updated</th></tr></thead>
+<div class="table-wrap"><table class="table">
+<thead><tr><th>Client</th><th>Status</th><th>Records</th><th class="right">Expired</th><th class="right">Due 30d</th><th class="right">Missing</th><th class="right">Uploads</th><th class="right">SWMS</th><th>Register updated</th></tr></thead>
 <tbody>
 {% for r in rows %}
 {% if r.error %}
-<tr><td data-label="Client">{{ r.cid }}</td><td colspan="7"><span class="badge bad">Register error</span> <span class="small">{{ r.error }}</span></td></tr>
+<tr><td><strong>{{ r.cid }}</strong></td><td colspan="8"><span class="pill pill-bad">Register error</span> <span class="small">{{ r.error }}</span></td></tr>
 {% else %}{% set v = r.v %}
 <tr>
-  <td data-label="Client"><a href="{{ url_for('portal.dashboard', client_id=r.cid) }}"><strong>{{ v.name }}</strong></a> <span class="muted small">{{ r.cid }} · {{ v.business.get('Service tier') or '' }}</span></td>
-  <td data-label="Status"><span class="rag {{ v.rag|lower }}">{{ v.rag }}</span></td>
-  <td data-label="Expired">{{ v.count('EXPIRED') }}</td>
-  <td data-label="Due ≤30d">{{ v.count('DUE 7','DUE 30') }}</td>
-  <td data-label="Missing">{{ v.gaps|length }}</td>
-  <td data-label="New uploads">{% if r.uploads %}<a href="{{ url_for('portal.staff_inbox') }}">{{ r.uploads }}</a>{% else %}0{% endif %}</td>
-  <td data-label="SWMS requests">{% if r.requests %}<a href="{{ url_for('portal.staff_inbox') }}"><strong>{{ r.requests }}</strong></a>{% else %}0{% endif %}</td>
-  <td data-label="Register updated">{{ v.register_mtime.strftime('%d %b %H:%M') }}</td>
+  <td><div class="cell-main"><span class="avatar avatar-sq">{{ v.name|initials }}</span><div><a href="{{ url_for('portal.dashboard', client_id=r.cid) }}"><strong>{{ v.name }}</strong></a><span>{{ r.cid }} · {{ v.business.get('Service tier') or '' }}</span></div></div></td>
+  <td data-label="Status"><span class="rag rag-{{ v.rag|lower }}">{{ v.rag }}</span></td>
+  <td data-label="Records">{% if v.tracked %}<svg class="bar" viewBox="0 0 100 8" preserveAspectRatio="none" role="img" aria-label="{{ v.score }} percent current"><rect class="ok" x="0" y="0" height="8" width="{{ r.bar.ok }}"/><rect class="warn" x="{{ r.bar.ok }}" y="0" height="8" width="{{ r.bar.warn }}"/><rect class="bad" x="{{ r.bar.ok + r.bar.warn }}" y="0" height="8" width="{{ r.bar.bad }}"/></svg>{% else %}<span class="muted small">None</span>{% endif %}</td>
+  <td data-label="Expired" class="num right">{{ v.count('EXPIRED') }}</td>
+  <td data-label="Due 30d" class="num right">{{ v.count('DUE 7','DUE 30') }}</td>
+  <td data-label="Missing" class="num right">{{ v.gaps|length }}</td>
+  <td data-label="Uploads" class="num right">{% if r.uploads %}<a href="{{ url_for('portal.staff_inbox') }}"><strong>{{ r.uploads }}</strong></a>{% else %}0{% endif %}</td>
+  <td data-label="SWMS" class="num right">{% if r.requests %}<a href="{{ url_for('portal.staff_inbox') }}"><strong>{{ r.requests }}</strong></a>{% else %}0{% endif %}</td>
+  <td data-label="Register updated" class="num nowrap muted">{{ v.register_mtime.strftime('%d %b, %H:%M') }}</td>
 </tr>
 {% endif %}
-{% else %}<tr><td colspan="8" class="muted">No client folders found.</td></tr>{% endfor %}
-</tbody></table>
+{% else %}<tr><td colspan="9">{{ empty('building', 'No client folders found', '') }}</td></tr>{% endfor %}
+</tbody></table></div>
 </section>
 {% endblock %}

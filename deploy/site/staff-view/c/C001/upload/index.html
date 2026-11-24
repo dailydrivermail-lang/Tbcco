@@ -1,70 +1,146 @@
+
 <!doctype html>
 <html lang="en-AU">
 <head>
 <meta name="robots" content="noindex, nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Upload · Example Gas &amp; Drain</title>
+<title>Send documents · Example Gas &amp; Drain</title>
 <link rel="stylesheet" href="/static/portal.css">
+<script defer src="/static/js/app.js"></script>
 </head>
 <body>
 <div class="demobar">Demo site · fictional data · forms are not saved · <a href="/">switch view</a></div>
-<header class="top">
-  <div class="wrap top-inner">
-    <a class="brand" href="/"><span class="mark" aria-hidden="true">✓</span> Compliance portal</a>
+<svg class="sprite" aria-hidden="true" focusable="false">
+<symbol id="i-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+<symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+<symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+<symbol id="i-alert-triangle" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+<symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+<symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+<symbol id="i-log-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></symbol>
+<symbol id="i-inbox" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/></symbol>
+<symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+<symbol id="i-waves" viewBox="0 0 24 24"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></symbol>
+<symbol id="i-thermometer" viewBox="0 0 24 24"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+<symbol id="i-octagon" viewBox="0 0 24 24"><path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86z"/><path d="M12 8v4"/><path d="M12 16h.01"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></symbol>
+<symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+</svg>
+
+
+<div class="app">
+  <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true" tabindex="-1">
+  <aside class="sidebar" aria-label="Main navigation">
+    <a class="brand" href="/"><span class="brand-mark"><svg class="icon " aria-hidden="true"><use href="#i-shield-check"/></svg></span><span>Compliance Portal<small>WHS and licensing</small></span></a>
     
-    <div class="who">
-      
-        <a href="/staff-view/staff/" class="">All clients</a>
-        <a href="/staff-view/staff/inbox/" class="">Inbox</a>
-      
-      <span class="email">Demo Staff</span>
+    <div class="side-label">Staff</div>
+    <nav class="side-nav">
+      <a class="side-link " href="/staff-view/staff/"><svg class="icon " aria-hidden="true"><use href="#i-building"/></svg>All clients</a>
+      <a class="side-link " href="/staff-view/staff/inbox/"><svg class="icon " aria-hidden="true"><use href="#i-inbox"/></svg>Inbox</a>
+    </nav>
+    
+    
+    <div class="side-label">Client</div>
+    <div class="side-client">
+      <span class="avatar avatar-sq">EG</span>
+      <div><strong>Example Gas &amp; Drain</strong><span><i class="dot dot-green"></i> Up to date</span></div>
+    </div>
+    <nav class="side-nav">
+      <a class="side-link " href="/staff-view/c/C001/"><svg class="icon " aria-hidden="true"><use href="#i-dashboard"/></svg>Overview</a>
+      <a class="side-link " href="/staff-view/c/C001/people/"><svg class="icon " aria-hidden="true"><use href="#i-users"/></svg>People and licences</a>
+      <a class="side-link " href="/staff-view/c/C001/insurance/"><svg class="icon " aria-hidden="true"><use href="#i-shield"/></svg>Insurance</a>
+      <a class="side-link " href="/staff-view/c/C001/jobs/"><svg class="icon " aria-hidden="true"><use href="#i-clipboard"/></svg>Jobs and SWMS</a>
+      <a class="side-link " href="/staff-view/c/C001/reports/"><svg class="icon " aria-hidden="true"><use href="#i-file"/></svg>Reports</a>
+      <a class="side-link is-active" href="/staff-view/c/C001/upload/"><svg class="icon " aria-hidden="true"><use href="#i-upload"/></svg>Send documents</a>
+    </nav>
+    <a class="btn btn-primary btn-block side-cta" href="/staff-view/c/C001/swms-request/"><svg class="icon " aria-hidden="true"><use href="#i-plus"/></svg>Request a SWMS</a>
+    
+    <div class="side-foot">
+      <span class="avatar">DS</span>
+      <div class="who"><strong>Demo Staff</strong><span>Staff</span></div>
       <a href="/" class="link-out">Switch view</a>
     </div>
-    
+  </aside>
+  <label for="nav-toggle" class="scrim" aria-hidden="true"></label>
+  <div class="main">
+    <header class="topbar">
+      <label for="nav-toggle" class="menu" aria-label="Open menu"><svg class="icon " aria-hidden="true"><use href="#i-menu"/></svg></label>
+      <a class="brand" href="/"><span class="brand-mark"><svg class="icon " aria-hidden="true"><use href="#i-shield-check"/></svg></span><span>Compliance Portal</span></a>
+    </header>
+    <main class="content">
+      
+        
+      
+      
+<div class="page-head">
+  <div>
+    <div class="crumbs"><a href="/staff-view/staff/">All clients</a><svg class="icon " aria-hidden="true"><use href="#i-chevron-right"/></svg><span>Example Gas &amp; Drain</span><svg class="icon " aria-hidden="true"><use href="#i-chevron-right"/></svg><span>Send documents</span></div>
+    <h1>Send documents</h1>
+    <p>Photos from your phone are fine. We check each one and add it to your register, usually within 2 business days.</p>
   </div>
-</header>
-
-<nav class="clientnav">
-  <div class="wrap">
-    <span class="staffview">Staff view: C001</span>
-    <h1 class="client">Example Gas &amp; Drain</h1>
-    <div class="tabs">
-      <a href="/staff-view/c/C001/" class="">Overview</a>
-      <a href="/staff-view/c/C001/people/" class="">People &amp; licences</a>
-      <a href="/staff-view/c/C001/insurance/" class="">Insurance</a>
-      <a href="/staff-view/c/C001/jobs/" class="">Jobs &amp; SWMS</a>
-      <a href="/staff-view/c/C001/reports/" class="">Reports</a>
-      <a href="/staff-view/c/C001/upload/" class="cta on">Upload</a>
+  
+</div>
+<div class="grid grid-3-2">
+  <form method="get" class="card card-pad stack" action="/demo-not-saved/">
+    
+    <input type="hidden" name="ref" value="">
+    <label class="dropzone" data-dropzone>
+      <svg class="icon " aria-hidden="true"><use href="#i-upload"/></svg>
+      <strong>Choose files or drop them here</strong>
+      <span class="muted small">PDF, photo, Word or Excel. Up to 25 MB each.</span>
+      <input type="file" name="files" multiple required accept=".doc,.docx,.heic,.heif,.jpeg,.jpg,.pdf,.png,.xls,.xlsx,image/*">
+    </label>
+    <ul class="filelist" data-filelist hidden></ul>
+    <div class="field-row">
+      <label class="field"><span class="field-label">What is it?</span><select class="input" name="doc_type"><option>Licence or ticket</option><option>White Card</option><option>Training certificate (e.g. asbestos, silica, first aid)</option><option>Insurance certificate of currency</option><option>Subcontractor statement</option><option>Safety data sheet (SDS)</option><option>Test and tag / service record</option><option>Incident or near miss</option><option>Policy or procedure</option><option>Other</option></select></label>
+      <label class="field"><span class="field-label">Who or what is it for?</span><input class="input" name="about" value="" placeholder="For example: Sam Smith, or the jetter"></label>
     </div>
+    <div><button class="btn btn-primary"><svg class="icon " aria-hidden="true"><use href="#i-upload"/></svg>Upload</button></div>
+  </form>
+  <aside class="card card-pad">
+    <h2 class="card-title"><svg class="icon " aria-hidden="true"><use href="#i-info"/></svg>A good photo</h2>
+    <ul class="plainlist muted">
+      <li>The whole card or page is in frame</li>
+      <li>Name, number and expiry date are readable</li>
+      <li>Both sides of a card if there's writing on the back</li>
+      <li>For insurance, the certificate of currency, not the invoice</li>
+    </ul>
+  </aside>
+</div>
+<section class="card">
+  <div class="card-head"><h2 class="card-title">Recently sent</h2></div>
+  <div class="empty"><svg class="icon " aria-hidden="true"><use href="#i-upload"/></svg><strong>Nothing sent yet</strong></div>
+</section>
+
+    </main>
+    <footer class="foot">
+      Register last updated 24 Nov 2026, 10:04 AM. 
+      Prepared from the records you've given us. This is a compliance administration service, not legal advice.
+    </footer>
   </div>
-</nav>
-
-<main class="wrap">
-  
-    
-  
-  
-<div class="pagehead"><h2>Send us documents</h2>
-<p class="muted">Photos from your phone are fine. Make sure the whole card is in frame and readable. We'll check each one and add it to your register.</p></div>
-<form method="get" class="card form" action="/demo-not-saved/">
-  
-  <input type="hidden" name="ref" value="">
-  <label class="drop">Files (PDF, photo, Word or Excel; up to 25 MB each)
-    <input type="file" name="files" multiple required accept=".doc,.docx,.heic,.heif,.jpeg,.jpg,.pdf,.png,.xls,.xlsx,image/*">
-  </label>
-  <div class="cols">
-    <label>What is it? <select name="doc_type"><option>Licence or ticket</option><option>White Card</option><option>Training certificate (e.g. asbestos, silica, first aid)</option><option>Insurance certificate of currency</option><option>Subcontractor statement</option><option>Safety data sheet (SDS)</option><option>Test and tag / service record</option><option>Incident or near miss</option><option>Policy or procedure</option><option>Other</option></select></label>
-    <label>Who or what is it for? <input name="about" value="" placeholder="e.g. Sam Smith, or the jetter"></label>
-  </div>
-  <button class="btn primary">Upload</button>
-</form>
+</div>
 
 
-</main>
-<footer class="wrap foot">
-  Register last updated 24 Nov 2026, 08:52 AM. 
-  Prepared from the records you've given us. This is a compliance administration service, not legal advice.
-</footer>
 </body>
 </html>

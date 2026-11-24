@@ -1,45 +1,64 @@
 {% extends "base.html" %}
-{% block title %}Jobs &amp; SWMS · {{ v.name }}{% endblock %}
+{% from "_macros.html" import icon, page_head, empty with context %}
+{% block title %}Jobs and SWMS · {{ v.name }}{% endblock %}
 {% block content %}
-<div class="pagehead row">
-  <div><h2>Jobs &amp; SWMS</h2><p class="muted">Site-specific SWMS for high-risk construction work. Every SWMS is checked by a person before it's issued.</p></div>
-  <a class="btn primary" href="{{ url_for('portal.swms_request', client_id=v.client_id) }}">Request a SWMS</a>
-</div>
+{% call page_head('Jobs and SWMS', 'Site-specific SWMS for high-risk construction work. A person on our team reviews every one before it is issued.', 'Jobs and SWMS') %}
+  <a class="btn btn-primary" href="{{ url_for('portal.swms_request', client_id=v.client_id) }}">{{ icon('plus') }}Request a SWMS</a>
+{% endcall %}
 {% if reqs %}
-<section class="card"><h3>Received, waiting to start</h3>
-<ul class="files">{% for r in reqs %}<li><strong>{{ r.site_address }}</strong> <span class="muted small">· starts {{ r.start_date }} · sent {{ r.submitted_at.replace('T',' ')[:16] }}</span></li>{% endfor %}</ul>
+<section class="card">
+  <div class="card-head"><div><h2 class="card-title">Received</h2><p class="muted small">With our team. The 24-hour clock is running.</p></div></div>
+  <ul class="rows">
+  {% for r in reqs %}
+    <li><span class="stat-icon">{{ icon('clock') }}</span>
+      <div class="grow"><strong>{{ r.site_address }}</strong><br><span class="muted small">{{ r.job_title or 'SWMS request' }} · starts {{ r.start_date }} · sent {{ r.submitted_at.replace('T',' ')[:16] }}</span></div>
+      <span class="pill pill-info">Received</span>
+      {% if user.role == 'staff' and r.kind == 'assessment' %}<a class="btn btn-secondary btn-sm" href="{{ url_for('portal.swms_request', client_id=v.client_id, request=r.request_id) }}">{{ icon('pencil') }}Edit answers</a>{% endif %}
+    </li>
+  {% endfor %}
+  </ul>
 </section>
 {% endif %}
 <section class="card">
-{% if rows %}
-<table class="list">
-  <thead><tr><th>Job</th><th>Site</th><th>Start</th><th>SWMS</th><th></th></tr></thead>
-  <tbody>
+  <div class="card-head"><h2 class="card-title">Jobs</h2><span class="muted small">{{ rows|length }} job{{ '' if rows|length == 1 else 's' }}</span></div>
   {% for r in rows %}{% set j = r.job %}
-  <tr>
-    <td data-label="Job">{{ j['Job ID'] }}{% if j['Client job ref'] %} <span class="muted small">({{ j['Client job ref'] }})</span>{% endif %}</td>
-    <td data-label="Site">{{ j['Site address'] }}<br><span class="muted small">{{ (j['Scope of work'] or '')[:80] }}</span></td>
-    <td data-label="Start">{{ fmt_date(j['Start date']) if j['Start date'] and j['Start date'].strftime is defined else (j['Start date'] or '') }}</td>
-    <td data-label="SWMS"><span class="chip {{ 'ok' if j['SWMS status'] == 'Issued' else 'muted' }}">{{ j['SWMS status'] or '—' }}</span></td>
-    <td>{% if r.pdf %}<a class="btn small" href="{{ url_for('portal.swms_download', client_id=v.client_id, job_id=j['Job ID']) }}">Download PDF</a>{% endif %}
-      {% if user.role == 'staff' %}
-      <div class="staffops">
-        <form method="post" action="{{ url_for('portal.staff_swms_draft', client_id=v.client_id, job_id=j['Job ID']) }}">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn small">{{ 'Re-draft' if r.draft else 'Generate draft' }}</button></form>
-        {% if r.draft %}
-        <a class="btn small" href="{{ url_for('portal.staff_swms_draft_pdf', client_id=v.client_id, job_id=j['Job ID']) }}">Draft PDF</a>
-        {% if j['SWMS status'] != 'Issued' %}
-        <form method="post" action="{{ url_for('portal.staff_swms_issue', client_id=v.client_id, job_id=j['Job ID']) }}">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <label class="check small"><input type="checkbox" name="confirm" value="yes"> I've reviewed the draft</label>
-          <button class="btn small primary">Issue</button></form>
-        {% endif %}{% endif %}
+  <article class="job">
+    <div>
+      <h3><span class="id">{{ j['Job ID'] }}</span>{{ j['Site address'] }}</h3>
+      <p>{{ j['Scope of work'] or '' }}</p>
+      <div class="facts">
+        {% if j['Start date'] %}<span>{{ icon('calendar') }}Starts {{ fmt_date(j['Start date']) if j['Start date'].strftime is defined else j['Start date'] }}</span>{% endif %}
+        {% if j['Principal / head contractor'] %}<span>{{ icon('building') }}{{ j['Principal / head contractor'] }}</span>{% endif %}
+        {% if j['State'] %}<span>{{ icon('map-pin') }}{{ j['State'] }}</span>{% endif %}
+        {% if j['Reviewed by'] and j['SWMS status'] == 'Issued' %}<span>{{ icon('check-circle') }}Reviewed by {{ j['Reviewed by'] }}</span>{% endif %}
       </div>
-      {% endif %}</td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
-{% else %}<p class="muted">No jobs yet.</p>{% endif %}
+    </div>
+    <div class="side">
+      {% if r.pdf %}<a class="btn btn-primary btn-sm" href="{{ url_for('portal.swms_download', client_id=v.client_id, job_id=j['Job ID']) }}">{{ icon('download') }}Download SWMS</a>
+      {% elif r.step >= 0 %}<span class="pill pill-neutral">{{ j['SWMS status'] }}</span>{% endif %}
+    </div>
+    {% if r.step >= 0 %}
+    <ol class="track" aria-label="SWMS progress">
+      {% for name in ['Requested', 'Drafting', 'In review', 'Issued'] %}<li class="{{ 'is-done' if loop.index0 < r.step or r.step == 3 else 'is-current' if loop.index0 == r.step }}">{{ name }}</li>{% endfor %}
+    </ol>
+    {% endif %}
+    {% if user.role == 'staff' %}
+    <div class="staffbar">
+      <span class="lead">Staff</span>
+      <form method="post" action="{{ url_for('portal.staff_swms_draft', client_id=v.client_id, job_id=j['Job ID']) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-secondary btn-sm">{{ 'Re-draft' if r.draft else 'Generate draft' }}</button></form>
+      {% if r.has_assessment %}<a class="btn btn-secondary btn-sm" href="{{ url_for('portal.swms_request', client_id=v.client_id, job=j['Job ID']) }}">{{ icon('pencil') }}Edit assessment</a>{% endif %}
+      {% if r.draft %}
+      <a class="btn btn-secondary btn-sm" href="{{ url_for('portal.staff_swms_draft_pdf', client_id=v.client_id, job_id=j['Job ID']) }}">{{ icon('download') }}Draft PDF</a>
+      {% if j['SWMS status'] != 'Issued' %}
+      <form method="post" action="{{ url_for('portal.staff_swms_issue', client_id=v.client_id, job_id=j['Job ID']) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label class="checkline small"><input type="checkbox" name="confirm" value="yes"> I've reviewed the draft</label>
+        <button class="btn btn-primary btn-sm">Issue</button></form>
+      {% endif %}{% endif %}
+    </div>
+    {% endif %}
+  </article>
+  {% else %}{{ empty('clipboard', 'No jobs yet', 'Request a SWMS and it will appear here.') }}{% endfor %}
 </section>
 {% endblock %}

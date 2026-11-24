@@ -1,12 +1,14 @@
-{% macro badge(status) -%}
+{% macro icon(name, cls='') -%}<svg class="icon {{ cls }}" aria-hidden="true"><use href="#i-{{ name }}"/></svg>{%- endmacro %}
+
+{% macro pill(status) -%}
 {%- set cls = {'EXPIRED':'bad','DUE 7':'bad','DUE 30':'warn','DUE 60':'soon','CURRENT':'ok','NO EXPIRY':'ok','MISSING DATE':'info'}.get(status,'info') -%}
-<span class="badge {{ cls }}">{{ STATUS_TEXT.get(status, status) }}</span>
+<span class="pill pill-{{ cls }}">{{ STATUS_TEXT.get(status, status) }}</span>
 {%- endmacro %}
 
 {% macro verified(text) -%}
-{%- if text and text.startswith('Verified') -%}<span class="chip ok" title="{{ text }}">Checked</span>
-{%- elif text == 'Rejected' -%}<span class="chip bad">Not accepted</span>
-{%- else -%}<span class="chip muted" title="We haven't checked this document yet">Awaiting check</span>{%- endif -%}
+{%- if text and text.startswith('Verified') -%}<span class="chip chip-ok" title="{{ text }}">{{ icon('check') }}Checked</span>
+{%- elif text == 'Rejected' -%}<span class="chip chip-bad">{{ icon('x') }}Not accepted</span>
+{%- else -%}<span class="chip" title="We haven't checked this document yet">{{ icon('clock') }}Awaiting check</span>{%- endif -%}
 {%- endmacro %}
 
 {% macro when(i) -%}
@@ -15,12 +17,17 @@
 {%- endif -%}
 {%- endmacro %}
 
-{% macro rag_banner(v) -%}
-{%- if v.rag == 'RED' -%}
-<div class="banner red"><strong>Action needed.</strong> Something has expired or is missing. See "What we need from you" below.</div>
-{%- elif v.rag == 'AMBER' -%}
-<div class="banner amber"><strong>Some items need attention soon.</strong> Nothing has lapsed, but renewals are coming up.</div>
-{%- else -%}
-<div class="banner green"><strong>You're up to date.</strong> Everything we track is current.</div>
-{%- endif -%}
+{% macro page_head(title, sub='', crumb='') -%}
+<div class="page-head">
+  <div>
+    {% if v is defined and user and user.role == 'staff' %}<div class="crumbs"><a href="{{ url_for('portal.staff_overview') }}">All clients</a>{{ icon('chevron-right') }}<span>{{ v.name }}</span>{% if crumb %}{{ icon('chevron-right') }}<span>{{ crumb }}</span>{% endif %}</div>{% endif %}
+    <h1>{{ title }}</h1>
+    {% if sub %}<p>{{ sub }}</p>{% endif %}
+  </div>
+  {% if caller %}<div class="actions">{{ caller() }}</div>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro empty(icon_name, title, text='') -%}
+<div class="empty">{{ icon(icon_name) }}<strong>{{ title }}</strong>{{ text }}</div>
 {%- endmacro %}

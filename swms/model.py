@@ -86,6 +86,7 @@ class SwmsDoc:
     reviewed_by: str = ""
     issued_at: str = ""
     review_note: str = ""
+    assessment: list = field(default_factory=list)   # [{label, answer, priority, unsure}] from the guided job assessment
 
     def to_json(self) -> dict:
         d = asdict(self)
@@ -143,6 +144,14 @@ def _slug(s: str) -> str:
 def job_folder(cdir: Path, job: dict) -> Path:
     existing = sorted((cdir / "04_Jobs").glob(f"{job['Job ID']}_*"))
     return existing[0] if existing else cdir / "04_Jobs" / f"{job['Job ID']}_{_slug(job.get('Site address'))}"
+
+
+def load_job_assessment(cdir: Path, job: dict) -> dict | None:
+    p = job_folder(cdir, job) / "assessment.json"
+    if not p.exists():
+        return None
+    import json
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 def pick_template(scope: str, templates: list) -> dict:
@@ -213,8 +222,33 @@ def build(cdir: Path, job_id: str, today: dt.date | None = None) -> SwmsDoc:
         flags.append(Flag("blocker", f"State '{state}' isn't covered by the v1 library (ACT, NSW)."))
 
     # modules
-    modules = ["base"] + [k for k, m in hz.items() if k != "base" and str(job.get(m.get("job_column"), "")).upper() == "Y"]
+    # guided job assessment, if the request came through the portal
+    assess, derived = load_job_assessment(cdir, job), None
+    if assess:
+        from swms import assessment as _a
+        derived = _a.evaluate({"job_type": assess.get("job_type"), "state": state,
+                               "building_age": (assess.get("site") or {}).get("building_age"), **(assess.get("answers") or {})})
+    ticked_cols = {k for k, m in hz.items() if k != "base" and str(job.get(m.get("job_column"), "")).upper() == "Y"}
+    if derived:
+        ticked_cols |= set(derived["hazards"])
+    modules = ["base"] + [k for k in hz if k in ticked_cols]
     template = pick_template(job.get("Scope of work"), tk["templates"])
+    if derived and derived["template"]:
+        template = next(t for t in tk["templates"] if t["id"] == derived["template"])
+    extra_controls: dict[str, list] = {}
+    need_codes: dict[str, str] = {}
+    if derived:
+        for c in derived["controls"]:
+            extra_controls.setdefault(c["step"], []).append([c["h"], c["text"]])
+        need_codes = {n["code"]: n["who"] for n in derived["needs"]}
+        for t in derived["stops"]:
+            flags.append(Flag("blocker", f"[Job assessment] STOP: {t}"))
+        for t in derived["blockers"]:
+            flags.append(Flag("blocker", f"[Job assessment] {t}"))
+        for t in derived["checks"]:
+            flags.append(Flag("check", f"[Job assessment] {t}"))
+        if derived["missing"]:
+            flags.append(Flag("blocker", f"[Job assessment] {len(derived['missing'])} question(s) unanswered. Re-open the assessment and complete it."))
     if template["id"] == "general":
         flags.append(Flag("check", "Scope didn't match a specific task template. General plumbing steps were used; tailor them to the job."))
 
@@ -232,7 +266,13 @@ def build(cdir: Path, job_id: str, today: dt.date | None = None) -> SwmsDoc:
     for m in modules:
         for c in hz[m].get("competencies", []) or []:
             if c["scope"] in ("ALL", state) and c["code"] not in [r["code"] for r in required]:
+                if derived and c["code"] == "ELEC_RESTRICTED" and c["code"] not in need_codes:
+                    continue  # the assessment already says who does the electrical work
                 required.append(c)
+    for code, who in need_codes.items():
+        if code not in [r["code"] for r in required]:
+            required.append({"code": code, "scope": "ALL", "note": "Required by the job assessment answers"})
+    any_one = set(ANY_ONE) | {c for c, who in need_codes.items() if who == "any"}
     for req in required:
         code = req["code"]
         rows = []
@@ -240,19 +280,19 @@ def build(cdir: Path, job_id: str, today: dt.date | None = None) -> SwmsDoc:
             stt, det = _cred_status(pcreds[str(p["Person ID"])], code, start, end)
             rows.append(CompetencyCheck(str(p["Person ID"]), p.get("Full name", ""), code, CRED_NAMES.get(code, code), stt, det))
         ok = [r for r in rows if r.status in ("OK", "NO EXPIRY")]
-        if code in ANY_ONE:
+        if code in any_one:
             checks += ok[:1] or rows[:1]
             if not ok and workers:
-                flags.append(Flag("check", f"No assigned worker has {CRED_NAMES.get(code, code)}. {req.get('note', '')}".strip()))
+                flags.append(Flag("blocker" if code in need_codes else "check", f"No assigned worker has {CRED_NAMES.get(code, code)}. {req.get('note', '')}".strip()))
             continue
         checks += rows
         for r in rows:
             if r.status not in ("OK", "NO EXPIRY"):
-                sev = "check" if code in CHECK_ONLY or r.status == "EXPIRES DURING JOB" else "blocker"
+                sev = "check" if (code in CHECK_ONLY and code not in need_codes) or r.status == "EXPIRES DURING JOB" else "blocker"
                 flags.append(Flag(sev, f"{r.name}: {r.label}: {r.status.lower()}{' (' + r.detail + ')' if r.detail else ''}."))
 
     # trade licences (team level)
-    trades = set(template.get("licence", [])) | ({"gas"} if "gas" in modules else set())
+    trades = set(template.get("licence", [])) | ({"gas"} if "gas" in modules else set()) | set(derived["licences"] if derived else [])
     licensed_people = []
     for trade in sorted(trades):
         codes = tk["licences"][trade].get(state, [])
@@ -319,11 +359,11 @@ def build(cdir: Path, job_id: str, today: dt.date | None = None) -> SwmsDoc:
     ordered = buckets["first"] + buckets["early"] + tsteps[:cut] + buckets["middle"] + tsteps[cut:] + buckets["late"] + buckets["any"] + buckets["last"]
     steps = []
     for i, (src, s) in enumerate(ordered, start=1):
-        ctr = sorted(s["controls"], key=lambda c: HIER_ORDER.index(c[0]))
+        ctr = sorted(list(s["controls"]) + extra_controls.get(s.get("id"), []), key=lambda c: HIER_ORDER.index(c[0]))
         steps.append(Step(i, s["step"], s["hazards"], s["risk"], ctr, s["residual"], who(s["responsible"]), src))
 
     # hrcw ticks
-    ticked = {i for m in modules for i in HRCW_MAP.get(m, [])}
+    ticked = {i for m in modules for i in HRCW_MAP.get(m, [])} | set(derived["hrcw"] if derived else [])
     hrcw = [[c, i in ticked] for i, c in enumerate(HRCW_ALL)]
     if not ticked:
         flags.append(Flag("check", "No high-risk construction work category is ticked. A SWMS may not be legally required, "
@@ -365,4 +405,6 @@ def build(cdir: Path, job_id: str, today: dt.date | None = None) -> SwmsDoc:
         workers=[{"person_id": str(p["Person ID"]), "name": p.get("Full name", ""), "roles": p.get("Roles", ""),
                   "first_aider": str(p.get("Designated first aider") or "").upper() == "Y"} for p in workers],
         competencies=checks, steps=steps, ppe=ppe, plant=plant, references=refs, emergency=emergency, flags=flags,
-        prepared_at=dt.datetime.now().isoformat(timespec="minutes"))
+        prepared_at=dt.datetime.now().isoformat(timespec="minutes"),
+        assessment=([{"label": d["label"], "answer": d["answer"], "priority": d["priority"], "unsure": d["unsure"]}
+                     for d in derived["details"]] if derived else []))

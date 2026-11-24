@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import json
 import secrets
 from pathlib import Path
 
@@ -28,6 +29,7 @@ def create_app(overrides: dict | None = None) -> Flask:
     app = Flask(__name__)
     app.config.update(config.load(overrides))
     app.register_blueprint(bp)
+    app.jinja_env.filters["initials"] = data.initials
 
     @app.before_request
     def _csrf():
@@ -150,7 +152,8 @@ def dashboard(client_id):
     cdir, v = _client(client_id)
     reports = data.list_reports(cdir)[:3]
     pending = data.list_swms_requests(cdir, "Pending")
-    return render_template("dashboard.html", v=v, reports=reports, pending=pending, active="dashboard")
+    recent = sorted(v.jobs, key=lambda j: str(j.get("Job ID")), reverse=True)[:3]
+    return render_template("dashboard.html", v=v, reports=reports, pending=pending, jobs=recent, active="dashboard")
 
 
 @bp.route("/c/<client_id>/people")
@@ -173,8 +176,11 @@ def insurance(client_id):
 def jobs(client_id):
     cdir, v = _client(client_id)
     rows = []
+    staff_user = auth.current_user()["role"] == "staff"
     for j in sorted(v.jobs, key=lambda j: str(j.get("Job ID")), reverse=True):
         rows.append({"job": j, "pdf": data.issued_swms(cdir, j),
+                     "step": {"Requested": 0, "Drafting": 1, "In review": 2, "Issued": 3}.get(j.get("SWMS status"), -1),
+                     "has_assessment": staff_user and data.job_assessment(cdir, j) is not None,
                      "draft": data.latest_draft(cdir, j) if auth.current_user()["role"] == "staff" else None})
     reqs = data.list_swms_requests(cdir, "Pending")
     return render_template("jobs.html", v=v, rows=rows, reqs=reqs, active="jobs")
@@ -195,29 +201,59 @@ def swms_download(client_id, job_id):
 @bp.route("/c/<client_id>/swms-request", methods=["GET", "POST"])
 @auth.login_required
 def swms_request(client_id):
+    """Guided job assessment. Staff can also re-open a pending request (?request=) or a job's assessment (?job=)."""
     cdir, v = _client(client_id)
+    u = auth.current_user()
+    staff = u["role"] == "staff"
+    rid, jid = request.args.get("request", ""), request.args.get("job", "")
+    existing, job = None, None
+    if rid or jid:
+        if not staff:
+            abort(403)
+        if rid:
+            existing = data.load_swms_request(cdir, rid)
+            if not existing or existing.get("status") != "Pending" or existing.get("kind") != "assessment":
+                abort(404)
+        else:
+            job = next((j for j in v.jobs if str(j.get("Job ID")) == jid), None)
+            existing = data.job_assessment(cdir, job) if job else None
+            if not existing:
+                abort(404)
     if request.method == "POST":
-        f = request.form
-        errors = [label for key, label in (("site_address", "Site address"), ("state", "State"), ("scope", "What's the job"),
-                                           ("start_date", "Start date")) if not f.get(key, "").strip()]
         try:
-            if f.get("start_date"):
-                dt.date.fromisoformat(f["start_date"])
+            payload = json.loads(request.form.get("payload") or "null")
         except ValueError:
-            errors.append("Start date (use the date picker)")
+            payload = None
+        rec, errors = data.clean_assessment(payload, {str(p.person.get("Person ID")) for p in v.people})
         if errors:
-            flash("Please fill in: " + ", ".join(errors), "error")
-            return render_template("swms_request.html", v=v, hazards=data.HAZARDS, form=f, active="jobs"), 400
-        rec = {k: f.get(k, "").strip()[:2000] for k in ("site_address", "state", "head_contractor", "scope", "start_date",
-                                                        "est_value", "workers", "plant", "other_hazards", "building_age",
-                                                        "site_notes", "client_ref", "hc_template")}
-        rec.update({h: bool(f.get(h)) for h, _, _ in data.HAZARDS})
-        rec["submitted_by"] = auth.current_user()["email"]
-        saved = data.save_swms_request(cdir, rec)
-        auth.audit("swms_request", client_id, saved["request_id"])
-        flash("Thanks. We've received your SWMS request and the 24-hour clock has started. We'll email you when it's ready.", "ok")
+            flash("We couldn't save that yet. " + " ".join(errors), "error")
+            return redirect(request.full_path.rstrip("?"))
+        if job:
+            try:
+                data.save_job_assessment(cdir, job, rec, u["email"])
+            except SystemExit as e:  # register locked
+                flash(str(e), "error")
+                return redirect(request.full_path.rstrip("?"))
+            auth.audit("assessment_edit", client_id, jid)
+            flash(f"Assessment for {jid} updated. Re-draft the SWMS to pick up the changes.", "ok")
+        elif existing:
+            data.update_swms_request(cdir, rid, rec)
+            auth.audit("assessment_edit", client_id, rid)
+            flash("Answers updated.", "ok")
+            return redirect(url_for("portal.staff_inbox"))
+        else:
+            rec["submitted_by"] = u["email"]
+            saved = data.save_swms_request(cdir, rec)
+            auth.audit("swms_request", client_id, saved["request_id"])
+            flash("Thanks. Your job assessment is with our team and the 24-hour clock has started. "
+                  "We'll be in touch if anything needs confirming.", "ok")
         return redirect(url_for("portal.jobs", client_id=client_id))
-    return render_template("swms_request.html", v=v, hazards=data.HAZARDS, form={}, active="jobs")
+    prefill = None
+    if existing:
+        prefill = {k: existing.get(k) for k in ("job_type", "site", "answers", "crew", "plant_other", "notes")}
+    boot = data.assessment_boot(v, staff, prefill, _today())
+    heading = f"Edit assessment for {jid}" if job else "Edit SWMS request" if existing else "Request a SWMS"
+    return render_template("swms_request.html", v=v, boot=boot, heading=heading, active="jobs")
 
 
 @bp.route("/c/<client_id>/reports")
@@ -292,10 +328,17 @@ def staff_overview():
             rows.append({"cid": cid, "error": str(e)[:200]})
             continue
         ups = [u for u in data.list_uploads(cdir, 500) if not u["processed"]]
-        rows.append({"cid": cid, "v": v, "uploads": len(ups), "requests": len(data.list_swms_requests(cdir, "Pending"))})
+        n = max(v.tracked, 1)
+        bad = v.count("EXPIRED", "MISSING DATE")
+        warn = v.count("DUE 7", "DUE 30", "DUE 60")
+        rows.append({"cid": cid, "v": v, "uploads": len(ups), "requests": len(data.list_swms_requests(cdir, "Pending")),
+                     "bar": {"ok": round(100 * (n - bad - warn) / n, 1), "warn": round(100 * warn / n, 1), "bad": round(100 * bad / n, 1)}})
     order = {"RED": 0, "AMBER": 1, "GREEN": 2}
     rows.sort(key=lambda r: (order.get(r["v"].rag, 3) if "v" in r else -1, r["cid"]))
-    return render_template("staff.html", rows=rows, active="staff")
+    ok = [r for r in rows if "v" in r]
+    totals = {"clients": len(rows), "red": sum(r["v"].rag == "RED" for r in ok), "amber": sum(r["v"].rag == "AMBER" for r in ok),
+              "requests": sum(r["requests"] for r in ok), "uploads": sum(r["uploads"] for r in ok)}
+    return render_template("staff.html", rows=rows, totals=totals, active="staff")
 
 
 @bp.route("/staff/inbox")
@@ -304,7 +347,7 @@ def staff_inbox():
     out = []
     for cid, cdir in data.find_clients(current_app.config["CLIENTS_ROOT"]).items():
         for r in data.list_swms_requests(cdir, "Pending"):
-            out.append({"cid": cid, "kind": "swms", "r": r})
+            out.append({"cid": cid, "kind": "swms", "r": r, "summary": data.assessment_summary(r)})
         for u in data.list_uploads(cdir, 500):
             if not u["processed"]:
                 out.append({"cid": cid, "kind": "upload", "r": u})

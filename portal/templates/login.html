@@ -1,15 +1,34 @@
 {% extends "base.html" %}
-{% block title %}Sign in · Compliance portal{% endblock %}
-{% block content %}
-<section class="card narrow">
-  <h1>Sign in</h1>
-  <p class="muted">See your licence, ticket and insurance register, send us documents, and request a SWMS.</p>
-  <form method="post" class="form">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <label>Email <input type="email" name="email" autocomplete="username" required autofocus></label>
-    <label>Password <input type="password" name="password" autocomplete="current-password" required></label>
-    <button class="btn primary">Sign in</button>
-  </form>
-  <p class="muted small">Forgotten your password or need access for someone else? Email us and we'll set it up.</p>
-</section>
+{% from "_macros.html" import icon with context %}
+{% block title %}Sign in · Compliance Portal{% endblock %}
+{% block shell %}
+<div class="auth">
+  <section class="auth-brand">
+    <span class="brand"><span class="brand-mark">{{ icon('shield-check') }}</span><span>Compliance Portal</span></span>
+    <h1>Audit-ready, without the paperwork.</h1>
+    <p>Your licences, tickets, insurances and SWMS in one place, kept current by a compliance specialist.</p>
+    <ul class="auth-points">
+      <li>{{ icon('check-circle') }}<span>See what's expired and what's coming up, for every worker and subcontractor</span></li>
+      <li>{{ icon('check-circle') }}<span>Request a site-specific SWMS and have it back within 24 hours</span></li>
+      <li>{{ icon('check-circle') }}<span>Send us documents from your phone and we'll do the rest</span></li>
+    </ul>
+    <p class="auth-foot">A compliance administration service. Every document is reviewed by a person before it's issued.</p>
+  </section>
+  <section class="auth-form">
+    <div class="inner">
+      <h2>Sign in</h2>
+      <p class="muted">Use the email address we set up for you.</p>
+      {% with msgs = get_flashed_messages(with_categories=true) %}
+        {% for cat, m in msgs %}<div class="alert alert-danger" role="alert">{{ icon('alert-triangle') }}<span>{{ m }}</span></div>{% endfor %}
+      {% endwith %}
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label class="field"><span class="field-label">Email</span><input class="input" type="email" name="email" autocomplete="username" required autofocus></label>
+        <label class="field"><span class="field-label">Password</span><input class="input" type="password" name="password" autocomplete="current-password" required></label>
+        <button class="btn btn-primary btn-lg btn-block">Sign in</button>
+      </form>
+      <p class="field-hint">Forgotten your password, or need access for someone else? Email us and we'll set it up.</p>
+    </div>
+  </section>
+</div>
 {% endblock %}

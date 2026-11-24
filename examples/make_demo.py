@@ -155,6 +155,23 @@ def main(argv=None):
     print("import:", intake_import.import_sheet(cdir, filled))
     # SWMS: J0001 drafted, reviewed and issued; J0002 drafted and still in review (has blockers)
     from swms.__main__ import draft as swms_draft, issue as swms_issue
+    import json
+    from swms import assessment, model
+    rec = {"kind": "assessment", "job_type": "drainage",
+           "site": {"site_address": "12 Example St, Kambah ACT", "state": "ACT", "start_date": (a.today - dt.timedelta(days=3)).isoformat(),
+                    "scope": "Replace sewer line under driveway, new boundary trap", "building_age": "pre1990",
+                    "head_contractor": "Example Builders", "client_ref": "DP-1042"},
+           "answers": {"exc_depth": "gt15", "exc_support": "shield", "exc_ground": "stable", "exc_adjacent": "no", "exc_byda": "have",
+                       "exc_services": ["none"], "exc_method": "machine", "exc_operator": "own", "sew_live": "yes", "sew_entry": "no",
+                       "sur_road": "private", "sur_occupied": "yes", "asb_disturb": "yes", "asb_known": "assume", "asb_amount": "avoid",
+                       "sil_cut": "no", "hot_any": "no", **{q: "yes" for q in ("q_induct", "q_toolbox", "q_ppe", "q_firstaid", "q_tag",
+                                                                               "q_rcd", "q_sds", "q_rpe", "q_ladder", "q_prestart")}},
+           "crew": ["P001", "P002"], "plant_other": "Plate compactor", "notes": "", "submitted_by": "pat@example.com",
+           "submitted_at": dt.datetime.combine(a.today - dt.timedelta(days=6), dt.time(9, 15)).isoformat()}
+    assert not assessment.evaluate_record(rec)["missing"]
+    jf = model.job_folder(cdir, {"Job ID": "J0001", "Site address": "12 Example St, Kambah ACT"})
+    jf.mkdir(parents=True, exist_ok=True)
+    (jf / "assessment.json").write_text(json.dumps(rec, indent=2))
     swms_draft(cdir, "J0001", master, a.today)
     swms_issue(cdir, "J0001", "I. Reviewer", master, today=a.today)
     swms_draft(cdir, "J0002", master, a.today)

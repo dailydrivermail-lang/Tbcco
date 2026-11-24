@@ -232,6 +232,7 @@ asbestos:
     - "Confirm the asbestos register (commercial) has been sighted, or the presence of asbestos has been assumed and recorded (r 422-425)."
     - "Friable asbestos, or more than 10 m2 of non-friable asbestos, must be removed by a licensed asbestos removalist. Check the quantity and type. If over the threshold, this SWMS does NOT authorise the removal."
     - "ACT: check the affected residential premises (loose-fill) register for the address."
+    - "ACT: the rules for asbestos work without a removal licence are stricter than the 10 m2 model threshold. Confirm what this worker may do (pending legal review)."
   steps:
     - id: asb_identify
       position: early
