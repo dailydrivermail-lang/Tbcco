@@ -1,0 +1,26 @@
+{% macro badge(status) -%}
+{%- set cls = {'EXPIRED':'bad','DUE 7':'bad','DUE 30':'warn','DUE 60':'soon','CURRENT':'ok','NO EXPIRY':'ok','MISSING DATE':'info'}.get(status,'info') -%}
+<span class="badge {{ cls }}">{{ STATUS_TEXT.get(status, status) }}</span>
+{%- endmacro %}
+
+{% macro verified(text) -%}
+{%- if text and text.startswith('Verified') -%}<span class="chip ok" title="{{ text }}">Checked</span>
+{%- elif text == 'Rejected' -%}<span class="chip bad">Not accepted</span>
+{%- else -%}<span class="chip muted" title="We haven't checked this document yet">Awaiting check</span>{%- endif -%}
+{%- endmacro %}
+
+{% macro when(i) -%}
+{%- if i.status == 'EXPIRED' -%}{{ -i.days }} day{{ '' if -i.days == 1 else 's' }} ago
+{%- elif i.days is not none -%}in {{ i.days }} day{{ '' if i.days == 1 else 's' }}
+{%- endif -%}
+{%- endmacro %}
+
+{% macro rag_banner(v) -%}
+{%- if v.rag == 'RED' -%}
+<div class="banner red"><strong>Action needed.</strong> Something has expired or is missing. See "What we need from you" below.</div>
+{%- elif v.rag == 'AMBER' -%}
+<div class="banner amber"><strong>Some items need attention soon.</strong> Nothing has lapsed, but renewals are coming up.</div>
+{%- else -%}
+<div class="banner green"><strong>You're up to date.</strong> Everything we track is current.</div>
+{%- endif -%}
+{%- endmacro %}

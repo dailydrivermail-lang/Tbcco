@@ -4,3 +4,5 @@ clients/
 __pycache__/
 .pytest_cache/
 ~$*.xlsx
+examples/demo/_portal/
+portal_secret_key

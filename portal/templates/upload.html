@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Upload · {{ v.name }}{% endblock %}
+{% block content %}
+<div class="pagehead"><h2>Send us documents</h2>
+<p class="muted">Photos from your phone are fine. Make sure the whole card is in frame and readable. We'll check each one and add it to your register.</p></div>
+<form method="post" enctype="multipart/form-data" class="card form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="ref" value="{{ ref }}">
+  <label class="drop">Files (PDF, photo, Word or Excel; up to 25 MB each)
+    <input type="file" name="files" multiple required accept="{{ accept }},image/*">
+  </label>
+  <div class="cols">
+    <label>What is it? <select name="doc_type">{% for d in doc_types %}<option>{{ d }}</option>{% endfor %}</select></label>
+    <label>Who or what is it for? <input name="about" value="{{ about }}" placeholder="e.g. Sam Smith, or the jetter"></label>
+  </div>
+  <button class="btn primary">Upload</button>
+</form>
+{% if uploads %}
+<section class="card"><h3>Recently sent</h3>
+<table class="list"><thead><tr><th>File</th><th>What</th><th>Sent</th><th>Status</th></tr></thead><tbody>
+{% for u in uploads %}<tr><td data-label="File">{{ u.original }}</td><td data-label="What">{{ u.doc_type }}{% if u.about %} · {{ u.about }}{% endif %}</td><td data-label="Sent">{{ u.at.replace('T',' ')[:16] }}</td>
+<td data-label="Status"><span class="chip {{ 'ok' if u.processed else 'muted' }}">{{ 'Added to register' if u.processed else 'Received' }}</span></td></tr>{% endfor %}
+</tbody></table></section>
+{% endif %}
+{% endblock %}

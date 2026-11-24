@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, verified, when with context %}
+{% block title %}People &amp; licences · {{ v.name }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <h2>People &amp; licences</h2>
+  <p class="muted">Everyone who works on your sites, and the licences, tickets and training we hold for them. Something wrong or missing? <a href="{{ url_for('portal.upload', client_id=v.client_id) }}">Send us a copy</a>.</p>
+</div>
+{% for pv in v.people %}
+<section class="card person">
+  <div class="personhead">
+    <div>
+      <h3>{{ pv.person['Full name'] }}</h3>
+      <p class="muted small">{{ pv.person['Roles'] or '' }}{% if pv.person['Person type'] %} · {{ pv.person['Person type'] }}{% endif %}{% if pv.person['States worked'] %} · {{ pv.person['States worked'] }}{% endif %}</p>
+    </div>
+    {% if not pv.credentials %}<span class="badge info">No records yet</span>{% elif pv.worst in ('CURRENT','NO EXPIRY') %}<span class="badge ok">Up to date</span>{% else %}{{ badge(pv.worst) }}{% endif %}
+  </div>
+  {% if pv.credentials %}
+  <table class="list">
+    <thead><tr><th>Licence / ticket</th><th>Number</th><th>Expiry</th><th>Status</th><th>Document</th></tr></thead>
+    <tbody>
+    {% for c in pv.credentials %}
+    <tr>
+      <td data-label="Licence / ticket">{{ short_label(c) }}</td>
+      <td data-label="Number">{{ c.number }}</td>
+      <td data-label="Expiry">{% if c.expiry %}{{ fmt_date(c.expiry) }} <span class="muted small">({{ when(c) }})</span>{% elif c.status == 'NO EXPIRY' %}—{% else %}<span class="muted">needed</span>{% endif %}</td>
+      <td data-label="Status">{{ badge(c.status) }}</td>
+      <td data-label="Document">{{ verified(v.verification.get(c.item_id)) }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</section>
+{% else %}
+<section class="card"><p class="muted">No people on your register yet. Send us your staff list and we'll set it up.</p></section>
+{% endfor %}
+{% endblock %}

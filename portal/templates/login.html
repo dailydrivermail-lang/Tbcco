@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Sign in · Compliance portal{% endblock %}
+{% block content %}
+<section class="card narrow">
+  <h1>Sign in</h1>
+  <p class="muted">See your licence, ticket and insurance register, send us documents, and request a SWMS.</p>
+  <form method="post" class="form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Email <input type="email" name="email" autocomplete="username" required autofocus></label>
+    <label>Password <input type="password" name="password" autocomplete="current-password" required></label>
+    <button class="btn primary">Sign in</button>
+  </form>
+  <p class="muted small">Forgotten your password or need access for someone else? Email us and we'll set it up.</p>
+</section>
+{% endblock %}

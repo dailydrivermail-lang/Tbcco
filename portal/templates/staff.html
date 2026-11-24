@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}All clients · Staff{% endblock %}
+{% block content %}
+<div class="pagehead"><h2>All clients</h2><p class="muted">Live from each client's register. Sorted red first. Items from rules not yet legally reviewed count here but are hidden from clients.</p></div>
+<section class="card">
+<table class="list">
+<thead><tr><th>Client</th><th>Status</th><th>Expired</th><th>Due ≤30d</th><th>Missing</th><th>New uploads</th><th>SWMS requests</th><th>Register updated</th></tr></thead>
+<tbody>
+{% for r in rows %}
+{% if r.error %}
+<tr><td data-label="Client">{{ r.cid }}</td><td colspan="7"><span class="badge bad">Register error</span> <span class="small">{{ r.error }}</span></td></tr>
+{% else %}{% set v = r.v %}
+<tr>
+  <td data-label="Client"><a href="{{ url_for('portal.dashboard', client_id=r.cid) }}"><strong>{{ v.name }}</strong></a> <span class="muted small">{{ r.cid }} · {{ v.business.get('Service tier') or '' }}</span></td>
+  <td data-label="Status"><span class="rag {{ v.rag|lower }}">{{ v.rag }}</span></td>
+  <td data-label="Expired">{{ v.count('EXPIRED') }}</td>
+  <td data-label="Due ≤30d">{{ v.count('DUE 7','DUE 30') }}</td>
+  <td data-label="Missing">{{ v.gaps|length }}</td>
+  <td data-label="New uploads">{% if r.uploads %}<a href="{{ url_for('portal.staff_inbox') }}">{{ r.uploads }}</a>{% else %}0{% endif %}</td>
+  <td data-label="SWMS requests">{% if r.requests %}<a href="{{ url_for('portal.staff_inbox') }}"><strong>{{ r.requests }}</strong></a>{% else %}0{% endif %}</td>
+  <td data-label="Register updated">{{ v.register_mtime.strftime('%d %b %H:%M') }}</td>
+</tr>
+{% endif %}
+{% else %}<tr><td colspan="8" class="muted">No client folders found.</td></tr>{% endfor %}
+</tbody></table>
+</section>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Request a SWMS · {{ v.name }}{% endblock %}
+{% block content %}
+<div class="pagehead"><h2>Request a SWMS</h2>
+<p class="muted">The more detail you give us, the faster and more accurate the SWMS. We aim to turn it around within 24 hours of receiving this form.</p></div>
+<form method="post" class="card form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="cols">
+    <label>Site address * <input name="site_address" required value="{{ form.site_address }}"></label>
+    <label>State * <select name="state" required>{% for s in ['ACT','NSW'] %}<option {{ 'selected' if form.state == s }}>{{ s }}</option>{% endfor %}</select></label>
+    <label>Start date * <input type="date" name="start_date" required value="{{ form.start_date }}"></label>
+    <label>Your job reference <input name="client_ref" value="{{ form.client_ref }}"></label>
+    <label>Builder / head contractor <input name="head_contractor" value="{{ form.head_contractor }}"></label>
+    <label>Estimated value ($) <input name="est_value" inputmode="numeric" value="{{ form.est_value }}"></label>
+  </div>
+  <label>What's the job? * <textarea name="scope" rows="3" required placeholder="e.g. Replace 40 m of sewer line under driveway, new boundary trap">{{ form.scope }}</textarea></label>
+  <fieldset>
+    <legend>Hazards on this job (tick all that apply)</legend>
+    <div class="checks">
+    {% for f, col, label in hazards %}<label class="check"><input type="checkbox" name="{{ f }}" {{ 'checked' if form.get(f) }}> {{ label }}</label>{% endfor %}
+    </div>
+  </fieldset>
+  <div class="cols">
+    <label>Other hazards <input name="other_hazards" value="{{ form.other_hazards }}"></label>
+    <label>Building age <select name="building_age">{% for a in ['Unknown','Before 1990','1990-2003','2004 or later'] %}<option {{ 'selected' if form.building_age == a }}>{{ a }}</option>{% endfor %}</select></label>
+    <label>Who's on the job? <input name="workers" placeholder="Names" value="{{ form.workers }}"></label>
+    <label>Plant and equipment <input name="plant" placeholder="e.g. 1.7 t excavator, jetter" value="{{ form.plant }}"></label>
+  </div>
+  <label>Anything special about the site? <textarea name="site_notes" rows="2" placeholder="Access, live services, occupants, traffic">{{ form.site_notes }}</textarea></label>
+  <label class="check"><input type="checkbox" name="hc_template" value="yes" {{ 'checked' if form.hc_template }}> The head contractor wants their own SWMS template used (email it to us)</label>
+  <button class="btn primary">Send request</button>
+</form>
+{% endblock %}

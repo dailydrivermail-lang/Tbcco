@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Compliance portal{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="{{ url_for('portal.home') }}"><span class="mark" aria-hidden="true">✓</span> Compliance portal</a>
+    {% if user %}
+    <div class="who">
+      {% if user.role == 'staff' %}
+        <a href="{{ url_for('portal.staff_overview') }}" class="{{ 'on' if active == 'staff' }}">All clients</a>
+        <a href="{{ url_for('portal.staff_inbox') }}" class="{{ 'on' if active == 'inbox' }}">Inbox</a>
+      {% endif %}
+      <span class="email">{{ user.name or user.email }}</span>
+      <form method="post" action="{{ url_for('portal.logout') }}" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="link">Sign out</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</header>
+{% if v is defined %}
+<nav class="clientnav">
+  <div class="wrap">
+    {% if user and user.role == 'staff' %}<span class="staffview">Staff view: {{ v.client_id }}</span>{% endif %}
+    <h1 class="client">{{ v.name }}</h1>
+    <div class="tabs">
+      <a href="{{ url_for('portal.dashboard', client_id=v.client_id) }}" class="{{ 'on' if active == 'dashboard' }}">Overview</a>
+      <a href="{{ url_for('portal.people', client_id=v.client_id) }}" class="{{ 'on' if active == 'people' }}">People &amp; licences</a>
+      <a href="{{ url_for('portal.insurance', client_id=v.client_id) }}" class="{{ 'on' if active == 'insurance' }}">Insurance</a>
+      <a href="{{ url_for('portal.jobs', client_id=v.client_id) }}" class="{{ 'on' if active == 'jobs' }}">Jobs &amp; SWMS</a>
+      <a href="{{ url_for('portal.reports', client_id=v.client_id) }}" class="{{ 'on' if active == 'reports' }}">Reports</a>
+      <a href="{{ url_for('portal.upload', client_id=v.client_id) }}" class="cta {{ 'on' if active == 'upload' }}">Upload</a>
+    </div>
+  </div>
+</nav>
+{% endif %}
+<main class="wrap">
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}<div class="flash {{ cat }}" role="status">{{ m }}</div>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="wrap foot">
+  {% if v is defined %}Register last updated {{ v.register_mtime.strftime('%d %b %Y, %I:%M %p') }}. {% endif %}
+  {% if not user or user.role != 'staff' or v is defined %}Prepared from the records you've given us. This is a compliance administration service, not legal advice.{% endif %}
+</footer>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Inbox · Staff{% endblock %}
+{% block content %}
+<div class="pagehead"><h2>Inbox</h2><p class="muted">SWMS requests and uploads from the portal. Process uploads with the extraction prompt, then move the file to <code>01_Intake_Inbox/_processed</code>. Log your minutes in the Time Log.</p></div>
+<section class="card">
+{% if items %}
+<table class="list"><thead><tr><th>Client</th><th>Type</th><th>Details</th><th>Received</th><th></th></tr></thead><tbody>
+{% for it in items %}{% set r = it.r %}
+<tr>
+  <td data-label="Client"><a href="{{ url_for('portal.dashboard', client_id=it.cid) }}">{{ it.cid }}</a></td>
+  {% if it.kind == 'swms' %}
+  <td data-label="Type"><span class="chip warn">SWMS request</span></td>
+  <td data-label="Details"><strong>{{ r.site_address }}</strong> ({{ r.state }}), starts {{ r.start_date }}<br><span class="small">{{ r.scope[:140] }}</span></td>
+  <td data-label="Received">{{ r.submitted_at.replace('T',' ')[:16] }}</td>
+  <td><form method="post" action="{{ url_for('portal.staff_accept_request', client_id=it.cid, request_id=r.request_id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn small">Add to Jobs register</button></form></td>
+  {% else %}
+  <td data-label="Type"><span class="chip muted">Upload</span></td>
+  <td data-label="Details">{{ r.original }}<br><span class="small muted">{{ r.doc_type }}{% if r.about %} · {{ r.about }}{% endif %}{% if r.ref %} · re {{ r.ref }}{% endif %} · <code>01_Intake_Inbox/portal/{{ r.stored_as }}</code></span></td>
+  <td data-label="Received">{{ r.at.replace('T',' ')[:16] }}</td><td></td>
+  {% endif %}
+</tr>
+{% endfor %}
+</tbody></table>
+{% else %}<p class="muted">Inbox zero.</p>{% endif %}
+</section>
+{% endblock %}

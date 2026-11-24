@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Jobs &amp; SWMS · {{ v.name }}{% endblock %}
+{% block content %}
+<div class="pagehead row">
+  <div><h2>Jobs &amp; SWMS</h2><p class="muted">Site-specific SWMS for high-risk construction work. Every SWMS is checked by a person before it's issued.</p></div>
+  <a class="btn primary" href="{{ url_for('portal.swms_request', client_id=v.client_id) }}">Request a SWMS</a>
+</div>
+{% if reqs %}
+<section class="card"><h3>Received, waiting to start</h3>
+<ul class="files">{% for r in reqs %}<li><strong>{{ r.site_address }}</strong> <span class="muted small">· starts {{ r.start_date }} · sent {{ r.submitted_at.replace('T',' ')[:16] }}</span></li>{% endfor %}</ul>
+</section>
+{% endif %}
+<section class="card">
+{% if rows %}
+<table class="list">
+  <thead><tr><th>Job</th><th>Site</th><th>Start</th><th>SWMS</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rows %}{% set j = r.job %}
+  <tr>
+    <td data-label="Job">{{ j['Job ID'] }}{% if j['Client job ref'] %} <span class="muted small">({{ j['Client job ref'] }})</span>{% endif %}</td>
+    <td data-label="Site">{{ j['Site address'] }}<br><span class="muted small">{{ (j['Scope of work'] or '')[:80] }}</span></td>
+    <td data-label="Start">{{ fmt_date(j['Start date']) if j['Start date'] and j['Start date'].strftime is defined else (j['Start date'] or '') }}</td>
+    <td data-label="SWMS"><span class="chip {{ 'ok' if j['SWMS status'] == 'Issued' else 'muted' }}">{{ j['SWMS status'] or '—' }}</span></td>
+    <td>{% if r.pdf %}<a class="btn small" href="{{ url_for('portal.swms_download', client_id=v.client_id, job_id=j['Job ID']) }}">Download PDF</a>{% endif %}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}<p class="muted">No jobs yet.</p>{% endif %}
+</section>
+{% endblock %}

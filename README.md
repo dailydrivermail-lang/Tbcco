@@ -21,6 +21,7 @@ Clients send us raw inputs; we return audit-ready registers, alerts, SWMS and co
 | `docs/02-data-model.md` | Every register and field (generated from `engine/schema.py`) |
 | `docs/03-rules-library.md` | How the rules library works, Ivana's verification queue, sources |
 | `docs/04-expiry-engine-runbook.md` | Daily routine, new client, alert logic, RAG |
+| `docs/05-client-portal.md` | Client portal: features, legal-review gate, running locally, Azure deployment, security |
 | `rules/rules_library.csv` | **60 rules** for plumbing, ACT/NSW, with sources and confidence (source of truth) |
 | `rules/Rules_Library_REVIEW.xlsx` | Ivana's review copy |
 | `intake/onboarding_questionnaire.md` | Microsoft Forms build spec (onboarding + SWMS request), channels, recurring intake |
@@ -29,20 +30,22 @@ Clients send us raw inputs; we return audit-ready registers, alerts, SWMS and co
 | `templates/Client_Register_TEMPLATE.xlsx` | Per-client register: 10 sheets, dropdowns, live expiry status, colour coding |
 | `templates/Master_Client_List.xlsx` | Ops workbook: Clients (RAG, minutes), Time Log, Audit Log |
 | `engine/` | `schema.py` · `build_templates.py` · `new_client.py` · `intake_import.py` · `expiry_engine.py` |
+| `portal/` | **Client portal** (Flask): client dashboard, registers, uploads, SWMS requests, reports; staff overview and inbox. See `docs/05-client-portal.md` |
 | `examples/make_demo.py` | Builds a fictional client end to end (scaffold → intake → engine → drafts) |
 
 ## Quick start
 
 ```bash
-pip install openpyxl pytest
+pip install -r requirements.txt
 python -m engine.build_templates      # regenerate templates + data-model doc
-python examples/make_demo.py          # demo client in examples/demo/
-python -m pytest -q                   # 16 tests
+python examples/make_demo.py          # demo clients in examples/demo/
+python -m portal.run --demo           # portal at http://127.0.0.1:8080 (demo logins printed)
+python -m pytest -q                   # 28 tests
 ```
 
 ## Roadmap
 
 - **Phase 1 (weeks 1-4):** ✅ rules library v1 · ✅ data model + folder structure · ✅ intake (Forms spec, bulk sheet, Claude extraction) · ✅ register + expiry engine + draft alerts · ⏭ SWMS generator v1 · ⏭ Ivana verifies the rules · ⏭ 3 pilot clients
 - **Phase 2:** quarterly pack builder (PDF), chemical/incident registers in use, ops dashboard, gap analysis vs head contractor requirements
-- **Phase 3:** hardening, client shared-folder views, case study template, broker renewal pack
+- **Phase 3:** hardening, ✅ client portal v1 (local; Azure Australia East to go live), case study template, broker renewal pack
 - **Later:** asbestos removal rules, more states, Plus tier (Xero read-only), automated Claude extraction via the API

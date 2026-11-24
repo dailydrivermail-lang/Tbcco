@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Reports · {{ v.name }}{% endblock %}
+{% block content %}
+<div class="pagehead"><h2>Reports</h2><p class="muted">Monthly summaries, quarterly compliance packs and register snapshots. Ready to hand to a head contractor, inspector or broker.</p></div>
+<section class="card">
+{% if reports %}
+<table class="list"><thead><tr><th>Document</th><th>Type</th><th>Date</th><th>Size</th></tr></thead><tbody>
+{% for r in reports %}<tr><td data-label="Document"><a href="{{ url_for('portal.report_download', client_id=v.client_id, rel=r.rel) }}">{{ r.name }}</a></td><td data-label="Type">{{ r.folder }}</td><td data-label="Date">{{ r.modified.strftime('%d %b %Y') }}</td><td data-label="Size">{{ r.size_kb }} KB</td></tr>{% endfor %}
+</tbody></table>
+{% else %}<p class="muted">Nothing here yet.</p>{% endif %}
+</section>
+{% endblock %}

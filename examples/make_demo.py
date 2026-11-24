@@ -20,6 +20,32 @@ sys.path.insert(0, str(ROOT))
 from engine import expiry_engine, intake_import, new_client  # noqa: E402
 
 OUT = ROOT / "examples" / "demo"
+DEMO_TODAY = dt.date(2026, 11, 24)
+
+
+def placeholder_pdf(path: Path, title: str, lines: list[str]):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+    path.parent.mkdir(parents=True, exist_ok=True)
+    c = canvas.Canvas(str(path), pagesize=A4)
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(60, 780, title)
+    c.setFont("Helvetica", 11)
+    y = 750
+    for ln in ["DEMO DOCUMENT - FICTIONAL DATA - NOT FOR USE"] + lines:
+        c.drawString(60, y, ln)
+        y -= 18
+    c.save()
+
+
+def set_row(ws, values: dict, row: int | None = None):
+    hdr = [c.value for c in ws[1]]
+    if row is None:
+        row = 2
+        while ws.cell(row=row, column=1).value not in (None, ""):
+            row += 1
+    for k, v in values.items():
+        ws.cell(row=row, column=hdr.index(k) + 1, value=v)
 
 
 def d(today, days):
@@ -62,10 +88,10 @@ def fill_intake(path: Path, today: dt.date):
     wb.save(path)
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--today", type=lambda s: dt.date.fromisoformat(s), default=dt.date(2026, 11, 24))
-    a = ap.parse_args()
+    ap.add_argument("--today", type=lambda s: dt.date.fromisoformat(s), default=DEMO_TODAY)
+    a = ap.parse_args(argv)
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
@@ -87,7 +113,42 @@ def main():
                  "Policy type": "PL", "Insurer": "Example Insurer", "Policy number": "PL-001", "Sum insured / limit": 20000000,
                  "Expiry date": a.today + dt.timedelta(days=45), "Verification": "Verified - document"}.items():
         ins.cell(row=2, column=ih.index(k) + 1, value=v)
+    set_row(wb["Jobs"], {"Job ID": "J0001", "Client job ref": "DP-1042", "Site address": "12 Example St, Kambah ACT", "State": "ACT",
+                         "Principal / head contractor": "Example Builders", "Scope of work": "Replace sewer line under driveway, new boundary trap",
+                         "Start date": a.today - dt.timedelta(days=3), "Hazard: trench over 1.5m": "Y", "Hazard: asbestos": "Y",
+                         "Hazard: traffic / mobile plant": "Y", "SWMS status": "Issued",
+                         "SWMS requested at": dt.datetime.combine(a.today - dt.timedelta(days=6), dt.time(9, 15)),
+                         "SWMS issued at": dt.datetime.combine(a.today - dt.timedelta(days=5), dt.time(8, 40)),
+                         "Reviewed by": "I. Reviewer"})
+    set_row(wb["Jobs"], {"Job ID": "J0002", "Site address": "3 Sample Pl, Queanbeyan NSW", "State": "NSW",
+                         "Scope of work": "Hot water heat pump install", "Start date": a.today + dt.timedelta(days=4),
+                         "Hazard: live electrical": "Y", "SWMS status": "In review",
+                         "SWMS requested at": dt.datetime.combine(a.today - dt.timedelta(days=1), dt.time(14, 5))})
+    set_row(wb["Documents"], {"Document ID": "D001", "Title": "WHS Policy", "Category": "Policy", "Version": "1.0",
+                              "Owner": "Pat Owner", "Approved date": a.today - dt.timedelta(days=340), "Review interval (months)": 12})
     wb.save(reg)
+    placeholder_pdf(cdir / "04_Jobs" / "J0001_12-Example-St-Kambah" / "Issued" / "J0001_SWMS_v1.pdf",
+                    "SWMS J0001 - 12 Example St, Kambah", ["Trenching over 1.5 m; asbestos; mobile plant", "Reviewed by: I. Reviewer"])
+    placeholder_pdf(cdir / "09_Client_Reports" / "Monthly" / f"C000_Monthly_Summary_{a.today:%Y-%m}.pdf",
+                    "Monthly compliance summary", ["What we did, what's coming up, what we need from you"])
+
+    # Second fictional client, all green, to exercise the staff view and client isolation
+    c2 = new_client.create(OUT, "C001", "Example Gas and Drain Pty Ltd", "Essentials", "ACT", master)
+    reg2 = next((c2 / "00_Register").glob("*_Register.xlsx"))
+    w2 = load_workbook(reg2)
+    set_row(w2["Business"], {"Trading name": "Example Gas & Drain", "Employees (FTE)": 0, "Primary contact": "Lee Sample"}, row=2)
+    set_row(w2["People"], {"Person ID": "P001", "Full name": "Lee Sample", "Person type": "Employee", "Roles": "Gasfitter",
+                           "States worked": "ACT", "Active": "Y"})
+    for i, (code, num, exp) in enumerate([("ACT_GASFITTER", "ACT-GF-9", 500), ("WHITE_CARD", "WC-9", None),
+                                          ("ACT_ASB_AWARE", "SoA", None), ("ACT_SILICA", "SoA", None)], start=1):
+        set_row(w2["Credentials"], {"Credential ID": f"L{i:04d}", "Person ID": "P001", "Credential type": code,
+                                    "Licence / card number": num, "Verification": "Verified - document",
+                                    "Expiry date": a.today + dt.timedelta(days=exp) if exp else None,
+                                    "No expiry": None if exp else "Y"})
+    set_row(w2["Insurances"], {"Insurance ID": "I001", "Holder type": "Client", "Holder ID": "C001", "Policy type": "PL",
+                               "Policy number": "PL-9", "Expiry date": a.today + dt.timedelta(days=200),
+                               "Verification": "Verified - document"})
+    w2.save(reg2)
 
     filled = cdir / "01_Intake_Inbox" / "Filled_People_and_Licences_Intake.xlsx"
     fill_intake(filled, a.today)

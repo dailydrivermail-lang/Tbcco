@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, when, rag_banner with context %}
+{% block title %}Overview · {{ v.name }}{% endblock %}
+{% block content %}
+{{ rag_banner(v) }}
+<div class="tiles">
+  <div class="tile {{ 'bad' if v.count('EXPIRED') }}"><span class="n">{{ v.count('EXPIRED') }}</span><span class="l">Expired</span></div>
+  <div class="tile {{ 'warn' if v.count('DUE 7','DUE 30') }}"><span class="n">{{ v.count('DUE 7','DUE 30') }}</span><span class="l">Due within 30 days</span></div>
+  <div class="tile"><span class="n">{{ v.count('DUE 60') }}</span><span class="l">Due in 31-60 days</span></div>
+  <div class="tile {{ 'info' if v.needs }}"><span class="n">{{ v.needs|length }}</span><span class="l">Things we need</span></div>
+</div>
+
+<div class="grid2">
+<section class="card">
+  <h2>What we need from you</h2>
+  {% if v.needs %}
+  <ul class="needs">
+    {% for kind, x in v.needs %}
+    <li>
+      {% if kind == 'expired' %}
+        <div><strong>{{ x.holder_name }}</strong>: {{ short_label(x) }} {{ badge(x.status) }}<br><span class="muted small">{{ x.number }} · expired {{ fmt_date(x.expiry) }}. Please send the renewed copy.</span></div>
+        <a class="btn small" href="{{ url_for('portal.upload', client_id=v.client_id, ref=x.item_id, about=x.holder_name ~ ' - ' ~ short_label(x)) }}">Upload</a>
+      {% elif kind == 'nodate' %}
+        <div><strong>{{ x.holder_name }}</strong>: {{ short_label(x) }} {{ badge(x.status) }}<br><span class="muted small">We need a copy showing the expiry date.</span></div>
+        <a class="btn small" href="{{ url_for('portal.upload', client_id=v.client_id, ref=x.item_id, about=x.holder_name ~ ' - ' ~ short_label(x)) }}">Upload</a>
+      {% else %}
+        <div><strong>{{ x.holder_name }}</strong>: {{ evidence_names(x.evidence) }}: <span class="muted">not on file</span>
+          {% if user.role == 'staff' and not x.ivana_status.startswith('Verified') %}<span class="chip muted" title="Rule {{ x.rule_id }} hasn't been legally reviewed. Clients don't see this item.">Staff only: rule pending review</span>{% endif %}
+          <br><span class="muted small">If it doesn't apply to them, let us know and we'll update the register.</span></div>
+        <a class="btn small" href="{{ url_for('portal.upload', client_id=v.client_id, ref=x.rule_id, about=x.holder_name) }}">Upload</a>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="muted">Nothing outstanding. Thanks!</p>
+  {% endif %}
+  {% if user.role == 'staff' and v.gaps_hidden %}<p class="muted small">{{ v.gaps_hidden }} more item(s) from unreviewed rules are hidden from the client.</p>{% endif %}
+</section>
+
+<section class="card">
+  <h2>Coming up (next 60 days)</h2>
+  {% if v.upcoming %}
+  <table class="list">
+    <thead><tr><th>Who</th><th>What</th><th>Expires</th><th></th></tr></thead>
+    <tbody>
+    {% for i in v.upcoming %}
+      <tr><td data-label="Who">{{ i.holder_name or 'Your business' }}</td><td data-label="What">{{ short_label(i) }}</td>
+          <td data-label="Expires">{{ fmt_date(i.expiry) }} <span class="muted small">({{ when(i) }})</span></td><td>{{ badge(i.status) }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">Nothing expires in the next 60 days.</p>{% endif %}
+</section>
+</div>
+
+<div class="grid2">
+<section class="card">
+  <h2>Latest reports</h2>
+  {% if reports %}
+  <ul class="files">{% for r in reports %}<li><a href="{{ url_for('portal.report_download', client_id=v.client_id, rel=r.rel) }}">{{ r.name }}</a> <span class="muted small">{{ r.folder }} · {{ r.modified.strftime('%d %b %Y') }}</span></li>{% endfor %}</ul>
+  {% else %}<p class="muted">Your first monthly summary will appear here.</p>{% endif %}
+</section>
+<section class="card">
+  <h2>Need a SWMS?</h2>
+  <p>Tell us about the job and we'll have a site-specific SWMS back to you within 24 hours, checked by a person before it's issued.</p>
+  <a class="btn primary" href="{{ url_for('portal.swms_request', client_id=v.client_id) }}">Request a SWMS</a>
+  {% if pending %}<p class="muted small">{{ pending|length }} request(s) in progress.</p>{% endif %}
+</section>
+</div>
+{% endblock %}

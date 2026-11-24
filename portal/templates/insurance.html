@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, verified, when with context %}
+{% block title %}Insurance · {{ v.name }}{% endblock %}
+{% block content %}
+{% macro ins_table(items) %}
+<table class="list">
+  <thead><tr><th>Holder</th><th>Policy</th><th>Number</th><th>Expiry</th><th>Status</th><th>Document</th></tr></thead>
+  <tbody>
+  {% for i in items %}
+  <tr>
+    <td data-label="Holder">{{ i.holder_name }}</td>
+    <td data-label="Policy">{{ short_label(i) }}</td>
+    <td data-label="Number">{{ i.number }}</td>
+    <td data-label="Expiry">{{ fmt_date(i.expiry) or 'needed' }}{% if i.expiry %} <span class="muted small">({{ when(i) }})</span>{% endif %}</td>
+    <td data-label="Status">{{ badge(i.status) }}</td>
+    <td data-label="Document">{{ verified(v.verification.get(i.item_id)) }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+<div class="pagehead"><h2>Insurance</h2>
+<p class="muted">Your policies and your subcontractors' certificates of currency. We chase subbies for renewals from 60 days out.</p></div>
+<section class="card"><h3>Your policies</h3>
+{% set own = v.insurances('Client') %}{% if own %}{{ ins_table(own) }}{% else %}<p class="muted">No policies on file yet. Upload your certificates of currency.</p>{% endif %}
+</section>
+<section class="card"><h3>Subcontractors</h3>
+{% set subs_i = v.insurances('Subcontractor') %}{% if subs_i %}{{ ins_table(subs_i) }}{% else %}<p class="muted">No subcontractor certificates on file.</p>{% endif %}
+</section>
+{% endblock %}
