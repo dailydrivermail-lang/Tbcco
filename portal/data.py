@@ -178,6 +178,12 @@ def issued_swms(cdir: Path, job: dict) -> Path | None:
     return None
 
 
+def latest_draft(cdir: Path, job: dict) -> Path | None:
+    drafts = sorted((cdir / "04_Jobs").glob(f"{job.get('Job ID')}_*/Drafts/*_SWMS_v*_DRAFT.pdf"),
+                    key=lambda p: int(p.stem.split("_v")[1].split("_")[0]))
+    return drafts[-1] if drafts else None
+
+
 def upload_dir(cdir: Path) -> Path:
     d = cdir / "01_Intake_Inbox" / "portal"
     d.mkdir(parents=True, exist_ok=True)

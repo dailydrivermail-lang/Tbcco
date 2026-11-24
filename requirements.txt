@@ -3,3 +3,4 @@ flask>=3.1,<4
 waitress>=3,<4
 reportlab>=4      # demo PDFs only
 pytest>=8         # tests
+pyyaml>=6

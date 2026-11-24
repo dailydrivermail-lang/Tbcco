@@ -33,7 +33,8 @@ def setup_demo() -> dict:
     data = md.OUT / "_portal"
     for email, name, role, cid, pw in DEMO_USERS:
         auth.upsert_user(data, email, name=name, role=role, client_id=cid, password=pw)
-    return {"CLIENTS_ROOT": str(md.OUT), "DATA_DIR": str(data), "TODAY": md.DEMO_TODAY}
+    return {"CLIENTS_ROOT": str(md.OUT), "DATA_DIR": str(data), "TODAY": md.DEMO_TODAY,
+            "MASTER": str(md.OUT / "Master_Client_List.xlsx")}
 
 
 def main(argv=None):

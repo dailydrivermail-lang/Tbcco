@@ -21,7 +21,21 @@
     <td data-label="Site">{{ j['Site address'] }}<br><span class="muted small">{{ (j['Scope of work'] or '')[:80] }}</span></td>
     <td data-label="Start">{{ fmt_date(j['Start date']) if j['Start date'] and j['Start date'].strftime is defined else (j['Start date'] or '') }}</td>
     <td data-label="SWMS"><span class="chip {{ 'ok' if j['SWMS status'] == 'Issued' else 'muted' }}">{{ j['SWMS status'] or '—' }}</span></td>
-    <td>{% if r.pdf %}<a class="btn small" href="{{ url_for('portal.swms_download', client_id=v.client_id, job_id=j['Job ID']) }}">Download PDF</a>{% endif %}</td>
+    <td>{% if r.pdf %}<a class="btn small" href="{{ url_for('portal.swms_download', client_id=v.client_id, job_id=j['Job ID']) }}">Download PDF</a>{% endif %}
+      {% if user.role == 'staff' %}
+      <div class="staffops">
+        <form method="post" action="{{ url_for('portal.staff_swms_draft', client_id=v.client_id, job_id=j['Job ID']) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn small">{{ 'Re-draft' if r.draft else 'Generate draft' }}</button></form>
+        {% if r.draft %}
+        <a class="btn small" href="{{ url_for('portal.staff_swms_draft_pdf', client_id=v.client_id, job_id=j['Job ID']) }}">Draft PDF</a>
+        {% if j['SWMS status'] != 'Issued' %}
+        <form method="post" action="{{ url_for('portal.staff_swms_issue', client_id=v.client_id, job_id=j['Job ID']) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <label class="check small"><input type="checkbox" name="confirm" value="yes"> I've reviewed the draft</label>
+          <button class="btn small primary">Issue</button></form>
+        {% endif %}{% endif %}
+      </div>
+      {% endif %}</td>
   </tr>
   {% endfor %}
   </tbody>

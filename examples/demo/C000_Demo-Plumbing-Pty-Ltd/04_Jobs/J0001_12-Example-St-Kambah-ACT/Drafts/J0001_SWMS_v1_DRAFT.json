@@ -1,0 +1,714 @@
+{
+  "swms_no": "C000-J0001-SWMS",
+  "version": 1,
+  "status": "DRAFT",
+  "client_id": "C000",
+  "business": {
+    "Client ID": "C000",
+    "Legal name": "Demo Plumbing Pty Ltd",
+    "Trading name": "Demo Plumbing",
+    "ABN": "00000000000",
+    "Entity type": null,
+    "Trades": "Plumbing; Drainage; Gasfitting",
+    "States operated": "ACT;NSW",
+    "Business licence numbers": null,
+    "Employees (FTE)": 12,
+    "Regular subcontractors": null,
+    "Head contractors worked for": null,
+    "Residential / commercial mix": null,
+    "Insurer": null,
+    "Broker": null,
+    "Broker email": null,
+    "Primary contact": "Pat Owner",
+    "Primary contact email": "pat@example.com",
+    "Primary contact mobile": "0400 000 000",
+    "Safety contact (if different)": null,
+    "Safety contact email": null,
+    "Xero connected": null,
+    "Service tier": "Standard",
+    "Service start date": "2026-11-24T00:00:00",
+    "ACT Leave employer registration no.": null,
+    "Notes": null
+  },
+  "job": {
+    "Job ID": "J0001",
+    "Client job ref": "DP-1042",
+    "Site address": "12 Example St, Kambah ACT",
+    "State": "ACT",
+    "Principal / head contractor": "Example Builders",
+    "Scope of work": "Replace sewer line under driveway, new boundary trap",
+    "Start date": "2026-11-21T00:00:00",
+    "End date": null,
+    "Est. value ($)": null,
+    "Plant and equipment": "1.7 t excavator, trench shield, plate compactor",
+    "Hazard: height over 2m": null,
+    "Hazard: trench over 1.5m": "Y",
+    "Hazard: confined space": null,
+    "Hazard: live electrical": null,
+    "Hazard: asbestos": "Y",
+    "Hazard: silica": null,
+    "Hazard: hot works": null,
+    "Hazard: gas lines": null,
+    "Hazard: traffic / mobile plant": "Y",
+    "Other hazards": null,
+    "Workers assigned (Person IDs)": "P001; P002",
+    "SWMS required": "=IF($A2=\"\",\"\",IF(OR(K2=\"Y\",L2=\"Y\",M2=\"Y\",N2=\"Y\",O2=\"Y\",R2=\"Y\",S2=\"Y\"),\"Y\",\"Check\"))",
+    "SWMS status": "Requested",
+    "SWMS requested at": "2026-11-18T09:15:00",
+    "SWMS issued at": null,
+    "SWMS turnaround (hrs)": "=IF($A2=\"\",\"\",IF(OR(X2=\"\",Y2=\"\"),\"\",ROUND((Y2-X2)*24,1)))",
+    "SWMS file": null,
+    "Reviewed by": null,
+    "Notes": null
+  },
+  "state": "ACT",
+  "template": "Sewer and stormwater drainage",
+  "modules": [
+    "General site work",
+    "Excavation and trenching",
+    "Possible asbestos",
+    "Traffic and mobile plant"
+  ],
+  "hrcw": [
+    [
+      "Work where there is a risk of a person falling more than 2 m",
+      false
+    ],
+    [
+      "Work on a telecommunication tower",
+      false
+    ],
+    [
+      "Demolition of an element of a structure that is load-bearing or related to physical integrity",
+      false
+    ],
+    [
+      "Work likely to involve disturbing asbestos",
+      true
+    ],
+    [
+      "Structural alterations or repairs that require temporary support",
+      false
+    ],
+    [
+      "Work in or near a confined space",
+      false
+    ],
+    [
+      "Work in or near a trench or shaft with an excavated depth greater than 1.5 m, or a tunnel",
+      true
+    ],
+    [
+      "Work involving the use of explosives",
+      false
+    ],
+    [
+      "Work on or near pressurised gas distribution mains or piping",
+      false
+    ],
+    [
+      "Work on or near chemical, fuel or refrigerant lines",
+      false
+    ],
+    [
+      "Work on or near energised electrical installations or services",
+      false
+    ],
+    [
+      "Work in an area that may have a contaminated or flammable atmosphere",
+      false
+    ],
+    [
+      "Work involving tilt-up or precast concrete elements",
+      false
+    ],
+    [
+      "Work on, in or adjacent to a road, railway, shipping lane or other traffic corridor in use",
+      true
+    ],
+    [
+      "Work in an area at a workplace in which there is any movement of powered mobile plant",
+      true
+    ],
+    [
+      "Work in an area in which there are artificial extremes of temperature",
+      false
+    ],
+    [
+      "Work in or near water or other liquid that involves a risk of drowning",
+      false
+    ],
+    [
+      "Work involving diving",
+      false
+    ]
+  ],
+  "workers": [
+    {
+      "person_id": "P001",
+      "name": "Sam Example",
+      "roles": "Licensed plumber; Drainer; Gasfitter; Supervisor / foreman",
+      "first_aider": true
+    },
+    {
+      "person_id": "P002",
+      "name": "Alex Sample",
+      "roles": "Apprentice",
+      "first_aider": false
+    }
+  ],
+  "competencies": [
+    {
+      "person_id": "P001",
+      "name": "Sam Example",
+      "code": "WHITE_CARD",
+      "label": "General construction induction (White Card, CPCWHS1001)",
+      "status": "NO EXPIRY",
+      "detail": "WC-111"
+    },
+    {
+      "person_id": "P002",
+      "name": "Alex Sample",
+      "code": "WHITE_CARD",
+      "label": "General construction induction (White Card, CPCWHS1001)",
+      "status": "NO EXPIRY",
+      "detail": "WC-222"
+    },
+    {
+      "person_id": "P001",
+      "name": "Sam Example",
+      "code": "ACT_ASB_AWARE",
+      "label": "Asbestos awareness - 11084NAT (ACT mandatory)",
+      "status": "NO EXPIRY",
+      "detail": "SoA"
+    },
+    {
+      "person_id": "P002",
+      "name": "Alex Sample",
+      "code": "ACT_ASB_AWARE",
+      "label": "Asbestos awareness - 11084NAT (ACT mandatory)",
+      "status": "NO EXPIRY",
+      "detail": "SoA"
+    },
+    {
+      "person_id": "P001",
+      "name": "Sam Example",
+      "code": "ACT_SILICA",
+      "label": "Crystalline silica exposure prevention - 10830NAT (ACT mandatory)",
+      "status": "NO EXPIRY",
+      "detail": "SoA"
+    },
+    {
+      "person_id": "P002",
+      "name": "Alex Sample",
+      "code": "ACT_SILICA",
+      "label": "Crystalline silica exposure prevention - 10830NAT (ACT mandatory)",
+      "status": "MISSING",
+      "detail": ""
+    },
+    {
+      "person_id": "P001",
+      "name": "Sam Example",
+      "code": "ACT_DRAINER",
+      "label": "Drainage licence: ACT drainer licence (advanced sanitary / journeyperson / operative)",
+      "status": "OK",
+      "detail": "ACT-DR-0001, to 20/09/2027"
+    }
+  ],
+  "steps": [
+    {
+      "n": 1,
+      "step": "Arrive, sign in, site induction, set up work area",
+      "hazards": [
+        "Unfamiliar site hazards",
+        "Public / occupants entering the work area",
+        "Slips, trips and falls on uneven ground"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "I",
+          "Barricade or tape off the work area; keep occupants and public out"
+        ],
+        [
+          "A",
+          "Complete principal contractor / client site induction and sign in"
+        ],
+        [
+          "A",
+          "Review this SWMS with all workers before starting. Workers sign the sign-on sheet"
+        ],
+        [
+          "A",
+          "Check access routes; keep work area tidy and remove trip hazards"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Sam Example (supervisor)",
+      "source": "base"
+    },
+    {
+      "n": 2,
+      "step": "Locate underground services before digging",
+      "hazards": [
+        "Striking gas, electrical, water, sewer or telecommunications services"
+      ],
+      "risk": "H",
+      "controls": [
+        [
+          "A",
+          "Obtain Before You Dig Australia plans; keep them on site"
+        ],
+        [
+          "A",
+          "Mark out services; pothole by hand or vacuum excavation near them"
+        ],
+        [
+          "A",
+          "Stop work and notify the asset owner if an unidentified service is found"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Sam Example (supervisor)",
+      "source": "trench"
+    },
+    {
+      "n": 3,
+      "step": "Identify asbestos before disturbing building materials (pre-2004 buildings)",
+      "hazards": [
+        "Inhaling asbestos fibres from AC pipe, flues, sheeting, vinyl, mastics"
+      ],
+      "risk": "X",
+      "controls": [
+        [
+          "E",
+          "Avoid disturbing suspect material; reroute pipework where possible"
+        ],
+        [
+          "A",
+          "Check the asbestos register, ask the owner, or presume asbestos is present"
+        ],
+        [
+          "A",
+          "Stop work if suspect material is found unexpectedly; isolate the area and get it tested"
+        ]
+      ],
+      "residual": "M",
+      "responsible": "Sam Example (supervisor)",
+      "source": "asbestos"
+    },
+    {
+      "n": 4,
+      "step": "Set up traffic control and plant exclusion zones",
+      "hazards": [
+        "Workers struck by vehicles or mobile plant",
+        "Public struck by plant"
+      ],
+      "risk": "X",
+      "controls": [
+        [
+          "I",
+          "Physical barriers separating workers from traffic and plant"
+        ],
+        [
+          "Eng",
+          "Plant fitted with reversing alarms and beacons"
+        ],
+        [
+          "A",
+          "Traffic guidance scheme implemented by accredited traffic controllers where required"
+        ],
+        [
+          "A",
+          "Plant exclusion zones; spotter for reversing; eye contact with the operator before approaching"
+        ],
+        [
+          "PPE",
+          "Hi-vis clothing"
+        ]
+      ],
+      "residual": "M",
+      "responsible": "Sam Example (supervisor)",
+      "source": "traffic"
+    },
+    {
+      "n": 5,
+      "step": "Mark out pipe route and set levels",
+      "hazards": [
+        "Working near the public or occupants"
+      ],
+      "risk": "L",
+      "controls": [
+        [
+          "A",
+          "Barricade the work area"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Sam Example (supervisor)",
+      "source": "drainage"
+    },
+    {
+      "n": 6,
+      "step": "Excavate trench deeper than 1.5 m",
+      "hazards": [
+        "Trench collapse / engulfment",
+        "Falls into the excavation",
+        "Struck by excavator",
+        "Undermining nearby structures"
+      ],
+      "risk": "X",
+      "controls": [
+        [
+          "E",
+          "Use trenchless methods (e.g. pipe bursting, directional boring) where practicable"
+        ],
+        [
+          "I",
+          "Barricade or cover the excavation when unattended"
+        ],
+        [
+          "Eng",
+          "Support the trench with shoring or a trench shield, or bench or batter the sides to a safe angle, before anyone enters"
+        ],
+        [
+          "Eng",
+          "Keep spoil, materials and plant at least 1 m back from the edge (more for deep trenches or poor ground)"
+        ],
+        [
+          "A",
+          "Exclusion zone around the operating excavator; spotter when workers are nearby"
+        ],
+        [
+          "A",
+          "Safe access and egress (ladder) within the supported area"
+        ],
+        [
+          "A",
+          "Competent person inspects the excavation daily and after rain"
+        ],
+        [
+          "PPE",
+          "Hard hat, hi-vis"
+        ]
+      ],
+      "residual": "M",
+      "responsible": "Sam Example (supervisor)",
+      "source": "trench"
+    },
+    {
+      "n": 7,
+      "step": "Lay, joint and test pipework in the trench",
+      "hazards": [
+        "Working in a trench",
+        "Pressure test failure"
+      ],
+      "risk": "H",
+      "controls": [
+        [
+          "Eng",
+          "Work only within the supported section"
+        ],
+        [
+          "A",
+          "No one in the trench during backfill or while plant moves nearby"
+        ],
+        [
+          "A",
+          "Follow test procedure; clear the area during pressure testing"
+        ]
+      ],
+      "residual": "M",
+      "responsible": "Sam Example (licensee)",
+      "source": "trench"
+    },
+    {
+      "n": 8,
+      "step": "Work on small quantities of non-friable asbestos (no more than 10 m2), if unavoidable",
+      "hazards": [
+        "Fibre release when cutting or breaking",
+        "Contaminating the site and clothing"
+      ],
+      "risk": "H",
+      "controls": [
+        [
+          "E",
+          "No power tools, abrasives or high-pressure water on asbestos"
+        ],
+        [
+          "I",
+          "Barricade the area with signage; keep others out"
+        ],
+        [
+          "Eng",
+          "Wet the material; use hand tools; shadow vacuum with an H-class vacuum"
+        ],
+        [
+          "A",
+          "Wrap waste in heavy-duty plastic, label it, and dispose of it at a licensed facility"
+        ],
+        [
+          "A",
+          "Decontaminate tools and the area before leaving"
+        ],
+        [
+          "PPE",
+          "Fit-tested P2 respirator; disposable coveralls"
+        ]
+      ],
+      "residual": "M",
+      "responsible": "Sam Example (supervisor)",
+      "source": "asbestos"
+    },
+    {
+      "n": 9,
+      "step": "Connect to the existing system / make the junction (live sewer)",
+      "hazards": [
+        "Biological hazards (sewage)",
+        "Hydrogen sulfide from the sewer"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "A",
+          "Plug or divert flows before cutting in"
+        ],
+        [
+          "A",
+          "Hand washing; cover cuts; keep up to date with recommended vaccinations (e.g. hepatitis A)"
+        ],
+        [
+          "PPE",
+          "Gloves and eye protection; change contaminated clothing"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Sam Example (licensee)",
+      "source": "drainage"
+    },
+    {
+      "n": 10,
+      "step": "Backfill, compact and reinstate",
+      "hazards": [
+        "Compactor vibration and noise",
+        "Struck by plant"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "A",
+          "No one in the trench during backfill; exclusion zone around plant"
+        ],
+        [
+          "A",
+          "Limit time on vibrating plate; rotate operators"
+        ],
+        [
+          "PPE",
+          "Hearing protection"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Sam Example (supervisor)",
+      "source": "drainage"
+    },
+    {
+      "n": 11,
+      "step": "Handle pipes, fittings, tools and materials",
+      "hazards": [
+        "Strain or sprain from lifting, carrying or awkward postures",
+        "Crush or pinch injuries"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "Eng",
+          "Use trolleys, pipe racks and mechanical aids for heavy or long items"
+        ],
+        [
+          "A",
+          "Team lift items over about 20 kg or awkward loads. Plan the route first"
+        ],
+        [
+          "A",
+          "Rotate tasks for sustained kneeling or overhead work"
+        ],
+        [
+          "PPE",
+          "Gloves; knee pads for kneeling work"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "All workers",
+      "source": "base"
+    },
+    {
+      "n": 12,
+      "step": "Use power and hand tools (cutting, drilling, threading)",
+      "hazards": [
+        "Cuts and lacerations",
+        "Flying particles",
+        "Electric shock from damaged leads",
+        "Noise"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "Eng",
+          "Use battery tools where practicable; guards fitted and working"
+        ],
+        [
+          "Eng",
+          "Portable RCD on all plug-in equipment"
+        ],
+        [
+          "A",
+          "Tools and leads tested and tagged (3-monthly on construction sites, AS/NZS 3012). Visual check before use"
+        ],
+        [
+          "PPE",
+          "Safety glasses; hearing protection when noise is high (e.g. cutting, core drilling)"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "All workers",
+      "source": "base"
+    },
+    {
+      "n": 13,
+      "step": "Use hazardous chemicals (solvent cement and primer, sealants, drain cleaners, LPG)",
+      "hazards": [
+        "Inhalation of vapours",
+        "Skin and eye contact",
+        "Fire from flammable products"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "S",
+          "Choose lower-hazard products where available"
+        ],
+        [
+          "Eng",
+          "Use in ventilated areas; keep containers closed"
+        ],
+        [
+          "A",
+          "Current SDS available on site. Follow SDS handling and first aid instructions"
+        ],
+        [
+          "A",
+          "No ignition sources near flammable products"
+        ],
+        [
+          "PPE",
+          "Chemical-resistant gloves and eye protection as per SDS"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "All workers",
+      "source": "base"
+    },
+    {
+      "n": 14,
+      "step": "Clean up, test, hand over",
+      "hazards": [
+        "Waste and sharp offcuts",
+        "Unsecured openings or excavations left behind"
+      ],
+      "risk": "L",
+      "controls": [
+        [
+          "A",
+          "Remove waste; dispose of offcuts and chemical containers correctly"
+        ],
+        [
+          "A",
+          "Leave no open excavation, pit or roof penetration unprotected"
+        ],
+        [
+          "A",
+          "Report incidents and near misses to the supervisor the same day"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Sam Example (supervisor)",
+      "source": "base"
+    }
+  ],
+  "ppe": [
+    "Safety boots",
+    "Hi-vis clothing",
+    "Gloves suited to task",
+    "Safety glasses",
+    "Sun protection (hat, sunscreen) outdoors",
+    "Hard hat",
+    "P2 (or better) respirator, fit-tested",
+    "Disposable coveralls (type 5/6)",
+    "Hi-vis (day/night as required)"
+  ],
+  "plant": "1.7 t excavator, trench shield, plate compactor",
+  "references": [
+    "Construction work Code of Practice",
+    "Hazardous manual tasks Code of Practice",
+    "Managing the work environment and facilities Code of Practice",
+    "Excavation work Code of Practice",
+    "WHS Regulation r 304-306 (excavation work)",
+    "How to manage and control asbestos in the workplace Code of Practice",
+    "How to safely remove asbestos Code of Practice",
+    "WHS Regulation Chapter 8",
+    "Road authority traffic management requirements (TfNSW / ACT Roads)",
+    "Work Health and Safety Act 2011 and Regulation (ACT: 2011; NSW: 2025). SWMS requirements: r 291 and r 299-303"
+  ],
+  "emergency": {
+    "call": "Emergency: 000 (ask for ambulance, fire or police)",
+    "regulator": "WorkSafe ACT: (02) 6207 3000",
+    "first_aiders": [
+      "Sam Example"
+    ],
+    "site_fields": [
+      "Nearest hospital / medical centre",
+      "Assembly point",
+      "First aid kit location",
+      "Fire extinguisher location"
+    ]
+  },
+  "flags": [
+    {
+      "severity": "check",
+      "text": "Alex Sample: Crystalline silica exposure prevention - 10830NAT (ACT mandatory): missing."
+    },
+    {
+      "severity": "check",
+      "text": "Earthmoving plant listed: confirm the operator's competency (VOC or ticket) and that the plant pre-start check is done."
+    },
+    {
+      "severity": "check",
+      "text": "[Excavation and trenching] Confirm Before You Dig Australia plans have been obtained and services located (potholing near services)."
+    },
+    {
+      "severity": "check",
+      "text": "[Excavation and trenching] Confirm the trench support method (shoring, benching or battering) suits the ground conditions. Get geotechnical advice if unsure."
+    },
+    {
+      "severity": "check",
+      "text": "[Possible asbestos] Confirm the asbestos register (commercial) has been sighted, or the presence of asbestos has been assumed and recorded (r 422-425)."
+    },
+    {
+      "severity": "check",
+      "text": "[Possible asbestos] Friable asbestos, or more than 10 m2 of non-friable asbestos, must be removed by a licensed asbestos removalist. Check the quantity and type. If over the threshold, this SWMS does NOT authorise the removal."
+    },
+    {
+      "severity": "check",
+      "text": "[Possible asbestos] ACT: check the affected residential premises (loose-fill) register for the address."
+    },
+    {
+      "severity": "check",
+      "text": "[Traffic and mobile plant] Work on or next to a road needs a traffic guidance scheme or traffic management plan from the road authority's accredited provider. Confirm who supplies it."
+    }
+  ],
+  "prepared_at": "2026-11-24T08:52",
+  "reviewed_by": "",
+  "issued_at": "",
+  "review_note": ""
+}

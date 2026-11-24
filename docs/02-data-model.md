@@ -157,7 +157,7 @@ Jobs that need a SWMS or site-specific compliance. Feeds the SWMS generator.
 | Hazard: traffic / mobile plant | list (yes_no) |  |  |
 | Other hazards | text |  |  |
 | Workers assigned (Person IDs) | text |  |  |
-| SWMS required | formula |  | Y if any high-risk construction work hazard is ticked. |
+| SWMS required | formula |  | Y if a high-risk construction work category (WHS Reg r 291) is ticked. Silica and hot works alone are not r 291 categories but still go in the SWMS when present. |
 | SWMS status | list (swms_status) |  |  |
 | SWMS requested at | datetime |  |  |
 | SWMS issued at | datetime |  |  |

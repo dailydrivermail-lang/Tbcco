@@ -173,3 +173,24 @@ def test_disabled_user_cannot_log_in(app):
     auth.upsert_user(data, "lee@example.com", role="client", client_id="C001", active=False)
     c = app.test_client()
     assert login(c, "lee@example.com", "client-password-2").status_code == 401
+
+
+def test_staff_swms_draft_and_issue_in_portal(app):
+    s = app.test_client()
+    login(s, "staff@example.com", "staff-password-1")
+    page = s.get("/c/C000/jobs").get_data(as_text=True)
+    tok = re.search(r'name="csrf_token" value="([^"]+)"', page).group(1)
+    r = s.post("/staff/c/C000/jobs/J0002/swms/draft", data={"csrf_token": tok}, follow_redirects=True)
+    assert "blocker" in r.get_data(as_text=True)
+    assert s.get("/staff/c/C000/jobs/J0002/swms/draft.pdf").data.startswith(b"%PDF")
+    r = s.post("/staff/c/C000/jobs/J0002/swms/issue", data={"csrf_token": tok}, follow_redirects=True)
+    assert "Tick the box" in r.get_data(as_text=True)
+    r = s.post("/staff/c/C000/jobs/J0002/swms/issue", data={"csrf_token": tok, "confirm": "yes"}, follow_redirects=True)
+    assert "Not issued" in r.get_data(as_text=True)
+    # clients can't reach staff SWMS actions
+    c = app.test_client()
+    login(c, "pat@example.com", "client-password-1")
+    ctok = _csrf(c, "/c/C000/upload")
+    assert c.post("/staff/c/C000/jobs/J0002/swms/draft", data={"csrf_token": ctok}).status_code == 403
+    assert c.get("/staff/c/C000/jobs/J0002/swms/draft.pdf").status_code == 403
+    assert "Generate draft" not in c.get("/c/C000/jobs").get_data(as_text=True)

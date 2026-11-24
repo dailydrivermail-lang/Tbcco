@@ -174,7 +174,8 @@ def jobs(client_id):
     cdir, v = _client(client_id)
     rows = []
     for j in sorted(v.jobs, key=lambda j: str(j.get("Job ID")), reverse=True):
-        rows.append({"job": j, "pdf": data.issued_swms(cdir, j)})
+        rows.append({"job": j, "pdf": data.issued_swms(cdir, j),
+                     "draft": data.latest_draft(cdir, j) if auth.current_user()["role"] == "staff" else None})
     reqs = data.list_swms_requests(cdir, "Pending")
     return render_template("jobs.html", v=v, rows=rows, reqs=reqs, active="jobs")
 
@@ -328,3 +329,60 @@ def staff_accept_request(client_id, request_id):
     auth.audit("swms_request_accepted", client_id, f"{request_id} -> {job_id}")
     flash(f"Added to {client_id}'s Jobs register as {job_id} (SWMS status: Requested).", "ok")
     return redirect(url_for("portal.staff_inbox"))
+
+
+# ---------------------------------------------------------------------------
+# Staff: SWMS generator
+# ---------------------------------------------------------------------------
+
+def _staff_client_dir(client_id):
+    cdir = data.client_dir(current_app.config["CLIENTS_ROOT"], client_id)
+    if not cdir:
+        abort(404)
+    return cdir
+
+
+@bp.route("/staff/c/<client_id>/jobs/<job_id>/swms/draft", methods=["POST"])
+@auth.staff_required
+def staff_swms_draft(client_id, job_id):
+    from swms.__main__ import SwmsError, draft
+    cdir = _staff_client_dir(client_id)
+    try:
+        doc, pdf = draft(cdir, job_id, current_app.config.get("MASTER"), _today())
+    except (SwmsError, KeyError) as e:
+        flash(f"Couldn't draft the SWMS: {e}", "error")
+    else:
+        auth.audit("swms_draft", client_id, f"{job_id} v{doc.version}")
+        flash(f"Draft v{doc.version} created for {job_id}: {len(doc.blockers)} blocker(s), "
+              f"{len(doc.flags) - len(doc.blockers)} item(s) to check. Download it and review the checklist on the last page.",
+              "error" if doc.blockers else "ok")
+    return redirect(url_for("portal.jobs", client_id=client_id))
+
+
+@bp.route("/staff/c/<client_id>/jobs/<job_id>/swms/issue", methods=["POST"])
+@auth.staff_required
+def staff_swms_issue(client_id, job_id):
+    from swms.__main__ import SwmsError, issue
+    cdir = _staff_client_dir(client_id)
+    if request.form.get("confirm") != "yes":
+        flash("Tick the box to confirm you've reviewed the draft before issuing.", "error")
+        return redirect(url_for("portal.jobs", client_id=client_id))
+    u = auth.current_user()
+    try:
+        doc, pdf = issue(cdir, job_id, u.get("name") or u["email"], current_app.config.get("MASTER"), today=_today())
+    except (SwmsError, KeyError) as e:
+        flash(str(e), "error")
+    else:
+        auth.audit("swms_issue", client_id, f"{job_id} v{doc.version}")
+        flash(f"Issued {job_id} v{doc.version}. The client can now download it.", "ok")
+    return redirect(url_for("portal.jobs", client_id=client_id))
+
+
+@bp.route("/staff/c/<client_id>/jobs/<job_id>/swms/draft.pdf")
+@auth.staff_required
+def staff_swms_draft_pdf(client_id, job_id):
+    cdir = _staff_client_dir(client_id)
+    pdf = data.latest_draft(cdir, {"Job ID": job_id})
+    if not pdf:
+        abort(404)
+    return send_file(pdf, as_attachment=True, download_name=pdf.name)

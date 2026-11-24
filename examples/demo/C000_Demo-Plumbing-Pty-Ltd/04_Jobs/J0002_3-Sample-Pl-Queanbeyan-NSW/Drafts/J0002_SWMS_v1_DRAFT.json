@@ -1,0 +1,504 @@
+{
+  "swms_no": "C000-J0002-SWMS",
+  "version": 1,
+  "status": "DRAFT",
+  "client_id": "C000",
+  "business": {
+    "Client ID": "C000",
+    "Legal name": "Demo Plumbing Pty Ltd",
+    "Trading name": "Demo Plumbing",
+    "ABN": "00000000000",
+    "Entity type": null,
+    "Trades": "Plumbing; Drainage; Gasfitting",
+    "States operated": "ACT;NSW",
+    "Business licence numbers": null,
+    "Employees (FTE)": 12,
+    "Regular subcontractors": null,
+    "Head contractors worked for": null,
+    "Residential / commercial mix": null,
+    "Insurer": null,
+    "Broker": null,
+    "Broker email": null,
+    "Primary contact": "Pat Owner",
+    "Primary contact email": "pat@example.com",
+    "Primary contact mobile": "0400 000 000",
+    "Safety contact (if different)": null,
+    "Safety contact email": null,
+    "Xero connected": null,
+    "Service tier": "Standard",
+    "Service start date": "2026-11-24T00:00:00",
+    "ACT Leave employer registration no.": null,
+    "Notes": null
+  },
+  "job": {
+    "Job ID": "J0002",
+    "Client job ref": null,
+    "Site address": "3 Sample Pl, Queanbeyan NSW",
+    "State": "NSW",
+    "Principal / head contractor": null,
+    "Scope of work": "Hot water heat pump install",
+    "Start date": "2026-11-28T00:00:00",
+    "End date": null,
+    "Est. value ($)": null,
+    "Plant and equipment": null,
+    "Hazard: height over 2m": null,
+    "Hazard: trench over 1.5m": null,
+    "Hazard: confined space": null,
+    "Hazard: live electrical": "Y",
+    "Hazard: asbestos": null,
+    "Hazard: silica": null,
+    "Hazard: hot works": null,
+    "Hazard: gas lines": null,
+    "Hazard: traffic / mobile plant": null,
+    "Other hazards": null,
+    "Workers assigned (Person IDs)": "Sam Example, Jo",
+    "SWMS required": "=IF($A3=\"\",\"\",IF(OR(K3=\"Y\",L3=\"Y\",M3=\"Y\",N3=\"Y\",O3=\"Y\",R3=\"Y\",S3=\"Y\"),\"Y\",\"Check\"))",
+    "SWMS status": "Requested",
+    "SWMS requested at": "2026-11-23T14:05:00",
+    "SWMS issued at": null,
+    "SWMS turnaround (hrs)": "=IF($A3=\"\",\"\",IF(OR(X3=\"\",Y3=\"\"),\"\",ROUND((Y3-X3)*24,1)))",
+    "SWMS file": null,
+    "Reviewed by": null,
+    "Notes": null
+  },
+  "state": "NSW",
+  "template": "Hot water system replacement / installation",
+  "modules": [
+    "General site work",
+    "Work near energised electrical services"
+  ],
+  "hrcw": [
+    [
+      "Work where there is a risk of a person falling more than 2 m",
+      false
+    ],
+    [
+      "Work on a telecommunication tower",
+      false
+    ],
+    [
+      "Demolition of an element of a structure that is load-bearing or related to physical integrity",
+      false
+    ],
+    [
+      "Work likely to involve disturbing asbestos",
+      false
+    ],
+    [
+      "Structural alterations or repairs that require temporary support",
+      false
+    ],
+    [
+      "Work in or near a confined space",
+      false
+    ],
+    [
+      "Work in or near a trench or shaft with an excavated depth greater than 1.5 m, or a tunnel",
+      false
+    ],
+    [
+      "Work involving the use of explosives",
+      false
+    ],
+    [
+      "Work on or near pressurised gas distribution mains or piping",
+      false
+    ],
+    [
+      "Work on or near chemical, fuel or refrigerant lines",
+      false
+    ],
+    [
+      "Work on or near energised electrical installations or services",
+      true
+    ],
+    [
+      "Work in an area that may have a contaminated or flammable atmosphere",
+      false
+    ],
+    [
+      "Work involving tilt-up or precast concrete elements",
+      false
+    ],
+    [
+      "Work on, in or adjacent to a road, railway, shipping lane or other traffic corridor in use",
+      false
+    ],
+    [
+      "Work in an area at a workplace in which there is any movement of powered mobile plant",
+      false
+    ],
+    [
+      "Work in an area in which there are artificial extremes of temperature",
+      false
+    ],
+    [
+      "Work in or near water or other liquid that involves a risk of drowning",
+      false
+    ],
+    [
+      "Work involving diving",
+      false
+    ]
+  ],
+  "workers": [
+    {
+      "person_id": "P001",
+      "name": "Sam Example",
+      "roles": "Licensed plumber; Drainer; Gasfitter; Supervisor / foreman",
+      "first_aider": true
+    },
+    {
+      "person_id": "P003",
+      "name": "Jo Placeholder",
+      "roles": "Drainer; Plant operator",
+      "first_aider": false
+    }
+  ],
+  "competencies": [
+    {
+      "person_id": "P001",
+      "name": "Sam Example",
+      "code": "WHITE_CARD",
+      "label": "General construction induction (White Card, CPCWHS1001)",
+      "status": "NO EXPIRY",
+      "detail": "WC-111"
+    },
+    {
+      "person_id": "P003",
+      "name": "Jo Placeholder",
+      "code": "WHITE_CARD",
+      "label": "General construction induction (White Card, CPCWHS1001)",
+      "status": "MISSING",
+      "detail": ""
+    },
+    {
+      "person_id": "P001",
+      "name": "Sam Example",
+      "code": "ELEC_RESTRICTED",
+      "label": "Restricted electrical licence (disconnect/reconnect)",
+      "status": "MISSING",
+      "detail": ""
+    }
+  ],
+  "steps": [
+    {
+      "n": 1,
+      "step": "Arrive, sign in, site induction, set up work area",
+      "hazards": [
+        "Unfamiliar site hazards",
+        "Public / occupants entering the work area",
+        "Slips, trips and falls on uneven ground"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "I",
+          "Barricade or tape off the work area; keep occupants and public out"
+        ],
+        [
+          "A",
+          "Complete principal contractor / client site induction and sign in"
+        ],
+        [
+          "A",
+          "Review this SWMS with all workers before starting. Workers sign the sign-on sheet"
+        ],
+        [
+          "A",
+          "Check access routes; keep work area tidy and remove trip hazards"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Sam Example (supervisor)",
+      "source": "base"
+    },
+    {
+      "n": 2,
+      "step": "Isolate electrical supply to equipment (e.g. electric hot water unit)",
+      "hazards": [
+        "Electric shock or electrocution",
+        "Arc flash"
+      ],
+      "risk": "X",
+      "controls": [
+        [
+          "E",
+          "Never work on energised equipment"
+        ],
+        [
+          "I",
+          "Licensed person isolates supply at the switchboard; lock out and danger tag (personal lock per worker)"
+        ],
+        [
+          "A",
+          "Test for dead before touching; re-test after any break"
+        ],
+        [
+          "A",
+          "Locate cables in walls, floors and ceilings before cutting or drilling"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Licensee (to confirm)",
+      "source": "electrical"
+    },
+    {
+      "n": 3,
+      "step": "Isolate water (and gas / electricity, see the isolation steps) and drain the old unit",
+      "hazards": [
+        "Scalding from hot water",
+        "Stored pressure"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "A",
+          "Let the unit cool, or drain hot water to a safe outlet"
+        ],
+        [
+          "A",
+          "Relieve pressure before disconnecting"
+        ],
+        [
+          "PPE",
+          "Gloves; eye protection"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Licensee (to confirm)",
+      "source": "hot_water"
+    },
+    {
+      "n": 4,
+      "step": "Remove the old unit and move in the new one",
+      "hazards": [
+        "Heavy, awkward loads (storage tanks 60-150 kg)",
+        "Possible asbestos in old cupboards, flues or sheeting"
+      ],
+      "risk": "H",
+      "controls": [
+        [
+          "Eng",
+          "Use an appliance trolley; two-person lift; plan the route and clear obstacles"
+        ],
+        [
+          "A",
+          "Check for suspect asbestos before cutting or removing panels (see the asbestos steps if ticked)"
+        ]
+      ],
+      "residual": "M",
+      "responsible": "All workers",
+      "source": "hot_water"
+    },
+    {
+      "n": 5,
+      "step": "Install, connect and commission (tempering valve, relief valves, set temperature)",
+      "hazards": [
+        "Scalding risk to occupants if delivery temperature is not limited",
+        "Water damage"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "A",
+          "Install a tempering or thermostatic mixing valve to the Plumbing Code; test the outlet temperature"
+        ],
+        [
+          "A",
+          "Check all relief and drain lines discharge safely"
+        ],
+        [
+          "A",
+          "Complete the compliance certificate and give the owner instructions"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Licensee (to confirm)",
+      "source": "hot_water"
+    },
+    {
+      "n": 6,
+      "step": "Handle pipes, fittings, tools and materials",
+      "hazards": [
+        "Strain or sprain from lifting, carrying or awkward postures",
+        "Crush or pinch injuries"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "Eng",
+          "Use trolleys, pipe racks and mechanical aids for heavy or long items"
+        ],
+        [
+          "A",
+          "Team lift items over about 20 kg or awkward loads. Plan the route first"
+        ],
+        [
+          "A",
+          "Rotate tasks for sustained kneeling or overhead work"
+        ],
+        [
+          "PPE",
+          "Gloves; knee pads for kneeling work"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "All workers",
+      "source": "base"
+    },
+    {
+      "n": 7,
+      "step": "Use power and hand tools (cutting, drilling, threading)",
+      "hazards": [
+        "Cuts and lacerations",
+        "Flying particles",
+        "Electric shock from damaged leads",
+        "Noise"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "Eng",
+          "Use battery tools where practicable; guards fitted and working"
+        ],
+        [
+          "Eng",
+          "Portable RCD on all plug-in equipment"
+        ],
+        [
+          "A",
+          "Tools and leads tested and tagged (3-monthly on construction sites, AS/NZS 3012). Visual check before use"
+        ],
+        [
+          "PPE",
+          "Safety glasses; hearing protection when noise is high (e.g. cutting, core drilling)"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "All workers",
+      "source": "base"
+    },
+    {
+      "n": 8,
+      "step": "Use hazardous chemicals (solvent cement and primer, sealants, drain cleaners, LPG)",
+      "hazards": [
+        "Inhalation of vapours",
+        "Skin and eye contact",
+        "Fire from flammable products"
+      ],
+      "risk": "M",
+      "controls": [
+        [
+          "S",
+          "Choose lower-hazard products where available"
+        ],
+        [
+          "Eng",
+          "Use in ventilated areas; keep containers closed"
+        ],
+        [
+          "A",
+          "Current SDS available on site. Follow SDS handling and first aid instructions"
+        ],
+        [
+          "A",
+          "No ignition sources near flammable products"
+        ],
+        [
+          "PPE",
+          "Chemical-resistant gloves and eye protection as per SDS"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "All workers",
+      "source": "base"
+    },
+    {
+      "n": 9,
+      "step": "Clean up, test, hand over",
+      "hazards": [
+        "Waste and sharp offcuts",
+        "Unsecured openings or excavations left behind"
+      ],
+      "risk": "L",
+      "controls": [
+        [
+          "A",
+          "Remove waste; dispose of offcuts and chemical containers correctly"
+        ],
+        [
+          "A",
+          "Leave no open excavation, pit or roof penetration unprotected"
+        ],
+        [
+          "A",
+          "Report incidents and near misses to the supervisor the same day"
+        ]
+      ],
+      "residual": "L",
+      "responsible": "Sam Example (supervisor)",
+      "source": "base"
+    }
+  ],
+  "ppe": [
+    "Safety boots",
+    "Hi-vis clothing",
+    "Gloves suited to task",
+    "Safety glasses",
+    "Sun protection (hat, sunscreen) outdoors",
+    "Insulated gloves only where the electrical risk assessment requires them"
+  ],
+  "plant": "",
+  "references": [
+    "Construction work Code of Practice",
+    "Hazardous manual tasks Code of Practice",
+    "Managing the work environment and facilities Code of Practice",
+    "Managing electrical risks in the workplace Code of Practice",
+    "WHS Regulation Part 4.7",
+    "Work Health and Safety Act 2011 and Regulation (ACT: 2011; NSW: 2025). SWMS requirements: r 291 and r 299-303"
+  ],
+  "emergency": {
+    "call": "Emergency: 000 (ask for ambulance, fire or police)",
+    "regulator": "SafeWork NSW: 13 10 50",
+    "first_aiders": [
+      "Sam Example"
+    ],
+    "site_fields": [
+      "Nearest hospital / medical centre",
+      "Assembly point",
+      "First aid kit location",
+      "Fire extinguisher location"
+    ]
+  },
+  "flags": [
+    {
+      "severity": "blocker",
+      "text": "Jo Placeholder: General construction induction (White Card, CPCWHS1001): missing."
+    },
+    {
+      "severity": "check",
+      "text": "No assigned worker has Restricted electrical licence (disconnect/reconnect). Only if the plumber disconnects or reconnects electrical equipment. Otherwise a licensed electrician does it"
+    },
+    {
+      "severity": "check",
+      "text": "Jo Placeholder: NSW licence categories aren't recorded. Confirm it covers plumbing and record the categories on the Credentials sheet."
+    },
+    {
+      "severity": "check",
+      "text": "Sam Example holds an ACT plumbing licence only. Check whether automatic mutual recognition covers this NSW work (rules P-NSW-01/02/03, pending legal review)."
+    },
+    {
+      "severity": "blocker",
+      "text": "No assigned worker holds a current NSW plumbing licence (NSW_TRADE_PDG / NSW_QS_PDG / NSW_CONTRACTOR_PDG). Licensed work must be done or supervised by a licensee."
+    },
+    {
+      "severity": "check",
+      "text": "[Work near energised electrical services] Confirm who isolates and reconnects electrical supply (licensed electrician, or a plumber with a restricted licence). Rule P-ALL-12 is pending legal review."
+    }
+  ],
+  "prepared_at": "2026-11-24T08:52",
+  "reviewed_by": "",
+  "issued_at": "",
+  "review_note": ""
+}

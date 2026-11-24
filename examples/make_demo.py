@@ -62,9 +62,10 @@ def fill_intake(path: Path, today: dt.date):
         for k, v in kv.items():
             ppl.cell(row=r, column=hdr.index(k) + 1, value=v)
 
-    row(**{"Full name": "Sam Example", "Employee / apprentice / subcontractor": "Employee", "Role(s)": "Licensed plumber; Gasfitter; Supervisor / foreman",
+    row(**{"Full name": "Sam Example", "Employee / apprentice / subcontractor": "Employee", "Role(s)": "Licensed plumber; Drainer; Gasfitter; Supervisor / foreman",
            "Works in (ACT / NSW / both)": "ACT;NSW", "Mobile": "0400 000 001", "Email": "sam@example.com", "Designated first aider? (Y/N)": "Y",
            "Plumbing licence no.": "ACT-PL-0001", "Plumbing licence state": "ACT", "Plumbing licence class": "Sanitary plumber", "Plumbing licence expiry": d(today, 25),
+           "Drainer licence no.": "ACT-DR-0001", "Drainer licence state": "ACT", "Drainer licence expiry": d(today, 300),
            "Gasfitter licence no.": "ACT-GF-0001", "Gasfitter licence state": "ACT", "Gasfitter class (general/advanced/LPG)": "General", "Gasfitter licence expiry": d(today, 400),
            "White Card no.": "WC-111", "White Card state": "ACT", "Asbestos awareness (11084NAT) date": "01/02/2020", "Silica (10830NAT) date": "01/08/2023",
            "First aid (HLTAID011) expiry": d(today, -10), "CPR (HLTAID009) expiry": d(today, 5)})
@@ -116,19 +117,18 @@ def main(argv=None):
     set_row(wb["Jobs"], {"Job ID": "J0001", "Client job ref": "DP-1042", "Site address": "12 Example St, Kambah ACT", "State": "ACT",
                          "Principal / head contractor": "Example Builders", "Scope of work": "Replace sewer line under driveway, new boundary trap",
                          "Start date": a.today - dt.timedelta(days=3), "Hazard: trench over 1.5m": "Y", "Hazard: asbestos": "Y",
-                         "Hazard: traffic / mobile plant": "Y", "SWMS status": "Issued",
-                         "SWMS requested at": dt.datetime.combine(a.today - dt.timedelta(days=6), dt.time(9, 15)),
-                         "SWMS issued at": dt.datetime.combine(a.today - dt.timedelta(days=5), dt.time(8, 40)),
-                         "Reviewed by": "I. Reviewer"})
+                         "Hazard: traffic / mobile plant": "Y", "SWMS status": "Requested",
+                         "Plant and equipment": "1.7 t excavator, trench shield, plate compactor",
+                         "Workers assigned (Person IDs)": "P001; P002",
+                         "SWMS requested at": dt.datetime.combine(a.today - dt.timedelta(days=6), dt.time(9, 15))})
     set_row(wb["Jobs"], {"Job ID": "J0002", "Site address": "3 Sample Pl, Queanbeyan NSW", "State": "NSW",
                          "Scope of work": "Hot water heat pump install", "Start date": a.today + dt.timedelta(days=4),
-                         "Hazard: live electrical": "Y", "SWMS status": "In review",
+                         "Hazard: live electrical": "Y", "SWMS status": "Requested",
+                         "Workers assigned (Person IDs)": "Sam Example, Jo",
                          "SWMS requested at": dt.datetime.combine(a.today - dt.timedelta(days=1), dt.time(14, 5))})
     set_row(wb["Documents"], {"Document ID": "D001", "Title": "WHS Policy", "Category": "Policy", "Version": "1.0",
                               "Owner": "Pat Owner", "Approved date": a.today - dt.timedelta(days=340), "Review interval (months)": 12})
     wb.save(reg)
-    placeholder_pdf(cdir / "04_Jobs" / "J0001_12-Example-St-Kambah" / "Issued" / "J0001_SWMS_v1.pdf",
-                    "SWMS J0001 - 12 Example St, Kambah", ["Trenching over 1.5 m; asbestos; mobile plant", "Reviewed by: I. Reviewer"])
     placeholder_pdf(cdir / "09_Client_Reports" / "Monthly" / f"C000_Monthly_Summary_{a.today:%Y-%m}.pdf",
                     "Monthly compliance summary", ["What we did, what's coming up, what we need from you"])
 
@@ -153,6 +153,11 @@ def main(argv=None):
     filled = cdir / "01_Intake_Inbox" / "Filled_People_and_Licences_Intake.xlsx"
     fill_intake(filled, a.today)
     print("import:", intake_import.import_sheet(cdir, filled))
+    # SWMS: J0001 drafted, reviewed and issued; J0002 drafted and still in review (has blockers)
+    from swms.__main__ import draft as swms_draft, issue as swms_issue
+    swms_draft(cdir, "J0001", master, a.today)
+    swms_issue(cdir, "J0001", "I. Reviewer", master, today=a.today)
+    swms_draft(cdir, "J0002", master, a.today)
     res = expiry_engine.run_client(cdir, a.today, master=master)
     print(f"engine: RAG={res.rag} items={len(res.items)} alerts={sum(i.alert for i in res.items)} missing={len(res.gaps)}")
     for p in res.drafts:

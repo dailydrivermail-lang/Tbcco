@@ -10,6 +10,7 @@ ops PC now and on Azure (Australia East) later.
                         0 (default): clients only see "missing" items from rules Ivana has verified.
                         Staff always see all of them, labelled.
   PORTAL_TODAY          YYYY-MM-DD override for demos and tests
+  PORTAL_MASTER         Master_Client_List.xlsx (SWMS drafts and issues are written to its Audit Log)
 """
 from __future__ import annotations
 
@@ -57,4 +58,5 @@ def load(overrides: dict | None = None) -> dict:
         "SESSION_COOKIE_SECURE": bool(secure),
         "PERMANENT_SESSION_LIFETIME": dt.timedelta(hours=8),
         "TESTING": o.get("TESTING", False),
+        "MASTER": Path(o.get("MASTER") or os.environ.get("PORTAL_MASTER") or "").expanduser() if (o.get("MASTER") or os.environ.get("PORTAL_MASTER")) else None,
     }

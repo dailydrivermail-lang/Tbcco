@@ -1,0 +1,158 @@
+# Plumbing task templates. A template is chosen by keywords in the job's "Scope of work"
+# (first match wins; 'general' is the fallback). Each template gives the trade steps in order;
+# hazard modules (hazards.yaml) are inserted around them by position.
+#
+#   licence: which trade licence the work needs: plumbing / drainage / gas (checked against assigned workers)
+
+templates:
+  - id: drainage
+    middle_after: 1
+    title: Sewer and stormwater drainage
+    keywords: [sewer, stormwater, drain, drainage, trench, excavat, boundary trap, inspection opening, pipe burst, relin]
+    licence: [drainage]
+    steps:
+      - step: "Mark out pipe route and set levels"
+        hazards: ["Working near the public or occupants"]
+        risk: L
+        controls: [[A, "Barricade the work area"]]
+        residual: L
+        responsible: supervisor
+      - step: "Connect to the existing system / make the junction (live sewer)"
+        hazards: ["Biological hazards (sewage)", "Hydrogen sulfide from the sewer"]
+        risk: M
+        controls:
+          - [A, "Plug or divert flows before cutting in"]
+          - [A, "Hand washing; cover cuts; keep up to date with recommended vaccinations (e.g. hepatitis A)"]
+          - [PPE, "Gloves and eye protection; change contaminated clothing"]
+        residual: L
+        responsible: licensed
+      - step: "Backfill, compact and reinstate"
+        hazards: ["Compactor vibration and noise", "Struck by plant"]
+        risk: M
+        controls:
+          - [A, "No one in the trench during backfill; exclusion zone around plant"]
+          - [A, "Limit time on vibrating plate; rotate operators"]
+          - [PPE, "Hearing protection"]
+        residual: L
+        responsible: supervisor
+
+  - id: hot_water
+    middle_after: 2
+    title: Hot water system replacement / installation
+    keywords: [hot water, hws, heat pump, water heater, storage heater, instantaneous, solar hot]
+    licence: [plumbing]
+    steps:
+      - step: "Isolate water (and gas / electricity, see the isolation steps) and drain the old unit"
+        hazards: ["Scalding from hot water", "Stored pressure"]
+        risk: M
+        controls:
+          - [A, "Let the unit cool, or drain hot water to a safe outlet"]
+          - [A, "Relieve pressure before disconnecting"]
+          - [PPE, "Gloves; eye protection"]
+        residual: L
+        responsible: licensed
+      - step: "Remove the old unit and move in the new one"
+        hazards: ["Heavy, awkward loads (storage tanks 60-150 kg)", "Possible asbestos in old cupboards, flues or sheeting"]
+        risk: H
+        controls:
+          - [Eng, "Use an appliance trolley; two-person lift; plan the route and clear obstacles"]
+          - [A, "Check for suspect asbestos before cutting or removing panels (see the asbestos steps if ticked)"]
+        residual: M
+        responsible: all
+      - step: "Install, connect and commission (tempering valve, relief valves, set temperature)"
+        hazards: ["Scalding risk to occupants if delivery temperature is not limited", "Water damage"]
+        risk: M
+        controls:
+          - [A, "Install a tempering or thermostatic mixing valve to the Plumbing Code; test the outlet temperature"]
+          - [A, "Check all relief and drain lines discharge safely"]
+          - [A, "Complete the compliance certificate and give the owner instructions"]
+        residual: L
+        responsible: licensed
+
+  - id: gas_fitting
+    middle_after: 0
+    title: Gasfitting
+    keywords: [gas line, gas fitting, gasfitting, gas pipe, cooktop, gas heater, lpg, gas meter, gas appliance]
+    licence: [gas]
+    steps:
+      - step: "Install or modify gas pipework"
+        hazards: ["Gas escape", "Cutting or drilling into hidden services"]
+        risk: H
+        controls:
+          - [A, "Confirm the supply is isolated (see the gas steps); cap all open ends"]
+          - [A, "Locate cables and pipes before drilling"]
+        residual: L
+        responsible: licensed
+
+  - id: roof_plumbing
+    middle_after: 0
+    title: Roof plumbing
+    keywords: [roof, gutter, downpipe, flashing, box gutter, rainwater head, valley]
+    licence: [plumbing]
+    steps:
+      - step: "Move materials onto the roof"
+        hazards: ["Falling materials", "Sheet metal cuts", "Wind catching sheets"]
+        risk: H
+        controls:
+          - [Eng, "Use a material hoist or lifting equipment where practicable"]
+          - [A, "Don't handle sheets in strong winds; exclusion zone below"]
+          - [PPE, "Cut-resistant gloves"]
+        residual: M
+        responsible: all
+      - step: "Install gutters, downpipes and flashings"
+        hazards: ["Sharp edges", "Heat stress and UV exposure on roofs"]
+        risk: M
+        controls:
+          - [A, "Schedule roof work for cooler parts of the day; water and rest breaks"]
+          - [PPE, "Cut-resistant gloves; sun protection"]
+        residual: L
+        responsible: licensed
+
+  - id: general
+    middle_after: 1
+    title: General plumbing installation and maintenance
+    keywords: []
+    licence: [plumbing]
+    steps:
+      - step: "Isolate water supply and relieve pressure"
+        hazards: ["Unexpected release of water under pressure", "Scalding from hot lines"]
+        risk: M
+        controls:
+          - [I, "Isolate at the nearest valve; tag the valve"]
+          - [A, "Open an outlet to relieve pressure; let hot lines cool"]
+        residual: L
+        responsible: licensed
+      - step: "Carry out the plumbing work (pipework, fixtures, repairs)"
+        hazards: ["Cuts", "Awkward postures in cramped spaces (under floors, in cupboards)", "Biological hazards (waste pipes)"]
+        risk: M
+        controls:
+          - [A, "Plan work to limit time in cramped spaces; take breaks"]
+          - [A, "Hygiene: hand washing; cover cuts"]
+          - [PPE, "Gloves; knee pads; eye protection"]
+        residual: L
+        responsible: licensed
+      - step: "Restore supply and test for leaks"
+        hazards: ["Water damage", "Pressure failure of new joints"]
+        risk: L
+        controls:
+          - [A, "Restore supply slowly; inspect all joints"]
+        residual: L
+        responsible: licensed
+
+licences:
+  # trade -> {state: [credential codes, any one of which satisfies]}
+  plumbing:
+    ACT: [ACT_PLUMBER]
+    NSW: [NSW_TRADE_PDG, NSW_QS_PDG, NSW_CONTRACTOR_PDG]
+  drainage:
+    ACT: [ACT_DRAINER]
+    NSW: [NSW_TRADE_PDG, NSW_QS_PDG, NSW_CONTRACTOR_PDG]
+  gas:
+    ACT: [ACT_GASFITTER]
+    NSW: [NSW_TRADE_PDG, NSW_QS_PDG, NSW_CONTRACTOR_PDG]
+
+emergency:
+  ACT:
+    regulator: "WorkSafe ACT: (02) 6207 3000"
+  NSW:
+    regulator: "SafeWork NSW: 13 10 50"
