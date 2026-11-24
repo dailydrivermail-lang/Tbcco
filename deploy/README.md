@@ -26,3 +26,10 @@ npx wrangler pages deploy deploy/site --project-name tbcco-portal-demo
 ## Letting Claude deploy it
 
 Create a Cloudflare API token (My Profile → API Tokens → Custom token, permission **Account → Cloudflare Pages → Edit**). Add it to this cloud environment's settings under **Network secrets** for host `api.cloudflare.com`. A new session picks it up, and Claude can then run option C itself.
+
+## GitHub Pages (alternative)
+
+`.github/workflows/pages.yml` runs the tests, builds the demo for the Pages URL (`/Tbcco/`) and publishes it on every push that touches the app.
+
+One-time setup: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**. Then re-run the workflow (Actions tab → "Publish portal demo to GitHub Pages" → Run workflow).
+The site will be at `https://dailydrivermail-lang.github.io/Tbcco/`.

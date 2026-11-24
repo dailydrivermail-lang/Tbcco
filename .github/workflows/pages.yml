@@ -1,0 +1,46 @@
+# Publishes the static portal demo (fictional data only) to GitHub Pages.
+# One-time setup: repo Settings → Pages → Build and deployment → Source: "GitHub Actions".
+name: Publish portal demo to GitHub Pages
+
+on:
+  push:
+    branches: [main, claude/trade-compliance-service-9jnkng]
+    paths: ["portal/**", "engine/**", "examples/**", "deploy/**", "rules/**", "templates/**", "intake/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+      - id: pages
+        uses: actions/configure-pages@v5
+      - name: Build static demo for this Pages URL
+        run: python deploy/build_static_demo.py --base "${{ steps.pages.outputs.base_path }}/" --out _site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

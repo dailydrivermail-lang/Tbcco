@@ -1,6 +1,7 @@
 """Export the client portal demo as a static site for Cloudflare Pages (or any static host).
 
-    python deploy/build_static_demo.py            # writes deploy/site/
+    python deploy/build_static_demo.py                              # deploy/site/, served from /  (Cloudflare Pages)
+    python deploy/build_static_demo.py --base /Tbcco/ --out _site   # GitHub Pages project site
 
 How it works: rebuild the fictional demo clients, run the real Flask app in-process, log in as the
 demo client and as staff, crawl every page, and write HTML/PDF files. Client pages go under
@@ -27,6 +28,7 @@ import examples.make_demo as md  # noqa: E402
 from portal import auth, create_app, data  # noqa: E402
 
 OUT = ROOT / "deploy" / "site"
+BASE = "/"  # URL prefix the site is served under, e.g. "/Tbcco/" on GitHub Pages
 VIEWS = {  # prefix -> (login email, password, start paths)
     "client": ("pat@example.com", "demo-client-password", ["/c/C000/"]),
     "staff-view": ("staff@example.com", "demo-staff-password", ["/staff", "/staff/inbox"]),
@@ -114,6 +116,8 @@ def write(rel_url: str, content: bytes | str):
     rel = rel_url.lstrip("/")
     target = OUT / rel / "index.html" if rel_url.endswith("/") else OUT / rel
     target.parent.mkdir(parents=True, exist_ok=True)
+    if isinstance(content, str) and target.suffix == ".html" and BASE != "/":
+        content = re.sub(r'(href|action|src)="/(?!/)', lambda m: f'{m.group(1)}="{BASE}', content)
     target.write_bytes(content.encode("utf-8") if isinstance(content, str) else content)
 
 
@@ -130,7 +134,15 @@ def page_shell(app, title: str, body: str) -> str:
 </body></html>"""
 
 
-def main():
+def main(argv=None):
+    global OUT, BASE
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--base", default="/", help="URL prefix, e.g. /Tbcco/ for a GitHub Pages project site")
+    ap.add_argument("--out", type=Path, default=OUT)
+    a = ap.parse_args(argv)
+    BASE = "/" + a.base.strip("/") + "/" if a.base.strip("/") else "/"
+    OUT = a.out.resolve()
     tmp = Path(tempfile.mkdtemp(prefix="static_demo_"))
     try:
         md.main([])  # rebuild fictional demo clients into examples/demo
@@ -190,7 +202,8 @@ def main():
                            "script-src 'self'; frame-ancestors 'none'\n")
         (OUT / "build.json").write_text(json.dumps({"built": dt.datetime.now().isoformat(timespec="seconds"),
                                                     "demo_today": md.DEMO_TODAY.isoformat()}, indent=2))
-        print(f"Static demo written to {OUT.relative_to(ROOT)} ({total} items)")
+        (OUT / ".nojekyll").write_text("")  # GitHub Pages: serve files as-is
+        print(f"Static demo written to {OUT} for base {BASE} ({total} items)")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
