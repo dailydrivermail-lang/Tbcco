@@ -46,6 +46,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .bar strong { font-size: 1rem; font-weight: 650; letter-spacing: -.01em; }
 .bar small { display: block; color: #8fa3c2; font-size: .72rem; font-weight: 500; }
 .bar .grow { flex: 1; min-width: 0; }
+.bar strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 520px) { .bar small { display: none; } }
 .tag { font-size: .7rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 99px; background: #1c3257; color: var(--ink-text); white-space: nowrap; }
 .tag.on { background: #0f3d2a; color: #8fe3b4; }
 .ghost { background: transparent; border: 1px solid #2a3f63; color: var(--ink-text); border-radius: 8px; padding: 6px 10px; font-size: .8rem; font-weight: 600; cursor: pointer; }
@@ -79,6 +81,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .kicker.plain { color: var(--text-3); background: var(--surface-2); border-color: var(--line); }
 .why { margin-top: 8px; font-size: .88rem; color: var(--warn); background: var(--warn-soft); border: 1px solid var(--warn-line); border-radius: 10px; padding: 8px 10px; }
 .hint { font-size: .8rem; color: var(--text-3); }
+.reasons { margin: 6px 0 0; padding-left: 18px; font-weight: 500; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { border: 1px solid var(--line-strong); background: var(--surface); border-radius: 12px; padding: 9px 13px; font-weight: 500; cursor: pointer; text-align: left; min-height: 42px; display: inline-flex; align-items: center; gap: 8px; }
 .chip:hover:not([disabled]) { border-color: var(--primary); background: var(--primary-soft); }
@@ -186,7 +189,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 <div class="app">
   <div class="bar"><div class="bar-in">
     <span class="mark"><svg class="icon"><use href="#i-shield"/></svg></span>
-    <div class="grow"><strong>SWMS Assistant</strong><small>Tell us the job. Get a site-specific SWMS.</small></div>
+    <div class="grow"><strong>SWMS Assistant</strong><small>Tell us the job. Find out if it needs a SWMS.</small></div>
     <span class="tag" id="ai-tag">Prototype</span>
     <button class="ghost" id="restart" type="button">Start again</button>
   </div></div>
@@ -326,10 +329,11 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
   // ---------- conversation
   function start() {
-    S = { job_type: null, site: {}, answers: {}, crew: null, quickDone: false, confirm: false, sent: false, scopeSet: false };
+    S = { job_type: null, site: {}, answers: {}, crew: null, quickDone: false, confirm: false, sent: false, scopeSet: false,
+          need: undefined, triageIdx: [], other: false, contract: false, unsureTriage: false };
     pending = { kind: "intro" }; seen = {}; thread.textContent = "";
     bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: "What's the job?" }),
-      el("div", { text: "Tell me in your own words: what you're doing, where, and when you start. I'll only ask what I still need." })]),
+      el("div", { text: "Tell me in your own words: what you're doing, where, and when you start. First I'll check whether it needs a SWMS at all. Many jobs don't." })]),
       chips([{ label: "Replacing a sewer line under a driveway in Kambah ACT, about 1.8 m deep, starting Monday" },
              { label: "Swapping an old electric hot water unit for a heat pump in Queanbeyan" },
              { label: "New gutters and downpipes on a two-storey house" }], function (o) { handleText(o.label); })]);
@@ -339,6 +343,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
   function next() {
     renderSide();
     if (!S.job_type) return askType();
+    if (S.need === undefined) return triage();
+    if (S.need === "no") return;
     var s = S.site;
     if (!s.site_address) return askText("addr", "What's the site address?", "Street and suburb is enough.", "Street address and suburb");
     if (!s.state) return askSite("state", "ACT or NSW?", [{ v: "ACT", label: "ACT" }, { v: "NSW", label: "NSW" }]);
@@ -349,6 +355,77 @@ button, input, textarea, select { font: inherit; color: inherit; }
     if (!S.quickDone) return askQuick();
     if (S.crew === null) return askCrew();
     return review();
+  }
+  // High-risk construction work in play: from the answers, plus anything ticked at screening.
+  function hrOf(r) {
+    var hr = []; r.hazards.forEach(function (h) { var t = B.hz[h].hrcw; if (t && hr.indexOf(t) < 0) hr.push(t); });
+    r.hrcw.concat(S.triageIdx).forEach(function (i) { var t = B.hrcw_all[i]; if (!hr.some(function (x) { return t.indexOf(x) === 0 || x.indexOf(t) === 0; })) hr.push(t); });
+    return hr;
+  }
+  function reasons(list) { var ul = el("ul", { class: "reasons" }); list.forEach(function (t) { ul.appendChild(el("li", { text: t })); }); return ul; }
+  // Screening: the starting point is that no SWMS is needed. Look for a reason; only then run the assessment.
+  function triage() {
+    var auto = hrOf(R());
+    if (auto.length) {
+      S.need = "yes";
+      bot([el("div", { class: "bubble" }, [el("span", { class: "kicker" }, [icon("alert"), "SWMS needed"]), el("div", { class: "q", text: "This job needs a SWMS." }),
+        el("div", { text: "From what you said, it involves high-risk construction work:" }), reasons(auto)])]);
+      return next();
+    }
+    pending = { kind: "triage" }; input.placeholder = "Ask a question";
+    var T = spec.triage, sel = [], row = el("div", { class: "chips live" }), EX = ["none", "unsure"];
+    var done = el("button", { type: "button", class: "chip go", disabled: true, onclick: function () {
+      me(T.options.filter(function (o) { return sel.indexOf(o.v) >= 0; }).map(function (o) { return o.label; }).join("; "));
+      if (sel.length === 1 && sel[0] === "none") return askBuilder();
+      S.need = "yes"; S.unsureTriage = sel[0] === "unsure"; S.other = sel.indexOf("other") >= 0;
+      var sets = {};
+      T.options.forEach(function (o) { if (sel.indexOf(o.v) < 0) return; if (o.hrcw !== undefined) S.triageIdx.push(o.hrcw); Object.keys(o.sets || {}).forEach(function (k) { sets[k] = o.sets[k]; }); });
+      E.questionsFor(spec, S.job_type).forEach(function (q) { if (sets[q.id] !== undefined && S.answers[q.id] === undefined) { S.answers[q.id] = sets[q.id]; S.answers = R().clean; } });
+      bot([el("div", { class: "bubble" }, [el("span", { class: "kicker" }, [icon("alert"), "SWMS needed"]),
+        el("div", { class: "q", text: S.unsureTriage ? "Let's work through it to be safe." : "This job needs a SWMS." }),
+        S.unsureTriage ? el("div", { text: "You weren't sure, so I'll ask a few questions. If nothing high-risk turns up, our team will tell you." })
+                       : el("div", { text: "I'll only ask what matters for those risks." })])]);
+      next();
+    } }, ["Done"]);
+    T.options.forEach(function (o) {
+      var b = el("button", { type: "button", class: "chip block" + (o.v === "unsure" ? " unsure" : ""), "aria-pressed": "false", onclick: function () {
+        var i = sel.indexOf(o.v);
+        if (i >= 0) sel.splice(i, 1); else if (EX.indexOf(o.v) >= 0) sel = [o.v]; else { sel = sel.filter(function (y) { return EX.indexOf(y) < 0; }); sel.push(o.v); }
+        Array.prototype.forEach.call(row.querySelectorAll("[data-v]"), function (c) { var on = sel.indexOf(c.getAttribute("data-v")) >= 0; c.classList.toggle("on", on); c.setAttribute("aria-pressed", String(on)); });
+        done.disabled = !sel.length;
+      } }, [el("span", {}, [el("span", { text: o.label }), o.hint ? el("span", { class: "sub", text: o.hint }) : null])]);
+      b.setAttribute("data-v", o.v); row.appendChild(b);
+    });
+    row.appendChild(done);
+    bot([el("div", { class: "bubble key" }, [el("span", { class: "kicker" }, [icon("target"), "First check · does it need a SWMS?"]), el("div", { class: "q", text: T.ask }),
+      el("div", { class: "why", text: T.why }), el("div", { class: "hint", text: "Choose all that apply, then Done." })]), row]);
+  }
+  function askBuilder() {
+    pending = { kind: "builder" }; input.placeholder = "Ask a question";
+    bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: "Has a builder or head contractor asked for a SWMS on this job?" }),
+      el("div", { class: "hint", text: "Some builders want one for every job on their site, even when the law doesn't require it." })]),
+      chips([{ v: "yes", label: "Yes" }, { v: "no", label: "No" }, { v: "unsure", label: "Not sure", cls: "unsure" }], function (o) {
+        me(o.label);
+        if (o.v === "yes") { S.need = "yes"; S.contract = true; say("No high-risk work, so the law doesn't require a SWMS here. The builder wants one, so let's put it together."); return next(); }
+        notRequired(o.v === "unsure");
+      })]);
+  }
+  function notRequired(askBuilderLater) {
+    S.need = "no"; pending = { kind: "done" }; renderSide();
+    var card = el("div", { class: "card" }, [el("h3", {}, [el("span", { text: "No SWMS needed for this job" }), el("span", { class: "pill ok" }, [icon("check"), "Recorded"])])]);
+    [["Job", S.site.scope || JT().title], ["Decision", "No SWMS required"], ["Reason", "None of the high-risk construction work categories apply"], ["Based on", "Your answers, " + fmt(TODAY)]]
+      .forEach(function (g) { card.appendChild(el("div", { class: "row" }, [el("span", { class: "k", text: g[0] }), el("span", { class: "v", text: g[1] })])); });
+    card.appendChild(el("div", { class: "pad" }, [
+      el("div", { class: "note" }, [icon("clock"), el("div", {}, [el("strong", { text: "Our team double-checks every 'not needed' decision " }), "and will message you if they see it differently."])]),
+      askBuilderLater ? el("div", { class: "note warn" }, [icon("alert"), el("span", { text: "Check with the builder. If they want a SWMS anyway, tell me and I'll put one together." })]) : null,
+      el("div", { class: "hint", text: "You still need to manage the usual risks on the job. Tell me if the job changes: for example it goes deeper than 1.5 m, moves onto a roof, or you find old sheeting or pipe that could be asbestos." })]));
+    bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: "Good news: you don't need a SWMS for this one." }), el("div", { class: "hint", text: "Prototype: nothing was actually saved." })]), card,
+      chips([{ v: "changed", label: "The job has changed" }, { v: "builder", label: "The builder wants one anyway" }, { v: "new", label: "Start another job", cls: "go" }], function (o) {
+        if (o.v === "new") return start();
+        me(o.label); S.need = undefined;
+        if (o.v === "builder") { S.need = "yes"; S.contract = true; say("No problem. Let's put one together."); }
+        next();
+      })]);
   }
   function askType() {
     pending = { kind: "type" }; input.placeholder = "Or describe the job";
@@ -462,6 +539,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
     r.stops.forEach(function (t) { pad.appendChild(el("div", { class: "note bad" }, [icon("stop"), el("div", {}, [el("strong", { text: "A specialist is needed first. " }), t])])); });
     if (r.blockers.length) { var ul = el("ul"); r.blockers.forEach(function (b) { ul.appendChild(el("li", { text: b })); });
       pad.appendChild(el("div", { class: "note warn" }, [icon("alert"), el("div", {}, [el("strong", { text: "To sort out before we can issue it" }), ul])])); }
+    if (S.other) pad.appendChild(el("div", { class: "note warn" }, [icon("alert"), el("span", { text: "You ticked other high-risk work. Our reviewer will call you about it before the SWMS is issued." })]));
+    if (S.contract) pad.appendChild(el("div", { class: "note" }, [icon("clock"), el("span", { text: "No high-risk work identified. This SWMS is being prepared because the builder asked for one." })]));
     card.appendChild(pad);
     r.details.filter(function (d) { return d.priority === "key"; }).forEach(function (d) {
       card.appendChild(el("div", { class: "row keyrow" }, [el("span", { class: "k", text: d.label }), el("span", { class: "v", text: d.answer }),
@@ -494,8 +573,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
     sheet.appendChild(el("div", { class: "draft", text: "DRAFT · not for use until reviewed and issued by our team" }));
     sheet.appendChild(el("h2", { text: "Safe Work Method Statement" }));
     sheet.appendChild(el("div", { class: "meta", text: tpl.title + " · " + S.site.site_address + ", " + S.site.state + " · starts " + fmt(S.site.start_date) }));
-    var hr = []; r.hazards.forEach(function (h) { var t = B.hz[h].hrcw; if (t && hr.indexOf(t) < 0) hr.push(t); });
-    r.hrcw.forEach(function (i) { var t = B.hrcw_all[i]; if (!hr.some(function (x) { return t.indexOf(x) === 0 || x.indexOf(t) === 0; })) hr.push(t); });
+    var hr = hrOf(r);
     function listBlock(title, items) { if (!items.length) return; var ul = el("ul"); items.forEach(function (t) { ul.appendChild(el("li", { text: t })); }); sheet.appendChild(el("h4", { text: title })); sheet.appendChild(el("div", { class: "list" }, [ul])); }
     listBlock("High-risk construction work", hr);
     var ppe = []; mods.forEach(function (m) { B.hz[m].ppe.forEach(function (p) { if (ppe.indexOf(p) < 0) ppe.push(p); }); });
@@ -519,6 +597,11 @@ button, input, textarea, select { font: inherit; color: inherit; }
     if (!jt) { box.appendChild(el("header", {}, [el("span", { class: "eyebrow", text: "Job risk profile" }), el("strong", { text: "Waiting for the job" })]));
       box.appendChild(el("section", {}, [el("p", { class: "empty", text: "As you answer, this shows what the SWMS will cover and what the job needs." })]));
       side.appendChild(box); strip.textContent = "Job risk profile"; return; }
+    if (S.need !== "yes") {
+      box.appendChild(el("header", {}, [el("span", { class: "eyebrow", text: "Job risk profile" }), el("strong", { text: jt.title })]));
+      box.appendChild(el("section", {}, [el("span", { class: "eyebrow", text: "SWMS" }), el("p", { class: "empty", text: S.need === "no" ? "Not needed: none of the high-risk construction work categories apply." : "Not needed unless the job involves high-risk construction work. Checking now." })]));
+      side.appendChild(box); strip.textContent = S.need === "no" ? "No SWMS needed" : "Checking whether a SWMS is needed"; return;
+    }
     var r = R(), N = needs(r), now = {};
     box.appendChild(el("header", {}, [el("span", { class: "eyebrow", text: "Job risk profile" }), el("strong", { text: jt.title })]));
     function block(title, items, cls, ic, empty) {
@@ -527,10 +610,9 @@ button, input, textarea, select { font: inherit; color: inherit; }
       var ul = el("ul"); items.forEach(function (t) { now[title + t] = 1; ul.appendChild(el("li", { class: seen[title + t] ? "" : "new" }, [icon(ic), el("span", { text: t })])); });
       s.appendChild(ul); box.appendChild(s);
     }
-    var hr = []; r.hazards.forEach(function (h) { var t = B.hz[h].hrcw; if (t && hr.indexOf(t) < 0) hr.push(t); });
-    r.hrcw.forEach(function (i) { var t = B.hrcw_all[i]; if (!hr.some(function (x) { return t.indexOf(x) === 0 || x.indexOf(t) === 0; })) hr.push(t); });
+    var hr = hrOf(r);
     block("Specialist needed first", r.stops, "p-stop", "stop");
-    block("High-risk construction work", hr, "p-risk", "alert", "None triggered so far.");
+    block(S.contract && !hr.length ? "Why a SWMS" : "Why a SWMS is needed", hr, "p-risk", "alert", S.contract ? "The builder asked for one. No high-risk work identified." : "Working through it to be safe.");
     block("Also covered", r.hazards.filter(function (h) { return !B.hz[h].hrcw; }).map(function (h) { return B.hz[h].title; }), "p-need", "check");
     block("Licences and tickets needed", N.lic.map(function (l) { return l.label.charAt(0).toUpperCase() + l.label.slice(1); }).concat(N.any.map(function (a) { return a.label; }), N.every.map(function (e) { return e.label + " (everyone)"; })), "p-need", "plain-shield");
     block("To sort out before issue", r.blockers, "p-todo", "clock");
@@ -588,7 +670,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
     r.details.forEach(function (d) { got.push([d.label, d.answer, d.id]); });
     var card = el("div", { class: "card" }, [el("h3", {}, [el("span", { text: "From what you said" }), el("span", { class: "pill", text: ai ? "Read by AI" : "Basic mode" })])]);
     got.forEach(function (g) { card.appendChild(el("div", { class: "row" + (g[2] && Q(g[2]).priority === "key" ? " keyrow" : "") }, [el("span", { class: "k", text: g[0] }), el("span", { class: "v", text: g[1] })])); });
-    bot([el("div", { class: "bubble", text: got.length > 1 ? "Got it. I've filled in what you told me, and you can change any of it at the end. A few more questions." : "Got it: " + JT().title + ". A few questions." }), card]);
+    bot([el("div", { class: "bubble", text: got.length > 1 ? "Got it. I've filled in what you told me. You can change any of it later." : "Got it: " + JT().title + "." }), card]);
     next();
   }
 

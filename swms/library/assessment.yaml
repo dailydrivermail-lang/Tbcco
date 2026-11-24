@@ -85,6 +85,28 @@ building_ages:
   - {v: post2003, label: "2004 or later"}
   - {v: unknown, label: "Not sure"}
 
+# Screening: the starting point is that a SWMS is NOT required. It is required only if the job involves
+# high-risk construction work (WHS Regulation r 291). This one question finds the reason, if there is one.
+#   hrcw   index into HRCW_ALL (swms/model.py)
+#   sets   answers to pre-fill in the assessment, where the tick answers a later question outright
+# "Not sure" counts as required, so nobody is screened out by a guess.
+triage:
+  ask: Does the job involve any of these?
+  why: A SWMS is only required for high-risk construction work. If none of these apply, you don't need one for this job.
+  options:
+    - {v: fall, label: "Anyone could fall more than 2 m", hrcw: 0, sets: {ht_fall: yes}}
+    - {v: trench, label: "A trench or shaft deeper than 1.5 m", hrcw: 6, sets: {exc_depth: gt15}}
+    - {v: confined, label: "Getting into a pit, tank, manhole or other enclosed space", hrcw: 5, sets: {sew_entry: yes}}
+    - {v: asbestos, label: "Cutting, drilling or removing material that may contain asbestos", hrcw: 3, sets: {asb_disturb: yes}}
+    - {v: gas, label: "Work on or near gas mains or gas pipework", hrcw: 8, sets: {gen_gas: yes}}
+    - {v: electrical, label: "Work on or near live electrical equipment or cables", hrcw: 10}
+    - {v: lines, label: "Work on or near fuel, chemical or refrigerant lines", hrcw: 9}
+    - {v: road, label: "Work on or beside a road, footpath or driveway in use", hrcw: 13}
+    - {v: plant, label: "Excavators or other mobile plant moving in the work area", hrcw: 14}
+    - {v: other, label: "Other high-risk work", hint: "Removing load-bearing parts, propping a structure, flammable or contaminated air, work over water, extreme heat or cold"}
+    - {v: none, label: "None of these"}
+    - {v: unsure, label: "Not sure"}
+
 questions:
   # ------------------------------------------------------------------ general: where the work is
   - id: gen_where

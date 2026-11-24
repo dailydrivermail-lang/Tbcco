@@ -154,3 +154,19 @@ def test_javascript_engine_matches_python(tmp_path):
     assert len(js) == len(cases) == 480
     for case, got in zip(cases, js):
         assert got == assessment.evaluate(case), case
+
+
+def test_triage_is_well_formed():
+    t = SPEC["triage"]
+    opts = {q["id"]: {o["v"] for o in q["options"]} for q in SPEC["questions"]}
+    vals = [o["v"] for o in t["options"]]
+    assert "none" in vals and "unsure" in vals and len(vals) == len(set(vals))
+    for o in t["options"]:
+        if "hrcw" in o:
+            assert 0 <= o["hrcw"] < len(model.HRCW_ALL)
+        for qid, v in (o.get("sets") or {}).items():
+            assert v in opts[qid], (o["v"], qid, v)
+    # every pre-filled answer must switch on a hazard or open the follow-up that does
+    r = assessment.evaluate({"job_type": "general", "state": "ACT", "building_age": "pre1990", "gen_where": ["roof", "outside"],
+                             "ht_fall": "yes", "exc_depth": "gt15", "sew_entry": "yes", "gen_gas": "yes"})
+    assert {"height", "trench", "confined", "gas"} <= set(r["hazards"])
