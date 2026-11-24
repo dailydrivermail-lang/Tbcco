@@ -1,0 +1,619 @@
+<title>SWMS Assistant</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a phone-first chat column; on wide screens a job risk profile sits beside it. */
+:root {
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bg: #f3f5f9; --surface: #ffffff; --surface-2: #f8fafc; --line: #dfe4ec; --line-strong: #c8d0dc;
+  --text: #101828; --text-2: #475467; --text-3: #667085;
+  --ink: #0c1a2e; --ink-text: #dbe6ff;
+  --primary: #1f56d8; --primary-hover: #1a45b0; --primary-soft: #eef4ff; --primary-line: #c9dafd; --on-primary: #ffffff;
+  --ok: #067647; --ok-soft: #ecfdf3; --ok-line: #c6f1d6;
+  --warn: #b54708; --warn-soft: #fffaeb; --warn-line: #fde3a7; --warn-strong: #f79009;
+  --bad: #b42318; --bad-soft: #fef3f2; --bad-line: #fdd0cc;
+  --x: #b42318; --h: #c4500a; --m: #a16207; --l: #067647;
+  --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 6px 16px -8px rgba(16, 24, 40, .14);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b111b; --surface: #131b28; --surface-2: #0f1622; --line: #243247; --line-strong: #31425c;
+  --text: #e8edf5; --text-2: #a9b5c7; --text-3: #8391a7; --ink: #070d16; --ink-text: #dbe6ff;
+  --primary: #4b83f5; --primary-hover: #6a99f7; --primary-soft: #16264a; --primary-line: #26427c; --on-primary: #ffffff;
+  --ok: #6ce0a0; --ok-soft: #0f2a1e; --ok-line: #1c4a34; --warn: #fbc571; --warn-soft: #2c210c; --warn-line: #5a4312; --warn-strong: #f5a742;
+  --bad: #fda29b; --bad-soft: #311513; --bad-line: #5c2622; --x: #fda29b; --h: #fdb27a; --m: #f6d365; --l: #6ce0a0;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .5); color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0b111b; --surface: #131b28; --surface-2: #0f1622; --line: #243247; --line-strong: #31425c;
+  --text: #e8edf5; --text-2: #a9b5c7; --text-3: #8391a7; --ink: #070d16; --ink-text: #dbe6ff;
+  --primary: #4b83f5; --primary-hover: #6a99f7; --primary-soft: #16264a; --primary-line: #26427c; --on-primary: #ffffff;
+  --ok: #6ce0a0; --ok-soft: #0f2a1e; --ok-line: #1c4a34; --warn: #fbc571; --warn-soft: #2c210c; --warn-line: #5a4312; --warn-strong: #f5a742;
+  --bad: #fda29b; --bad-soft: #311513; --bad-line: #5c2622; --x: #fda29b; --h: #fdb27a; --m: #f6d365; --l: #6ce0a0;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .5); color-scheme: dark; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 400 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p { margin: 0; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--primary) 45%, transparent); outline-offset: 2px; border-radius: 6px; }
+.icon { width: 1.15em; height: 1.15em; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sprite { position: absolute; width: 0; height: 0; }
+
+.app { height: 100%; display: flex; flex-direction: column; }
+.bar { background: var(--ink); color: #fff; }
+.bar-in { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; gap: 10px; padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(140deg, #3c7bff, #1b49c2); color: #fff; }
+.bar strong { font-size: 1rem; font-weight: 650; letter-spacing: -.01em; }
+.bar small { display: block; color: #8fa3c2; font-size: .72rem; font-weight: 500; }
+.bar .grow { flex: 1; min-width: 0; }
+.tag { font-size: .7rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 99px; background: #1c3257; color: var(--ink-text); white-space: nowrap; }
+.tag.on { background: #0f3d2a; color: #8fe3b4; }
+.ghost { background: transparent; border: 1px solid #2a3f63; color: var(--ink-text); border-radius: 8px; padding: 6px 10px; font-size: .8rem; font-weight: 600; cursor: pointer; }
+.ghost:hover { background: #13243d; }
+
+.body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); max-width: 1120px; width: 100%; margin: 0 auto; }
+.chat { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.strip { display: none; }
+.thread { flex: 1; min-height: 0; overflow-y: auto; padding-block: 18px 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+.side { display: none; }
+@media (min-width: 1000px) {
+  .chat { display: grid; grid-template-columns: minmax(0, 1fr) 330px; grid-template-rows: minmax(0, 1fr) auto; column-gap: 20px; }
+  .thread { grid-column: 1; grid-row: 1; } .composer { grid-column: 1; grid-row: 2; border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-radius: 14px 14px 0 0; }
+  .side { display: block; grid-column: 2; grid-row: 1 / 3; min-height: 0; overflow-y: auto; padding: 18px max(16px, env(safe-area-inset-right, 0px)) 18px 0; }
+}
+@media (max-width: 999px) {
+  .strip { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; border-bottom: 1px solid var(--line); background: var(--surface); padding-block: 9px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); font-size: .82rem; color: var(--text-2); cursor: pointer; text-align: left; }
+  .strip .grow { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .strip .chev { transition: transform .15s; } .strip[aria-expanded="true"] .chev { transform: rotate(180deg); }
+  .side.open { display: block; border-bottom: 1px solid var(--line); background: var(--bg); max-height: 46vh; overflow-y: auto; padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+}
+
+.msg { max-width: min(640px, 92%); display: grid; gap: 8px; animation: rise .18s ease-out; }
+.msg.bot { align-self: flex-start; } .msg.me { align-self: flex-end; }
+.bubble { padding: 11px 14px; border-radius: 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bot .bubble { background: var(--surface); border: 1px solid var(--line); border-bottom-left-radius: 6px; box-shadow: var(--shadow); }
+.me .bubble { background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 6px; }
+.bubble.key { border-color: var(--warn-strong); box-shadow: 0 0 0 1px var(--warn-strong), var(--shadow); }
+.bubble .q { font-weight: 600; font-size: 1.02rem; line-height: 1.35; }
+.kicker { display: inline-flex; align-items: center; gap: 6px; font-size: .72rem; font-weight: 600; color: var(--warn); background: var(--warn-soft); border: 1px solid var(--warn-line); padding: 2px 8px; border-radius: 99px; margin-bottom: 6px; }
+.kicker.plain { color: var(--text-3); background: var(--surface-2); border-color: var(--line); }
+.why { margin-top: 8px; font-size: .88rem; color: var(--warn); background: var(--warn-soft); border: 1px solid var(--warn-line); border-radius: 10px; padding: 8px 10px; }
+.hint { font-size: .8rem; color: var(--text-3); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line-strong); background: var(--surface); border-radius: 12px; padding: 9px 13px; font-weight: 500; cursor: pointer; text-align: left; min-height: 42px; display: inline-flex; align-items: center; gap: 8px; }
+.chip:hover:not([disabled]) { border-color: var(--primary); background: var(--primary-soft); }
+.chip.on { border-color: var(--primary); background: var(--primary-soft); box-shadow: 0 0 0 1px var(--primary); }
+.chip.unsure { border-style: dashed; color: var(--text-2); }
+.chip[disabled] { opacity: .5; cursor: default; }
+.chip small { color: var(--warn); font-weight: 600; font-size: .72rem; }
+.chip.go { background: var(--primary); border-color: var(--primary); color: var(--on-primary); font-weight: 600; }
+.chip.go:hover:not([disabled]) { background: var(--primary-hover); }
+.chip.block { display: flex; width: 100%; }
+.chip .sub { display: block; font-weight: 400; font-size: .8rem; color: var(--text-3); }
+.typing { display: inline-flex; gap: 4px; padding: 4px 0; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--text-3); animation: blink 1.1s infinite; }
+.typing i:nth-child(2) { animation-delay: .18s; } .typing i:nth-child(3) { animation-delay: .36s; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; }
+.card h3 { font-size: .95rem; font-weight: 650; padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.card .pad { padding: 12px 14px; display: grid; gap: 10px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); font-size: .92rem; }
+.row:first-of-type { border-top: 0; }
+.row .k { color: var(--text-2); min-width: 0; } .row .v { font-weight: 600; text-align: right; }
+.row.keyrow .k { color: var(--text); font-weight: 600; }
+.row button.link { border: 0; background: none; color: var(--primary); font-weight: 600; cursor: pointer; padding: 4px; }
+.seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; flex: none; }
+.seg button { border: 0; background: transparent; padding: 5px 10px; border-radius: 7px; font-weight: 600; font-size: .8rem; color: var(--text-2); cursor: pointer; }
+.seg button.on { background: var(--primary); color: var(--on-primary); }
+.seg button.on.no { background: var(--bad); color: var(--surface); } .seg button.on.unsure { background: var(--warn-strong); color: #1b1300; }
+.person { display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left; border: 1px solid var(--line-strong); background: var(--surface); border-radius: 12px; padding: 10px 12px; cursor: pointer; }
+.person.on { border-color: var(--primary); background: var(--primary-soft); box-shadow: 0 0 0 1px var(--primary); }
+.person strong { display: block; font-weight: 600; } .person span.r { font-size: .82rem; color: var(--text-2); }
+.box { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--line-strong); display: grid; place-items: center; color: transparent; flex: none; margin-top: 2px; }
+.on > .box { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.pill { display: inline-flex; align-items: center; gap: 4px; font-size: .74rem; font-weight: 500; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text-2); }
+.pill.ok { background: var(--ok-soft); border-color: var(--ok-line); color: var(--ok); }
+.pill.bad { background: var(--bad-soft); border-color: var(--bad-line); color: var(--bad); }
+.pill.warn { background: var(--warn-soft); border-color: var(--warn-line); color: var(--warn); }
+.note { display: flex; gap: 8px; padding: 10px 12px; border-radius: 10px; font-size: .9rem; border: 1px solid var(--line); }
+.note.warn { background: var(--warn-soft); border-color: var(--warn-line); color: var(--warn); }
+.note.bad { background: var(--bad-soft); border-color: var(--bad-line); color: var(--bad); }
+.note.ok { background: var(--ok-soft); border-color: var(--ok-line); color: var(--ok); }
+.note ul { margin: 4px 0 0; padding-left: 18px; }
+.check { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; background: var(--primary-soft); border: 1px solid var(--primary-line); border-radius: 10px; font-weight: 500; cursor: pointer; }
+.check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary); }
+
+.profile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; }
+.profile header { padding: 14px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.eyebrow { display: block; font-size: .68rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); }
+.profile section { padding: 12px 14px; border-top: 1px solid var(--line); }
+.profile section:first-of-type { border-top: 0; }
+.profile ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; font-size: .86rem; }
+.profile li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
+.profile li .icon { margin-top: 3px; width: 15px; height: 15px; }
+.profile .p-risk .icon { color: var(--warn-strong); } .profile .p-todo .icon { color: var(--warn-strong); } .profile .p-stop { color: var(--bad); }
+.profile .p-need .icon { color: var(--text-3); }
+.profile li.new { animation: flash 1.4s ease-out; border-radius: 6px; }
+.profile p.empty { font-size: .86rem; color: var(--text-3); margin-top: 4px; }
+
+.composer { border-top: 1px solid var(--line); background: var(--surface); padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+.composer form { display: flex; gap: 8px; align-items: flex-end; max-width: 760px; }
+.composer textarea { flex: 1; min-width: 0; resize: none; border: 1px solid var(--line-strong); border-radius: 14px; padding: 10px 14px; background: var(--surface-2); max-height: 120px; }
+.composer textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent); }
+.round { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong); background: var(--surface); display: grid; place-items: center; cursor: pointer; flex: none; }
+.round.send { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.round.live { background: var(--bad); border-color: var(--bad); color: var(--surface); animation: pulse 1.2s infinite; }
+.round[disabled] { opacity: .5; cursor: default; }
+.composer .hint { margin-top: 6px; }
+
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; position: relative; }
+.sheet .draft { background: var(--warn-soft); color: var(--warn); border-bottom: 1px solid var(--warn-line); padding: 8px 14px; font-size: .82rem; font-weight: 600; }
+.sheet h2 { font-size: 1.1rem; padding: 14px 14px 2px; } .sheet .meta { padding: 0 14px 12px; color: var(--text-2); font-size: .88rem; }
+.sheet h4 { margin: 0; padding: 10px 14px 6px; font-size: .7rem; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); border-top: 1px solid var(--line); }
+.sheet .list { padding: 0 14px 12px; font-size: .9rem; } .sheet .list ul { margin: 0; padding-left: 18px; }
+.step { border-top: 1px solid var(--line); padding: 12px 14px; display: grid; gap: 6px; }
+.step .top { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; }
+.step .n { font-weight: 700; color: var(--text-3); margin-right: 6px; font-variant-numeric: tabular-nums; }
+.step .name { font-weight: 600; }
+.risk { font-size: .72rem; font-weight: 700; white-space: nowrap; }
+.risk.X { color: var(--x); } .risk.H { color: var(--h); } .risk.M { color: var(--m); } .risk.L { color: var(--l); }
+.step .hz { font-size: .84rem; color: var(--text-2); }
+.step ul { margin: 0; padding-left: 18px; font-size: .88rem; display: grid; gap: 3px; }
+.step li b { font-weight: 600; } .step li.site { color: var(--primary); font-weight: 500; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+@keyframes flash { from { background: var(--warn-line); } to { background: transparent; } }
+@keyframes pulse { 50% { opacity: .65; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<svg class="sprite" aria-hidden="true">
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-plain-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 18v4"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-stop" viewBox="0 0 24 24"><path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86z"/><path d="M12 8v4"/><path d="M12 16h.01"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+</svg>
+
+<div class="app">
+  <div class="bar"><div class="bar-in">
+    <span class="mark"><svg class="icon"><use href="#i-shield"/></svg></span>
+    <div class="grow"><strong>SWMS Assistant</strong><small>Tell us the job. Get a site-specific SWMS.</small></div>
+    <span class="tag" id="ai-tag">Prototype</span>
+    <button class="ghost" id="restart" type="button">Start again</button>
+  </div></div>
+  <div class="body">
+    <div class="chat">
+      <button class="strip" id="strip" type="button" aria-expanded="false" aria-controls="side"><svg class="icon"><use href="#i-plain-shield"/></svg><span class="grow" id="strip-text">Job risk profile</span><svg class="icon chev"><use href="#i-down"/></svg></button>
+      <aside class="side" id="side" aria-label="Job risk profile"></aside>
+      <div class="thread" id="thread" aria-live="polite"></div>
+      <div class="composer">
+        <form id="form">
+          <textarea id="input" rows="1" aria-label="Message" placeholder="Describe the job in your own words"></textarea>
+          <button class="round" id="mic" type="button" aria-label="Speak" hidden><svg class="icon"><use href="#i-mic"/></svg></button>
+          <button class="round send" id="send" aria-label="Send"><svg class="icon"><use href="#i-send"/></svg></button>
+        </form>
+        <p class="hint" id="composer-hint">Prototype with a made-up crew. Nothing is sent or saved.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="boot">__BOOT__</script>
+<script>/*__ENGINE__*/</script>
+<script>
+(function () {
+  "use strict";
+  var B = JSON.parse(document.getElementById("boot").textContent), spec = B.spec, E = window.AssessmentEngine;
+  var thread = document.getElementById("thread"), side = document.getElementById("side"), input = document.getElementById("input");
+  var UNSURE = ["unsure", "unknown", "undecided"], EXCL = ["none", "unknown"];
+  var ai = null, dict = null, busy = false, seen = {}, pending = null, S;
+  var todayD = new Date(), iso = function (d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+  var TODAY = iso(todayD);
+  B.people.forEach(function (p) {  // demo expiry dates relative to today
+    p.list = Object.keys(p.creds).map(function (c) { var n = p.creds[c], d = new Date(todayD); if (n !== null) d.setDate(d.getDate() + n); return { code: c, expiry: n === null ? null : iso(d) }; });
+  });
+
+  // ---------- helpers
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      var v = attrs[k]; if (v === null || v === undefined || v === false) return;
+      if (k === "class") n.className = v; else if (k === "text") n.textContent = v;
+      else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), v); else if (v === true) n.setAttribute(k, ""); else n.setAttribute(k, v);
+    });
+    (kids || []).forEach(function (c) { if (c) n.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return n;
+  }
+  function icon(name) { var ns = "http://www.w3.org/2000/svg", s = document.createElementNS(ns, "svg"), u = document.createElementNS(ns, "use"); s.setAttribute("class", "icon"); s.setAttribute("aria-hidden", "true"); u.setAttribute("href", "#i-" + name); s.appendChild(u); return s; }
+  function Q(id) { return spec.questions.filter(function (x) { return x.id === id; })[0]; }
+  function JT() { return spec.job_types.filter(function (j) { return j.id === S.job_type; })[0]; }
+  function all() { var a = { job_type: S.job_type, state: S.site.state, building_age: S.site.building_age }; Object.keys(S.answers).forEach(function (k) { a[k] = S.answers[k]; }); return a; }
+  function R() { return E.evaluate(all(), spec); }
+  function prune() { var r = R(); Object.keys(S.answers).forEach(function (k) { if (r.visible.indexOf(k) < 0) delete S.answers[k]; }); }
+  function fmt(d) { if (!d) return ""; var p = d.split("-"); return p[2] + "/" + p[1] + "/" + p[0]; }
+  function label(q, v) { v = Array.isArray(v) ? v : [v]; return q.options.filter(function (o) { return v.indexOf(o.v) >= 0; }).map(function (o) { return o.label; }).join("; "); }
+  function scroll() { requestAnimationFrame(function () { thread.scrollTop = thread.scrollHeight; }); }
+  function lock() { thread.querySelectorAll(".live button, .live input").forEach(function (b) { b.disabled = true; }); thread.querySelectorAll(".live").forEach(function (n) { n.classList.remove("live"); }); }
+  function bot(nodes, cls) { var m = el("div", { class: "msg bot" + (cls ? " " + cls : "") }, nodes); thread.appendChild(m); scroll(); return m; }
+  function say(text) { return bot([el("div", { class: "bubble", text: text })]); }
+  function me(text) { lock(); thread.appendChild(el("div", { class: "msg me" }, [el("div", { class: "bubble", text: text })])); scroll(); }
+  function typing() { var m = bot([el("div", { class: "bubble" }, [el("span", { class: "typing", "aria-label": "Thinking" }, [el("i"), el("i"), el("i")])])]); return function () { m.remove(); }; }
+  function chips(list, onpick, extra) {
+    var c = el("div", { class: "chips live" + (extra ? " " + extra : "") });
+    list.forEach(function (o) {
+      c.appendChild(el("button", { type: "button", class: "chip" + (o.cls ? " " + o.cls : ""), onclick: function () { onpick(o); } },
+        [el("span", {}, [el("span", { text: o.label }), o.sub ? el("span", { class: "sub", text: o.sub }) : null]), o.tag ? el("small", { text: o.tag }) : null]));
+    });
+    return c;
+  }
+
+  // ---------- AI
+  function setTag() { var t = document.getElementById("ai-tag"); t.textContent = ai ? "AI on" : "Basic mode"; t.className = "tag" + (ai ? " on" : ""); }
+  function catalogue() {
+    return spec.questions.filter(function (q) { return q.priority !== "quick"; }).map(function (q) {
+      return q.id + " (" + q.type + "): " + q.ask + " -> " + q.options.map(function (o) { return o.v + "=" + o.label; }).join(" | ");
+    }).join("\n");
+  }
+  async function aiExtract(text) {
+    if (!ai) return localExtract(text);
+    var prompt = "You help Australian plumbers fill in a job safety assessment. Today is " + TODAY + ".\n" +
+      "From the tradie's message, extract ONLY what they clearly stated. Never guess; leave anything unstated out.\n" +
+      "Job types: " + spec.job_types.map(function (j) { return j.id + "=" + j.title + " (" + j.blurb + ")"; }).join("; ") + "\n" +
+      "Building age options: " + spec.building_ages.map(function (b) { return b.v + "=" + b.label; }).join(" | ") + "\n" +
+      "Questions (id (type): question -> value=label):\n" + catalogue() + "\n\n" +
+      "Reply with JSON only: {\"job_type\": id or null, \"site\": {\"site_address\": string or null, \"state\": \"ACT\" or \"NSW\" or null, " +
+      "\"start_date\": \"YYYY-MM-DD\" or null, \"building_age\": value or null}, \"answers\": {question id: value, or array of values for multi}}\n\n" +
+      "Tradie's message: " + JSON.stringify(text);
+    try { return await ai.json(prompt, { cache: false, modelTier: "default" }); }
+    catch (e) { aiFail(e); return localExtract(text); }
+  }
+  async function aiInterpret(q, text) {
+    if (!ai) return localInterpret(q, text);
+    var prompt = "A tradie is answering one question in a job safety assessment for plumbing work in Australia.\n" +
+      "Question: " + q.ask + "\nOptions: " + q.options.map(function (o) { return o.v + "=" + o.label; }).join(" | ") + "\nType: " + q.type + "\n" +
+      (q.why ? "Why it is asked: " + q.why + "\n" : "") +
+      "Their reply: " + JSON.stringify(text) + "\n\n" +
+      "If the reply clearly answers the question, return {\"kind\":\"answer\",\"value\": option value (array for multi)}. " +
+      "If they are unsure, choose the unsure/unknown/undecided option when there is one. " +
+      "If the reply is a question or asks for help, return {\"kind\":\"help\",\"reply\": a plain-English answer in at most 3 short sentences for a tradie, practical and specific. " +
+      "Do not state what the law requires beyond the reason given above; say our reviewer will confirm anything legal}. " +
+      "If you cannot tell, return {\"kind\":\"unclear\"}. JSON only.";
+    try { return await ai.json(prompt, { cache: false, modelTier: "quick" }); }
+    catch (e) { aiFail(e); return localInterpret(q, text); }
+  }
+  async function aiHelp(text) {
+    if (!ai) return "I can only answer free-form questions when AI is on. Tap one of the options, or ask us on the Friday call.";
+    var r = R(), ctx = "Job: " + (JT() ? JT().title : "not chosen yet") + ". Site: " + (S.site.site_address || "unknown") + ", " + (S.site.state || "") + ". " +
+      "Answers so far: " + r.details.map(function (d) { return d.label + ": " + d.answer; }).join("; ");
+    var prompt = "You are a safety assistant for Australian plumbers preparing a Safe Work Method Statement (SWMS). " + ctx + "\n" +
+      "Answer the tradie's question in at most 4 short sentences, plain English, practical. You are not giving legal advice: do not assert what the law requires; " +
+      "say a person on our team reviews every SWMS and will confirm anything legal. If it is off topic, say so briefly.\nQuestion: " + JSON.stringify(text);
+    try { return (await ai(prompt, { cache: false, modelTier: "quick" })).text; }
+    catch (e) { aiFail(e); return "I couldn't reach the AI just now. Tap one of the options, or try again in a moment."; }
+  }
+  function aiFail(e) { if (e && e.code === "not_granted") { ai = null; setTag(); } }
+  function localExtract(text) {
+    var t = text.toLowerCase(), out = { job_type: null, site: {}, answers: {} };
+    if (/sewer|drain|stormwater|trench|boundary trap/.test(t)) out.job_type = "drainage";
+    else if (/hot water|heat pump|hws|water heater/.test(t)) out.job_type = "hot_water";
+    else if (/\bgas\b|lpg|cooktop/.test(t)) out.job_type = "gas";
+    else if (/roof|gutter|downpipe|flashing/.test(t)) out.job_type = "roof";
+    if (/\bact\b|canberra/.test(t)) out.site.state = "ACT"; else if (/\bnsw\b|queanbeyan|sydney/.test(t)) out.site.state = "NSW";
+    var m = t.match(/(\d+(?:\.\d+)?)\s*(?:m|metres?|meters?)\b(?!\s*of)/);
+    if (m && out.job_type === "drainage") { var d = parseFloat(m[1]); out.answers.exc_depth = d > 1.5 ? "gt15" : d >= 1 ? "1to15" : "lt1"; }
+    if (/heat pump/.test(t)) out.answers.hw_new = "heatpump";
+    if (out.job_type === "hot_water" && /(replac|swap|old).*electric|electric.*(for|with|to)/.test(t)) out.answers.hw_old = "electric";
+    return out;
+  }
+  function localInterpret(q, text) {
+    var t = text.trim().toLowerCase();
+    if (/\?$/.test(t)) return { kind: "help", reply: q.why || "Tap the option that fits best. If you're not sure, say so and we'll call you." };
+    var hit = q.options.filter(function (o) { return o.label.toLowerCase() === t || o.v === t || (t.length > 2 && o.label.toLowerCase().indexOf(t) === 0); });
+    if (!hit.length && /^(y|yes|yep|yeah)$/.test(t)) hit = q.options.filter(function (o) { return o.v === "yes"; });
+    if (!hit.length && /^(n|no|nah|nope)$/.test(t)) hit = q.options.filter(function (o) { return o.v === "no"; });
+    if (!hit.length && /not sure|don.?t know|dunno/.test(t)) hit = q.options.filter(function (o) { return UNSURE.indexOf(o.v) >= 0; });
+    return hit.length === 1 ? { kind: "answer", value: q.type === "multi" ? [hit[0].v] : hit[0].v } : { kind: "unclear" };
+  }
+
+  // ---------- conversation
+  function start() {
+    S = { job_type: null, site: {}, answers: {}, crew: null, quickDone: false, confirm: false, sent: false, scopeSet: false };
+    pending = { kind: "intro" }; seen = {}; thread.textContent = "";
+    bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: "What's the job?" }),
+      el("div", { text: "Tell me in your own words: what you're doing, where, and when you start. I'll only ask what I still need." })]),
+      chips([{ label: "Replacing a sewer line under a driveway in Kambah ACT, about 1.8 m deep, starting Monday" },
+             { label: "Swapping an old electric hot water unit for a heat pump in Queanbeyan" },
+             { label: "New gutters and downpipes on a two-storey house" }], function (o) { handleText(o.label); })]);
+    input.placeholder = "Describe the job in your own words"; renderSide();
+  }
+  function setAnswer(q, v, quiet) { S.answers[q.id] = v; S.confirm = false; prune(); if (!quiet) me(label(q, v)); renderSide(); }
+  function next() {
+    renderSide();
+    if (!S.job_type) return askType();
+    var s = S.site;
+    if (!s.site_address) return askText("addr", "What's the site address?", "Street and suburb is enough.", "Street address and suburb");
+    if (!s.state) return askSite("state", "ACT or NSW?", [{ v: "ACT", label: "ACT" }, { v: "NSW", label: "NSW" }]);
+    if (!s.start_date) return askDate();
+    if (!s.building_age) return askSite("building_age", "Roughly when was the building built?", spec.building_ages, "Buildings from before 2004 can contain asbestos, so I ask a few more questions for those.");
+    var r = R(), risks = r.visible.map(Q).filter(function (x) { return x.priority !== "quick" && S.answers[x.id] === undefined; });
+    if (risks.length) return askQ(risks[0]);
+    if (!S.quickDone) return askQuick();
+    if (S.crew === null) return askCrew();
+    return review();
+  }
+  function askType() {
+    pending = { kind: "type" }; input.placeholder = "Or describe the job";
+    bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: "Which of these is closest?" })]),
+      chips(spec.job_types.map(function (j) { return { v: j.id, label: j.title, sub: j.blurb, cls: "block" }; }), function (o) { me(o.label); S.job_type = o.v; S.answers = {}; next(); })]);
+  }
+  function askText(key, q, hint, ph) { pending = { kind: "site", key: key }; input.placeholder = ph; bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: q }), hint ? el("div", { class: "hint", text: hint }) : null])]); input.focus(); }
+  function askSite(key, q, opts, hint) {
+    pending = { kind: "site", key: key }; input.placeholder = "Tap an option";
+    bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: q }), hint ? el("div", { class: "hint", text: hint }) : null]),
+      chips(opts, function (o) { me(o.label); S.site[key] = o.v; prune(); next(); })]);
+  }
+  function askDate() {
+    pending = { kind: "site", key: "start_date" }; input.placeholder = "Or type a date, like 2/12";
+    function plus(n) { var d = new Date(todayD); d.setDate(d.getDate() + n); return d; }
+    var mon = plus(((8 - todayD.getDay()) % 7) || 7), names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    var pick = el("input", { type: "date", class: "chip", min: TODAY, "aria-label": "Pick a date", onchange: function (e) { if (e.target.value) { me(fmt(e.target.value)); S.site.start_date = e.target.value; next(); } } });
+    var c = chips([{ v: iso(plus(0)), label: "Today" }, { v: iso(plus(1)), label: "Tomorrow" }, { v: iso(mon), label: "Next " + names[1] }], function (o) { me(o.label + " (" + fmt(o.v) + ")"); S.site.start_date = o.v; next(); });
+    c.appendChild(pick);
+    bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: "When does the job start?" })]), c]);
+  }
+  function askQ(q) {
+    pending = { kind: "q", id: q.id }; input.placeholder = "Answer, or ask a question";
+    var key = q.priority === "key";
+    var bubble = el("div", { class: "bubble" + (key ? " key" : "") }, [
+      key ? el("span", { class: "kicker" }, [icon("target"), "Key question · take a moment"]) : null,
+      el("div", { class: "q", text: q.ask }),
+      key && q.why ? el("div", { class: "why", text: q.why }) : null,
+      q.type === "multi" ? el("div", { class: "hint", text: "Choose all that apply, then Done." }) : null]);
+    var row;
+    if (q.type === "multi") {
+      var sel = [];
+      row = el("div", { class: "chips live" });
+      var done = el("button", { type: "button", class: "chip go", disabled: true, onclick: function () { setAnswer(q, sel.slice()); next(); } }, ["Done"]);
+      q.options.forEach(function (o) {
+        var b = el("button", { type: "button", class: "chip", "aria-pressed": "false", onclick: function () {
+          var i = sel.indexOf(o.v);
+          if (i >= 0) sel.splice(i, 1); else if (EXCL.indexOf(o.v) >= 0) sel = [o.v]; else { sel = sel.filter(function (y) { return EXCL.indexOf(y) < 0; }); sel.push(o.v); }
+          Array.prototype.forEach.call(row.querySelectorAll("[data-v]"), function (c) { var on = sel.indexOf(c.getAttribute("data-v")) >= 0; c.classList.toggle("on", on); c.setAttribute("aria-pressed", String(on)); });
+          done.disabled = !sel.length;
+        } }, [o.label]);
+        b.setAttribute("data-v", o.v); row.appendChild(b);
+      });
+      row.appendChild(done);
+    } else {
+      row = chips(q.options.map(function (o) { return { v: o.v, label: o.label, sub: o.hint, tag: o.tag, cls: UNSURE.indexOf(o.v) >= 0 ? "unsure" : "" }; }), function (o) { setAnswer(q, o.v); next(); });
+    }
+    bot([bubble, row]);
+  }
+  function askQuick() {
+    pending = { kind: "quick" }; input.placeholder = "Ask a question";
+    var list = R().visible.map(Q).filter(function (x) { return x.priority === "quick"; });
+    var card = el("div", { class: "card live" }), done;
+    function draw() {
+      card.textContent = "";
+      card.appendChild(el("h3", {}, [el("span", { text: "Quick checks" }), el("button", { type: "button", class: "chip", onclick: function () { list.forEach(function (x) { if (!S.answers[x.id]) S.answers[x.id] = "yes"; }); draw(); } }, ["Yes to all"])]));
+      list.forEach(function (x) {
+        var seg = el("div", { class: "seg", role: "group", "aria-label": x.short });
+        x.options.forEach(function (o) { seg.appendChild(el("button", { type: "button", class: S.answers[x.id] === o.v ? "on " + o.v : "", onclick: function () { S.answers[x.id] = o.v; draw(); } }, [o.label])); });
+        card.appendChild(el("div", { class: "row" }, [el("span", { class: "k", text: x.ask }), seg]));
+      });
+      done = el("button", { type: "button", class: "chip go", disabled: list.some(function (x) { return !S.answers[x.id]; }), onclick: function () {
+        var no = R().quick_no.length; lock(); me(no ? (list.length - no) + " of " + list.length + " in place" : "All " + list.length + " in place"); S.quickDone = true; next(); } }, ["Done"]);
+      card.appendChild(el("div", { class: "pad" }, [done]));
+    }
+    draw();
+    bot([el("div", { class: "bubble" }, [el("span", { class: "kicker plain", text: "Box ticks" }), el("div", { class: "q", text: "Last few standard items." }),
+      el("div", { class: "hint", text: "Say no if something isn't in place and we'll note it." })]), card]);
+  }
+  function credOk(p, code) { var st = S.site.start_date || TODAY; return p.list.some(function (c) { return c.code === code && (c.expiry === null || c.expiry >= st); }); }
+  function credState(p, code) { if (credOk(p, code)) return "ok"; return p.list.some(function (c) { return c.code === code; }) ? "expired" : "missing"; }
+  function needs(r) {
+    var st = S.site.state, every = [], any = [];
+    function add(list, code) { if (!list.some(function (x) { return x.code === code; })) list.push({ code: code, label: B.cred_names[code] || code }); }
+    ["base"].concat(r.hazards).forEach(function (m) { (B.hz[m].competencies || []).forEach(function (c) {
+      if ((c.scope !== "ALL" && c.scope !== st) || B.optional.indexOf(c.code) >= 0) return; add(B.any_one.indexOf(c.code) >= 0 ? any : every, c.code); }); });
+    r.needs.forEach(function (n) { add(n.who === "all" ? every : any, n.code); });
+    var trades = ((B.templates[r.template] || {}).licence || []).slice(); r.licences.forEach(function (t) { if (trades.indexOf(t) < 0) trades.push(t); });
+    return { every: every, any: any, lic: trades.map(function (t) { return { trade: t, codes: (B.licences[t] || {})[st] || [], label: st + " " + t + " licence" }; }) };
+  }
+  function askCrew() {
+    pending = { kind: "crew" }; input.placeholder = "Ask a question";
+    var sel = [], card = el("div", { class: "card live" });
+    function draw() {
+      var r = R(), N = needs(r), chosen = B.people.filter(function (p) { return sel.indexOf(p.id) >= 0; });
+      card.textContent = ""; card.appendChild(el("h3", {}, [el("span", { text: "Who's on the job?" }), el("span", { class: "pill", text: "Demo crew" })]));
+      var pad = el("div", { class: "pad" });
+      N.lic.concat(N.any.map(function (a) { return { label: a.label, codes: [a.code] }; })).forEach(function (L) {
+        var who = chosen.filter(function (p) { return L.codes.some(function (c) { return credOk(p, c); }); });
+        pad.appendChild(el("div", { class: "note " + (who.length ? "ok" : chosen.length ? "bad" : "") }, [icon(who.length ? "check" : chosen.length ? "alert" : "clock"),
+          el("span", { text: L.label.charAt(0).toUpperCase() + L.label.slice(1) + ": " + (who.length ? who.map(function (p) { return p.name; }).join(", ") : chosen.length ? "nobody picked holds this" : "needed by at least one person") })]));
+      });
+      B.people.forEach(function (p) {
+        var on = sel.indexOf(p.id) >= 0, pills = el("div", { class: "pills" });
+        N.every.forEach(function (c) { var s = credState(p, c.code); pills.appendChild(el("span", { class: "pill " + (s === "ok" ? "ok" : "bad") }, [icon(s === "ok" ? "check" : "x"), c.label + (s === "expired" ? " (expired)" : s === "missing" ? " (not on file)" : "")])); });
+        pad.appendChild(el("button", { type: "button", class: "person" + (on ? " on" : ""), "aria-pressed": String(on), onclick: function () { var i = sel.indexOf(p.id); if (i >= 0) sel.splice(i, 1); else sel.push(p.id); draw(); } },
+          [el("span", { class: "box" }, [icon("check")]), el("span", {}, [el("strong", { text: p.name }), el("span", { class: "r", text: p.roles }), pills])]));
+      });
+      pad.appendChild(el("div", { class: "chips" }, [
+        el("button", { type: "button", class: "chip go", disabled: !sel.length, onclick: function () { lock(); S.crew = sel.slice(); me(chosen.map(function (p) { return p.name; }).join(", ")); next(); } }, ["Done"]),
+        el("button", { type: "button", class: "chip unsure", onclick: function () { lock(); S.crew = []; me("Not decided yet"); next(); } }, ["Not decided yet"])]));
+      card.appendChild(pad);
+    }
+    draw();
+    bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: "Who's doing the work?" }), el("div", { class: "hint", text: "I'll check their licences and tickets against this job, as at the start date." })]), card]);
+  }
+  function review() {
+    pending = { kind: "review" }; input.placeholder = "Ask a question";
+    var r = R(), card = el("div", { class: "card live" }), pad = el("div", { class: "pad" });
+    card.appendChild(el("h3", {}, [el("span", {}, [icon("target"), " Key answers"]), el("span", { class: "pill warn", text: "Please check" })]));
+    r.stops.forEach(function (t) { pad.appendChild(el("div", { class: "note bad" }, [icon("stop"), el("div", {}, [el("strong", { text: "A specialist is needed first. " }), t])])); });
+    if (r.blockers.length) { var ul = el("ul"); r.blockers.forEach(function (b) { ul.appendChild(el("li", { text: b })); });
+      pad.appendChild(el("div", { class: "note warn" }, [icon("alert"), el("div", {}, [el("strong", { text: "To sort out before we can issue it" }), ul])])); }
+    card.appendChild(pad);
+    r.details.filter(function (d) { return d.priority === "key"; }).forEach(function (d) {
+      card.appendChild(el("div", { class: "row keyrow" }, [el("span", { class: "k", text: d.label }), el("span", { class: "v", text: d.answer }),
+        el("button", { type: "button", class: "link", "aria-label": "Change " + d.label, onclick: function () { lock(); me("Change: " + d.label); delete S.answers[d.id]; prune(); askQ(Q(d.id)); } }, ["Change"])]));
+    });
+    var send = el("button", { type: "button", class: "chip go", disabled: true, onclick: function () { lock(); me("Send it for review"); sent(); } }, ["Send for review"]);
+    var foot = el("div", { class: "pad" }, [
+      el("div", { class: "hint", text: S.site.site_address + ", " + S.site.state + " · starts " + fmt(S.site.start_date) + " · " + (S.crew.length ? S.crew.length + " on the crew" : "crew to be confirmed") }),
+      el("label", { class: "check" }, [el("input", { type: "checkbox", onchange: function (e) { send.disabled = !e.target.checked; } }), el("span", { text: "I've checked the key answers and they're right for this job." })]),
+      el("div", { class: "chips" }, [send])]);
+    card.appendChild(foot);
+    bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: "That's everything. Have a last look." }), el("div", { class: "hint", text: "These answers decide what the SWMS says." })]), card]);
+  }
+  function sent() {
+    S.sent = true; pending = { kind: "done" };
+    bot([el("div", { class: "bubble" }, [el("div", { class: "q", text: "Sent to our team." }),
+      el("div", { text: "A person reviews every SWMS before it's issued. You'd normally have it back within 24 hours. Here's the draft they'll start from." }),
+      el("div", { class: "hint", text: "Prototype: nothing was actually sent." })]), swmsDraft(),
+      chips([{ label: "Start another job", cls: "go" }], function () { start(); })]);
+  }
+
+  // ---------- draft SWMS preview (same assembly order as swms/model.py)
+  function swmsDraft() {
+    var r = R(), mods = ["base"].concat(Object.keys(B.hz).filter(function (k) { return k !== "base" && r.hazards.indexOf(k) >= 0; }));
+    var tpl = B.templates[r.template], order = { first: [], early: [], middle: [], late: [], any: [], last: [] }, extra = {};
+    r.controls.forEach(function (c) { (extra[c.step] = extra[c.step] || []).push([c.h, c.text]); });
+    mods.forEach(function (m) { B.hz[m].steps.forEach(function (s) { order[s.position].push(s); }); });
+    var steps = order.first.concat(order.early, tpl.steps.slice(0, tpl.middle_after), order.middle, tpl.steps.slice(tpl.middle_after), order.late, order.any, order.last);
+    var H = Object.keys(B.hierarchy), sheet = el("div", { class: "sheet" });
+    sheet.appendChild(el("div", { class: "draft", text: "DRAFT · not for use until reviewed and issued by our team" }));
+    sheet.appendChild(el("h2", { text: "Safe Work Method Statement" }));
+    sheet.appendChild(el("div", { class: "meta", text: tpl.title + " · " + S.site.site_address + ", " + S.site.state + " · starts " + fmt(S.site.start_date) }));
+    var hr = []; r.hazards.forEach(function (h) { var t = B.hz[h].hrcw; if (t && hr.indexOf(t) < 0) hr.push(t); });
+    r.hrcw.forEach(function (i) { var t = B.hrcw_all[i]; if (!hr.some(function (x) { return t.indexOf(x) === 0 || x.indexOf(t) === 0; })) hr.push(t); });
+    function listBlock(title, items) { if (!items.length) return; var ul = el("ul"); items.forEach(function (t) { ul.appendChild(el("li", { text: t })); }); sheet.appendChild(el("h4", { text: title })); sheet.appendChild(el("div", { class: "list" }, [ul])); }
+    listBlock("High-risk construction work", hr);
+    var ppe = []; mods.forEach(function (m) { B.hz[m].ppe.forEach(function (p) { if (ppe.indexOf(p) < 0) ppe.push(p); }); });
+    listBlock("PPE (minimum)", [ppe.join(" · ")]);
+    sheet.appendChild(el("h4", { text: "Work steps, hazards and controls" }));
+    steps.forEach(function (s, i) {
+      var ctl = s.controls.concat(extra[s.id] || []).slice().sort(function (a, b) { return H.indexOf(a[0]) - H.indexOf(b[0]); }), ul = el("ul");
+      ctl.forEach(function (c) { ul.appendChild(el("li", { class: c[1].indexOf("Site-specific") === 0 ? "site" : "" }, [el("b", { text: B.hierarchy[c[0]] + ": " }), c[1]])); });
+      sheet.appendChild(el("div", { class: "step" }, [
+        el("div", { class: "top" }, [el("span", {}, [el("span", { class: "n", text: String(i + 1) }), el("span", { class: "name", text: s.step })]),
+          el("span", { class: "risk " + s.risk, text: B.risk[s.risk] + " → " + B.risk[s.residual] })]),
+        el("div", { class: "hz", text: s.hazards.join(" · ") }), ul]));
+    });
+    return sheet;
+  }
+
+  // ---------- risk profile
+  function renderSide() {
+    side.textContent = ""; var jt = S && JT(), strip = document.getElementById("strip-text");
+    var box = el("div", { class: "profile" });
+    if (!jt) { box.appendChild(el("header", {}, [el("span", { class: "eyebrow", text: "Job risk profile" }), el("strong", { text: "Waiting for the job" })]));
+      box.appendChild(el("section", {}, [el("p", { class: "empty", text: "As you answer, this shows what the SWMS will cover and what the job needs." })]));
+      side.appendChild(box); strip.textContent = "Job risk profile"; return; }
+    var r = R(), N = needs(r), now = {};
+    box.appendChild(el("header", {}, [el("span", { class: "eyebrow", text: "Job risk profile" }), el("strong", { text: jt.title })]));
+    function block(title, items, cls, ic, empty) {
+      var s = el("section", { class: cls }, [el("span", { class: "eyebrow", text: title })]);
+      if (!items.length) { if (!empty) return; s.appendChild(el("p", { class: "empty", text: empty })); box.appendChild(s); return; }
+      var ul = el("ul"); items.forEach(function (t) { now[title + t] = 1; ul.appendChild(el("li", { class: seen[title + t] ? "" : "new" }, [icon(ic), el("span", { text: t })])); });
+      s.appendChild(ul); box.appendChild(s);
+    }
+    var hr = []; r.hazards.forEach(function (h) { var t = B.hz[h].hrcw; if (t && hr.indexOf(t) < 0) hr.push(t); });
+    r.hrcw.forEach(function (i) { var t = B.hrcw_all[i]; if (!hr.some(function (x) { return t.indexOf(x) === 0 || x.indexOf(t) === 0; })) hr.push(t); });
+    block("Specialist needed first", r.stops, "p-stop", "stop");
+    block("High-risk construction work", hr, "p-risk", "alert", "None triggered so far.");
+    block("Also covered", r.hazards.filter(function (h) { return !B.hz[h].hrcw; }).map(function (h) { return B.hz[h].title; }), "p-need", "check");
+    block("Licences and tickets needed", N.lic.map(function (l) { return l.label.charAt(0).toUpperCase() + l.label.slice(1); }).concat(N.any.map(function (a) { return a.label; }), N.every.map(function (e) { return e.label + " (everyone)"; })), "p-need", "plain-shield");
+    block("To sort out before issue", r.blockers, "p-todo", "clock");
+    side.appendChild(box); seen = now;
+    strip.textContent = hr.length + " high-risk item" + (hr.length === 1 ? "" : "s") + (r.blockers.length ? " · " + r.blockers.length + " to sort out" : "") + (r.stops.length ? " · specialist needed" : "");
+  }
+
+  // ---------- typed input
+  async function handleText(text) {
+    text = text.trim(); if (!text || busy) return;
+    me(text); busy = true; var stop = typing();
+    try {
+      var p = pending || {};
+      if (p.kind === "intro" || p.kind === "type") {
+        var x = await aiExtract(text) || {}; stop(); applyExtract(x, text);
+      } else if (p.kind === "site" && p.key === "addr") { stop(); S.site.site_address = text.slice(0, 200); next(); }
+      else if (p.kind === "site" && p.key === "start_date") {
+        var d = parseDate(text); if (!d && ai) { try { var j = await ai.json("Today is " + TODAY + ". Convert this start date to JSON {\"date\":\"YYYY-MM-DD\"} or {\"date\":null}: " + JSON.stringify(text), { modelTier: "quick" }); d = j && j.date; } catch (e) { aiFail(e); } }
+        stop(); if (d && /^\d{4}-\d\d-\d\d$/.test(d)) { S.site.start_date = d; say("Start date: " + fmt(d) + "."); next(); } else { say("I didn't catch the date. Tap one of the options or use the date picker."); askDate(); }
+      } else if (p.kind === "q") {
+        var q = Q(p.id), res = await aiInterpret(q, text) || {}; stop();
+        var vals = res.kind === "answer" ? (Array.isArray(res.value) ? res.value : [res.value]).filter(function (v) { return q.options.some(function (o) { return o.v === v; }); }) : [];
+        if (vals.length) { setAnswer(q, q.type === "multi" ? vals : vals[0], true); say("Got it: " + label(q, vals) + "."); next(); }
+        else if (res.kind === "help" && res.reply) { say(String(res.reply)); askQ(q); }
+        else { say("I'm not sure which option that is. Tap the one that fits, or ask me what it means."); askQ(q); }
+      } else { var a = await aiHelp(text); stop(); say(a); if (p.kind === "site") next(); }
+    } catch (e) { stop(); say("Something went wrong on my side. Tap an option to keep going."); }
+    busy = false;
+  }
+  function parseDate(t) {
+    t = t.toLowerCase(); var d = new Date(todayD);
+    if (/today/.test(t)) return iso(d); if (/tomorrow/.test(t)) { d.setDate(d.getDate() + 1); return iso(d); }
+    var days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    for (var i = 0; i < 7; i++) if (t.indexOf(days[i]) >= 0) { d.setDate(d.getDate() + (((i - d.getDay()) + 7) % 7 || 7)); return iso(d); }
+    var m = t.match(/(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{2,4}))?/);
+    if (m) { var y = m[3] ? (m[3].length === 2 ? 2000 + +m[3] : +m[3]) : d.getFullYear(), c = new Date(y, +m[2] - 1, +m[1]); if (!m[3] && c < d) c.setFullYear(y + 1); return iso(c); }
+    return null;
+  }
+  function applyExtract(x, text) {
+    var types = spec.job_types.map(function (j) { return j.id; });
+    if (x.job_type && types.indexOf(x.job_type) >= 0) S.job_type = x.job_type;
+    if (!S.scopeSet) { S.site.scope = text.slice(0, 300); S.scopeSet = true; }
+    var st = x.site || {};
+    if (typeof st.site_address === "string" && st.site_address.trim()) S.site.site_address = st.site_address.trim().slice(0, 200);
+    if (st.state === "ACT" || st.state === "NSW") S.site.state = st.state;
+    if (typeof st.start_date === "string" && /^\d{4}-\d\d-\d\d$/.test(st.start_date) && st.start_date >= TODAY) S.site.start_date = st.start_date;
+    if (spec.building_ages.some(function (b) { return b.v === st.building_age; })) S.site.building_age = st.building_age;
+    if (!S.job_type) { say("Thanks. I couldn't tell the type of job from that."); return next(); }
+    // apply answers in question order so follow-ups only stick when their parent answer makes them relevant
+    var given = x.answers && typeof x.answers === "object" ? x.answers : {};
+    E.questionsFor(spec, S.job_type).forEach(function (q) { if (q.priority !== "quick" && given[q.id] !== undefined) { S.answers[q.id] = given[q.id]; S.answers = R().clean; } });
+    var r = R(), got = [["Job", JT().title]];
+    if (S.site.site_address) got.push(["Site", S.site.site_address]); if (S.site.state) got.push(["State", S.site.state]);
+    if (S.site.start_date) got.push(["Starts", fmt(S.site.start_date)]);
+    r.details.forEach(function (d) { got.push([d.label, d.answer, d.id]); });
+    var card = el("div", { class: "card" }, [el("h3", {}, [el("span", { text: "From what you said" }), el("span", { class: "pill", text: ai ? "Read by AI" : "Basic mode" })])]);
+    got.forEach(function (g) { card.appendChild(el("div", { class: "row" + (g[2] && Q(g[2]).priority === "key" ? " keyrow" : "") }, [el("span", { class: "k", text: g[0] }), el("span", { class: "v", text: g[1] })])); });
+    bot([el("div", { class: "bubble", text: got.length > 1 ? "Got it. I've filled in what you told me, and you can change any of it at the end. A few more questions." : "Got it: " + JT().title + ". A few questions." }), card]);
+    next();
+  }
+
+  // ---------- wiring
+  document.getElementById("form").addEventListener("submit", function (e) { e.preventDefault(); var t = input.value; input.value = ""; input.style.height = ""; handleText(t); });
+  input.addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); document.getElementById("form").requestSubmit(); } });
+  input.addEventListener("input", function () { input.style.height = ""; input.style.height = Math.min(input.scrollHeight, 120) + "px"; });
+  document.getElementById("restart").addEventListener("click", start);
+  document.getElementById("strip").addEventListener("click", function (e) { var b = e.currentTarget, open = b.getAttribute("aria-expanded") !== "true"; b.setAttribute("aria-expanded", String(open)); side.classList.toggle("open", open); });
+  var mic = document.getElementById("mic"), base = "";
+  mic.addEventListener("click", function () {
+    if (!dict) return;
+    if (mic.classList.contains("live")) { dict.stop().catch(function () {}); return; }
+    base = input.value ? input.value + " " : "";
+    dict.start().catch(function (e) { if (e && e.code === "not_granted") mic.hidden = true; });
+  });
+  start();
+  if (window.claude && window.claude.use) {
+    window.claude.use("sample").then(function (s) { ai = s || null; setTag(); });
+    window.claude.use("dictation").then(function (d) {
+      if (!d) return; dict = d; mic.hidden = false;
+      d.onPartial(function (p) { input.value = base + p.text; });
+      d.onFinal(function (p) { base = base + p.text + " "; input.value = base; });
+      d.onState(function (s) { var live = s.state === "listening" || s.state === "starting"; mic.classList.toggle("live", live); mic.setAttribute("aria-label", live ? "Stop listening" : "Speak"); });
+    });
+  } else setTag();
+})();
+</script>
