@@ -1,0 +1,6 @@
+# Client data never goes in git. It lives in SharePoint (Australian region).
+clients/
+*.pyc
+__pycache__/
+.pytest_cache/
+~$*.xlsx
