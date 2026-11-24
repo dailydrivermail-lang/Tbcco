@@ -29,12 +29,13 @@ ROUTER = r"""
       if (/\.pdf$/i.test(path)) page = { title: "Not included", body: page.body.replace(/<h2>[\s\S]*?<\/div>\s*$/, "") + '<h2>PDF not included</h2><p class="muted">Downloads are left out of the single-file demo. The live demo site has them.</p><div class="choice-cards"><a class="btn btn-primary btn-lg" href="/">Back to the demo</a></div></div></section></div>' };
     }
     document.title = page.title;
-    document.body.innerHTML = page.body;
+    document.getElementById("app").innerHTML = page.body;
     window.scrollTo(0, 0);
     if (document.getElementById("assess-data")) window.__runWizard();
     window.__runApp();
   }
-  function go(path) { location.hash = "#" + norm(path); }
+  var USE_HASH = __USE_HASH__, stack = [];
+  function go(path) { if (USE_HASH) location.hash = "#" + norm(path); else { stack.push(norm(path)); show(path); } }
   document.addEventListener("click", function (e) {
     var a = e.target.closest ? e.target.closest("a[href]") : null;
     if (!a) return;
@@ -43,13 +44,26 @@ ROUTER = r"""
   });
   document.addEventListener("submit", function (e) { e.preventDefault(); go(e.target.getAttribute("action") || "/demo-not-saved/"); });
   HTMLFormElement.prototype.submit = function () { go(this.getAttribute("action") || "/demo-not-saved/"); };
-  window.addEventListener("hashchange", function () { show(location.hash.slice(1)); });
-  show(location.hash.slice(1) || "/");
+  if (USE_HASH) { window.addEventListener("hashchange", function () { show(location.hash.slice(1)); }); show(location.hash.slice(1) || "/"); }
+  else show("/");
 })();
 """
 
 
+def theme_aware(css: str) -> str:
+    """Artifact hosts set data-theme on the root; make the dark tokens follow it as well as the OS setting."""
+    m = re.search(r"@media \(prefers-color-scheme: dark\) \{\s*:root \{(.*?)\}\s*\}", css, re.S)
+    dark = m.group(1).strip() + " color-scheme: dark;"
+    block = (f'@media (prefers-color-scheme: dark) {{ :root:not([data-theme="light"]) {{ {dark} }} }}\n'
+             f':root[data-theme="dark"] {{ {dark} }}')
+    return css[:m.start()] + block + css[m.end():]
+
+
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--artifact", type=Path, help="also write a fragment (no html/head/body tags, no URL hash) for publishing as an Artifact")
+    a = ap.parse_args()
     css = (SITE / "static" / "portal.css").read_text(encoding="utf-8")
     font = base64.b64encode((SITE / "static" / "fonts" / "inter-latin-wght-normal.woff2").read_bytes()).decode()
     css = css.replace('url("fonts/inter-latin-wght-normal.woff2")', f'url("data:font/woff2;base64,{font}")')
@@ -67,13 +81,24 @@ def main():
 <html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>Compliance Portal demo</title>
 <style>{css}</style></head>
-<body><noscript>This demo needs JavaScript.</noscript></body>
+<body><div id="app"><noscript>This demo needs JavaScript.</noscript></div></body>
 <script type="application/json" id="pages">{data}</script>
 <script>{js["assessment-engine.js"]}</script>
 <script>window.__runWizard = function () {{ {js["wizard.js"]} }}; window.__runApp = function () {{ {js["app.js"]} }};</script>
-<script>{ROUTER}</script>
+<script>{ROUTER.replace("__USE_HASH__", "true")}</script>
 </html>"""
     OUT.write_text(out, encoding="utf-8")
+    if a.artifact:
+        frag = f"""<title>Compliance Portal Demo</title>
+<style>{theme_aware(css)}</style>
+<div id="app"></div>
+<script type="application/json" id="pages">{data}</script>
+<script>{js["assessment-engine.js"]}</script>
+<script>window.__runWizard = function () {{ {js["wizard.js"]} }}; window.__runApp = function () {{ {js["app.js"]} }};</script>
+<script>{ROUTER.replace("__USE_HASH__", "false")}</script>
+"""
+        a.artifact.write_text(frag, encoding="utf-8")
+        print(f"{a.artifact}: artifact fragment, {a.artifact.stat().st_size // 1024} KB")
     print(f"{OUT.relative_to(ROOT)}: {len(pages)} pages, {OUT.stat().st_size // 1024} KB")
 
 
