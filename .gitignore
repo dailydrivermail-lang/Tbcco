@@ -6,3 +6,5 @@ __pycache__/
 ~$*.xlsx
 examples/demo/_portal/
 portal_secret_key
+# internal strategy documents: kept out of the public repository
+docs/pivot/
