@@ -31,6 +31,7 @@ Clients send us raw inputs; we return audit-ready registers, alerts, SWMS and co
 | `templates/Master_Client_List.xlsx` | Ops workbook: Clients (RAG, minutes), Time Log, Audit Log |
 | `engine/` | `schema.py` · `build_templates.py` · `new_client.py` · `intake_import.py` · `expiry_engine.py` |
 | `portal/` | **Client portal** (Flask): client dashboard, registers, uploads, SWMS requests, reports; staff overview and inbox. See `docs/05-client-portal.md` |
+| `deploy/` | Static demo of the portal for Cloudflare Pages (`build_static_demo.py`, output in `deploy/site/`). See `deploy/README.md` |
 | `examples/make_demo.py` | Builds a fictional client end to end (scaffold → intake → engine → drafts) |
 
 ## Quick start
@@ -40,7 +41,7 @@ pip install -r requirements.txt
 python -m engine.build_templates      # regenerate templates + data-model doc
 python examples/make_demo.py          # demo clients in examples/demo/
 python -m portal.run --demo           # portal at http://127.0.0.1:8080 (demo logins printed)
-python -m pytest -q                   # 28 tests
+python -m pytest -q                   # 29 tests
 ```
 
 ## Roadmap

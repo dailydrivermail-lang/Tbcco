@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Upload · Demo Plumbing</title>
+<link rel="stylesheet" href="/static/portal.css">
+</head>
+<body>
+<div class="demobar">Demo site · fictional data · forms are not saved · <a href="/">switch view</a></div>
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="/"><span class="mark" aria-hidden="true">✓</span> Compliance portal</a>
+    
+    <div class="who">
+      
+        <a href="/staff-view/staff/" class="">All clients</a>
+        <a href="/staff-view/staff/inbox/" class="">Inbox</a>
+      
+      <span class="email">Demo Staff</span>
+      <a href="/" class="link-out">Switch view</a>
+    </div>
+    
+  </div>
+</header>
+
+<nav class="clientnav">
+  <div class="wrap">
+    <span class="staffview">Staff view: C000</span>
+    <h1 class="client">Demo Plumbing</h1>
+    <div class="tabs">
+      <a href="/staff-view/c/C000/" class="">Overview</a>
+      <a href="/staff-view/c/C000/people/" class="">People &amp; licences</a>
+      <a href="/staff-view/c/C000/insurance/" class="">Insurance</a>
+      <a href="/staff-view/c/C000/jobs/" class="">Jobs &amp; SWMS</a>
+      <a href="/staff-view/c/C000/reports/" class="">Reports</a>
+      <a href="/staff-view/c/C000/upload/" class="cta on">Upload</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  
+    
+  
+  
+<div class="pagehead"><h2>Send us documents</h2>
+<p class="muted">Photos from your phone are fine. Make sure the whole card is in frame and readable. We'll check each one and add it to your register.</p></div>
+<form method="get" class="card form" action="/demo-not-saved/">
+  
+  <input type="hidden" name="ref" value="">
+  <label class="drop">Files (PDF, photo, Word or Excel; up to 25 MB each)
+    <input type="file" name="files" multiple required accept=".doc,.docx,.heic,.heif,.jpeg,.jpg,.pdf,.png,.xls,.xlsx,image/*">
+  </label>
+  <div class="cols">
+    <label>What is it? <select name="doc_type"><option>Licence or ticket</option><option>White Card</option><option>Training certificate (e.g. asbestos, silica, first aid)</option><option>Insurance certificate of currency</option><option>Subcontractor statement</option><option>Safety data sheet (SDS)</option><option>Test and tag / service record</option><option>Incident or near miss</option><option>Policy or procedure</option><option>Other</option></select></label>
+    <label>Who or what is it for? <input name="about" value="" placeholder="e.g. Sam Smith, or the jetter"></label>
+  </div>
+  <button class="btn primary">Upload</button>
+</form>
+
+<section class="card"><h3>Recently sent</h3>
+<table class="list"><thead><tr><th>File</th><th>What</th><th>Sent</th><th>Status</th></tr></thead><tbody>
+<tr><td data-label="File">white card jo.jpg</td><td data-label="What">White Card · Jo Placeholder</td><td data-label="Sent">2026-11-24 10:15</td>
+<td data-label="Status"><span class="chip muted">Received</span></td></tr>
+</tbody></table></section>
+
+
+</main>
+<footer class="wrap foot">
+  Register last updated 24 Nov 2026, 08:36 AM. 
+  Prepared from the records you've given us. This is a compliance administration service, not legal advice.
+</footer>
+</body>
+</html>

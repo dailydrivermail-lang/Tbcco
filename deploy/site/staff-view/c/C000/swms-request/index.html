@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Request a SWMS · Demo Plumbing</title>
+<link rel="stylesheet" href="/static/portal.css">
+</head>
+<body>
+<div class="demobar">Demo site · fictional data · forms are not saved · <a href="/">switch view</a></div>
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="/"><span class="mark" aria-hidden="true">✓</span> Compliance portal</a>
+    
+    <div class="who">
+      
+        <a href="/staff-view/staff/" class="">All clients</a>
+        <a href="/staff-view/staff/inbox/" class="">Inbox</a>
+      
+      <span class="email">Demo Staff</span>
+      <a href="/" class="link-out">Switch view</a>
+    </div>
+    
+  </div>
+</header>
+
+<nav class="clientnav">
+  <div class="wrap">
+    <span class="staffview">Staff view: C000</span>
+    <h1 class="client">Demo Plumbing</h1>
+    <div class="tabs">
+      <a href="/staff-view/c/C000/" class="">Overview</a>
+      <a href="/staff-view/c/C000/people/" class="">People &amp; licences</a>
+      <a href="/staff-view/c/C000/insurance/" class="">Insurance</a>
+      <a href="/staff-view/c/C000/jobs/" class="on">Jobs &amp; SWMS</a>
+      <a href="/staff-view/c/C000/reports/" class="">Reports</a>
+      <a href="/staff-view/c/C000/upload/" class="cta ">Upload</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  
+    
+  
+  
+<div class="pagehead"><h2>Request a SWMS</h2>
+<p class="muted">The more detail you give us, the faster and more accurate the SWMS. We aim to turn it around within 24 hours of receiving this form.</p></div>
+<form method="get" class="card form" action="/demo-not-saved/">
+  
+  <div class="cols">
+    <label>Site address * <input name="site_address" required value=""></label>
+    <label>State * <select name="state" required><option >ACT</option><option >NSW</option></select></label>
+    <label>Start date * <input type="date" name="start_date" required value=""></label>
+    <label>Your job reference <input name="client_ref" value=""></label>
+    <label>Builder / head contractor <input name="head_contractor" value=""></label>
+    <label>Estimated value ($) <input name="est_value" inputmode="numeric" value=""></label>
+  </div>
+  <label>What's the job? * <textarea name="scope" rows="3" required placeholder="e.g. Replace 40 m of sewer line under driveway, new boundary trap"></textarea></label>
+  <fieldset>
+    <legend>Hazards on this job (tick all that apply)</legend>
+    <div class="checks">
+    <label class="check"><input type="checkbox" name="hz_height" > Work at height over 2 m</label><label class="check"><input type="checkbox" name="hz_trench" > Trench deeper than 1.5 m</label><label class="check"><input type="checkbox" name="hz_confined" > Confined space (pit, tank, sewer structure)</label><label class="check"><input type="checkbox" name="hz_electrical" > Near live electrical / disconnect-reconnect</label><label class="check"><input type="checkbox" name="hz_asbestos" > Possible asbestos (pre-2004 building)</label><label class="check"><input type="checkbox" name="hz_silica" > Cutting, chasing or core-drilling concrete, masonry or tiles</label><label class="check"><input type="checkbox" name="hz_hotworks" > Hot works (brazing, flame soldering)</label><label class="check"><input type="checkbox" name="hz_gas" > Gas mains or pressurised gas lines</label><label class="check"><input type="checkbox" name="hz_traffic" > Traffic or mobile plant nearby</label>
+    </div>
+  </fieldset>
+  <div class="cols">
+    <label>Other hazards <input name="other_hazards" value=""></label>
+    <label>Building age <select name="building_age"><option >Unknown</option><option >Before 1990</option><option >1990-2003</option><option >2004 or later</option></select></label>
+    <label>Who's on the job? <input name="workers" placeholder="Names" value=""></label>
+    <label>Plant and equipment <input name="plant" placeholder="e.g. 1.7 t excavator, jetter" value=""></label>
+  </div>
+  <label>Anything special about the site? <textarea name="site_notes" rows="2" placeholder="Access, live services, occupants, traffic"></textarea></label>
+  <label class="check"><input type="checkbox" name="hc_template" value="yes" > The head contractor wants their own SWMS template used (email it to us)</label>
+  <button class="btn primary">Send request</button>
+</form>
+
+</main>
+<footer class="wrap foot">
+  Register last updated 24 Nov 2026, 08:36 AM. 
+  Prepared from the records you've given us. This is a compliance administration service, not legal advice.
+</footer>
+</body>
+</html>
