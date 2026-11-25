@@ -80,6 +80,26 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
 .nos s { text-decoration-color: var(--red); text-decoration-thickness: 4px; }
 .fine { position: absolute; bottom: 56px; left: 0; right: 0; text-align: center; font-size: 22px; color: #6f83a3; }
 .url { font-size: 44px; font-weight: 600; color: #8fb4ff; letter-spacing: -.01em; }
+
+/* toolbox memo */
+.memo { border: 2px solid #dfe4ec; border-radius: 26px; background: #fff; padding: 24px 26px; display: grid; gap: 16px; color: var(--text); }
+.memo-top { font-size: 28px; font-weight: 700; padding-bottom: 16px; border-bottom: 2px solid #eef1f5; }
+.memo-top small { display: block; font-size: 21px; font-weight: 500; color: var(--mute); }
+.memo-line { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: baseline; font-size: 25px; font-weight: 600; line-height: 1.3; }
+.sign { background: var(--blue2); color: #fff; border-radius: 22px; padding: 20px 26px; font-size: 26px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+.sign span { font-size: 21px; font-weight: 600; background: rgba(255, 255, 255, .18); padding: 6px 14px; border-radius: 99px; }
+.signed { display: flex; gap: 12px; flex-wrap: wrap; }
+.signed span { font-size: 23px; font-weight: 700; color: #067647; background: #ecfdf3; border: 2px solid #c6f1d6; padding: 8px 16px; border-radius: 99px; }
+.signed b { margin-right: 8px; } .signed .wait { color: #b54708; background: #fffaeb; border-color: #fde3a7; }
+/* human in the loop */
+.two { display: grid; grid-template-columns: repeat(2, 700px); gap: 44px; margin-top: 26px; text-align: left; }
+.two > div { border: 2px solid #26395a; background: var(--ink2); border-radius: 32px; padding: 42px 44px; }
+.two > div.human { border-color: var(--amber); box-shadow: 0 0 0 2px var(--amber); }
+.two i { font-style: normal; font-size: 22px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #8fa3c2; }
+.two .human i { color: #ffc266; }
+.two strong { display: block; font-size: 48px; font-weight: 700; letter-spacing: -.025em; margin: 10px 0 18px; }
+.two ul { margin: 0; padding-left: 30px; display: grid; gap: 10px; font-size: 32px; color: #c6d2e4; font-weight: 500; }
+.two p { font-size: 32px; line-height: 1.38; color: #e6ecf7; font-weight: 500; }
 </style></head>
 <body>
 
@@ -153,47 +173,93 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
   </div>
 </section>
 
-<!-- 6. friday call  38.4 – 47.4 -->
+<!-- 6. toolbox talk memo  38.5 – 47.4 -->
 <section class="scene light" style="--in:38.5s;--out:47.2s">
   <div class="brand small"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div><div>back-office<span>.com.au</span></div></div>
   <div class="split">
     <div>
       <div class="step fx" style="--in:38.9s">Three</div>
-      <h2 class="fx" style="--in:39.1s">One call on Friday.</h2>
-      <p class="sub fx" style="--in:39.8s">Ten minutes. We tell you what needs doing next week, and take next week's jobs off you.</p>
-      <p class="sub fx" style="--in:44.4s;margin-top:28px;color:#101828;font-weight:600"><span class="tick">✓</span>You always know where you stand.</p>
+      <h2 class="fx" style="--in:39.1s">Brief the crew.</h2>
+      <p class="sub fx" style="--in:39.8s">A short toolbox talk memo for each job. What to watch for on site, in plain words, sent to everyone's phone.</p>
+      <p class="sub fx" style="--in:44.6s;margin-top:28px;color:#101828;font-weight:600"><span class="tick">✓</span>Each worker taps to sign. You keep the record.</p>
+    </div>
+    <div class="phone">
+      <div class="phone-head"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div><div>back-office<small>Your compliance team</small></div></div>
+      <div class="memo fx" style="--in:40.4s">
+        <div class="memo-top">Toolbox talk<small>Kambah sewer · starts Monday</small></div>
+        <div class="memo-line fx" style="--in:41.0s"><span class="dot" style="background:#f04438"></span>Trench is 1.8 m deep. Stay inside the shield.</div>
+        <div class="memo-line fx" style="--in:41.6s"><span class="dot" style="background:#f79009"></span>Gas line near the dig. Hand dig to expose it.</div>
+        <div class="memo-line fx" style="--in:42.2s"><span class="dot" style="background:#f79009"></span>Old pipe may be asbestos. Don't cut it. Call Sam.</div>
+      </div>
+      <div class="sign fx" style="--in:43.2s">I've read and understood this<span>Tap to sign</span></div>
+      <div class="signed">
+        <span class="fx" style="--in:44.0s"><b>✓</b>Sam</span><span class="fx" style="--in:44.6s"><b>✓</b>Alex</span><span class="fx wait" style="--in:45.2s">Jo: reminder sent</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. friday call -->
+<section class="scene light" style="--in:47.5s;--out:56.2s">
+  <div class="brand small"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div><div>back-office<span>.com.au</span></div></div>
+  <div class="split">
+    <div>
+      <div class="step fx" style="--in:47.9s">Four</div>
+      <h2 class="fx" style="--in:48.1s">One call on Friday.</h2>
+      <p class="sub fx" style="--in:48.8s">Ten minutes. We tell you what needs doing next week, and take next week's jobs off you.</p>
+      <p class="sub fx" style="--in:53.4s;margin-top:28px;color:#101828;font-weight:600"><span class="tick">✓</span>You always know where you stand.</p>
     </div>
     <div class="call">
-      <div class="call-top fx" style="--in:40.2s"><div class="ring"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div>Friday update<small>This week at a glance</small></div></div>
-      <div class="line fx" style="--in:41.0s"><span class="dot" style="background:#f04438"></span>1 expired: first aid, Sam</div>
-      <div class="line fx" style="--in:41.6s"><span class="dot" style="background:#f79009"></span>2 due in the next 30 days</div>
-      <div class="line fx" style="--in:42.2s"><span class="dot" style="background:#2f6bf0"></span>1 thing we need from you</div>
-      <div class="line fx" style="--in:42.8s"><span class="dot" style="background:#12b76a"></span>3 jobs next week, 2 need a SWMS</div>
+      <div class="call-top fx" style="--in:49.2s"><div class="ring"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div>Friday update<small>This week at a glance</small></div></div>
+      <div class="line fx" style="--in:50.0s"><span class="dot" style="background:#f04438"></span>1 expired: first aid, Sam</div>
+      <div class="line fx" style="--in:50.6s"><span class="dot" style="background:#f79009"></span>2 due in the next 30 days</div>
+      <div class="line fx" style="--in:51.2s"><span class="dot" style="background:#2f6bf0"></span>1 thing we need from you</div>
+      <div class="line fx" style="--in:51.8s"><span class="dot" style="background:#12b76a"></span>3 jobs next week, 2 need a SWMS</div>
     </div>
   </div>
 </section>
 
-<!-- 7. simple  47.4 – 55.4 -->
-<section class="scene" style="--in:47.5s;--out:55.2s">
+<!-- 8. human in the loop  56.5 – 66.4 -->
+<section class="scene" style="--in:56.5s;--out:66.2s">
   <div class="stack">
-    <div class="nos fx out" style="--in:47.9s;--out:54.6s"><span><s>Software to learn</s></span><span><s>Logins</s></span><span><s>Chasing people</s></span></div>
-    <h2 class="fx" style="--in:49.0s">That's the whole service.</h2>
+    <h2 class="fx" style="--in:56.9s;text-align:center">Automated, so it's affordable.<br><span class="warm">Checked by a person, so you can rely on it.</span></h2>
+    <div class="two">
+      <div class="fx" style="--in:58.6s">
+        <i>The legwork</i>
+        <strong>AI and automation</strong>
+        <ul><li>Reads every document you send</li><li>Tracks every expiry date</li><li>Drafts your SWMS and toolbox memos</li></ul>
+      </div>
+      <div class="fx human" style="--in:60.0s">
+        <i>The sign-off</i>
+        <strong>A human in the loop</strong>
+        <p>A legally trained professional, experienced in construction compliance and regulation, reviews every document before it reaches you.</p>
+      </div>
+    </div>
+    <div class="sub fx" style="--in:62.6s">Compliance people, backed by technology. Not the other way round.</div>
+  </div>
+</section>
+
+<!-- 9. simple -->
+<section class="scene" style="--in:66.5s;--out:74.2s">
+  <div class="stack">
+    <div class="nos fx out" style="--in:66.9s;--out:73.6s"><span><s>Software to learn</s></span><span><s>Logins</s></span><span><s>Chasing people</s></span></div>
+    <h2 class="fx" style="--in:68.0s">That's the whole service.</h2>
     <div class="three">
-      <div class="fx" style="--in:50.0s"><strong>1</strong><span>email address</span></div>
-      <div class="fx" style="--in:50.6s"><strong>1</strong><span>WhatsApp number</span></div>
-      <div class="fx" style="--in:51.2s"><strong>1</strong><span>call a week</span></div>
+      <div class="fx" style="--in:69.0s"><strong>1</strong><span>email address</span></div>
+      <div class="fx" style="--in:69.6s"><strong>1</strong><span>WhatsApp number</span></div>
+      <div class="fx" style="--in:70.2s"><strong>1</strong><span>call a week</span></div>
     </div>
   </div>
 </section>
 
-<!-- 8. end card  55.4 – 62 -->
-<section class="scene" style="--in:55.5s;--out:99s">
+<!-- 10. end card -->
+<section class="scene" style="--in:74.5s;--out:99s">
   <div class="stack">
-    <div class="brand fx" style="--in:55.9s"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div><div>back-office<span>.com.au</span></div></div>
-    <h1 class="fx" style="--in:56.8s;font-size:92px">Compliance, handled.</h1>
-    <div class="sub fx" style="--in:57.8s">You get back to the tools.</div>
-    <div class="url fx" style="--in:58.8s">back-office.com.au</div>
+    <div class="brand fx" style="--in:74.9s"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div><div>back-office<span>.com.au</span></div></div>
+    <h1 class="fx" style="--in:75.8s;font-size:92px">Compliance, handled.</h1>
+    <div class="sub fx" style="--in:76.8s">You get back to the tools.</div>
+    <div class="url fx" style="--in:77.8s">back-office.com.au</div>
   </div>
-  <div class="fine fx" style="--in:59.4s">A compliance administration service for trade businesses. Every document is reviewed by a person. Not legal advice. Names shown are examples.</div>
+  <div class="fine fx" style="--in:78.4s">A compliance administration service for trade businesses. Every document is reviewed by a person before it reaches you. Not legal advice. Names shown are examples.</div>
 </section>
 </body></html>
