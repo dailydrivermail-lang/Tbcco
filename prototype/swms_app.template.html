@@ -681,6 +681,11 @@ button, input, textarea, select { font: inherit; color: inherit; }
   document.getElementById("restart").addEventListener("click", start);
   document.getElementById("strip").addEventListener("click", function (e) { var b = e.currentTarget, open = b.getAttribute("aria-expanded") !== "true"; b.setAttribute("aria-expanded", String(open)); side.classList.toggle("open", open); });
   var mic = document.getElementById("mic"), base = "";
+  // No in-app dictation here (for example on an iPhone): point touch users to the keyboard's own microphone.
+  function keyboardHint() {
+    if (!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches)) return;
+    document.getElementById("composer-hint").textContent = "To speak, tap the microphone on your keyboard. Prototype: nothing is sent or saved.";
+  }
   mic.addEventListener("click", function () {
     if (!dict) return;
     if (mic.classList.contains("live")) { dict.stop().catch(function () {}); return; }
@@ -691,11 +696,11 @@ button, input, textarea, select { font: inherit; color: inherit; }
   if (window.claude && window.claude.use) {
     window.claude.use("sample").then(function (s) { ai = s || null; setTag(); });
     window.claude.use("dictation").then(function (d) {
-      if (!d) return; dict = d; mic.hidden = false;
+      if (!d) return keyboardHint(); dict = d; mic.hidden = false;
       d.onPartial(function (p) { input.value = base + p.text; });
       d.onFinal(function (p) { base = base + p.text + " "; input.value = base; });
       d.onState(function (s) { var live = s.state === "listening" || s.state === "starting"; mic.classList.toggle("live", live); mic.setAttribute("aria-label", live ? "Stop listening" : "Speak"); });
     });
-  } else setTag();
+  } else { setTag(); keyboardHint(); }
 })();
 </script>
