@@ -127,7 +127,7 @@ SOFTWARE = f"""<section class="block"><div class="wrap">
 </div></section>"""
 
 HOME = f"""<section class="hero"><div class="wrap">
-  <p class="eyebrow">A managed back office, based in Canberra</p>
+  <p class="eyebrow eyebrow-lead"><span class="for">For construction businesses</span> Compliance and tender responses, done for you from Canberra</p>
   <h1>No new software. <em>We just get on with it.</em></h1>
   <p class="lede"><strong>We keep compliance current and write tender responses for mid-sized Australian construction businesses.</strong> You don't log in to anything. Forward or CC us on a problem, send a photo, take one call a week.</p>
   <div class="cta-row"><a class="btn btn-primary" href="contact.html">Book a call</a><a class="btn btn-outline" href="pricing.html">How pricing works</a></div>
