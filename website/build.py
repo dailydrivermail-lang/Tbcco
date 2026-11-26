@@ -18,6 +18,11 @@ EMAIL = "hello@exiteight.com.au"   # placeholder until the mailbox exists
 
 # Short hash of the stylesheet and script. It goes on their URLs, so a browser never pairs new pages with an old cached copy.
 import hashlib
+def _mv(name):
+    """Short content hash of a media file, so browsers fetch a re-rendered video instead of a cached one."""
+    return hashlib.sha256((HERE.parent / "marketing" / "video" / name).read_bytes()).hexdigest()[:8]
+
+
 VERSION = hashlib.sha256((HERE / "site.css").read_bytes() + (HERE / "site.js").read_bytes()).hexdigest()[:10]
 
 # The Exit Eight mark: a blue rounded square with "E8" drawn in white strokes (an original monogram).
@@ -357,7 +362,10 @@ def main():
     (out / "assets").mkdir(parents=True, exist_ok=True)
     (out / "fonts").mkdir(exist_ok=True)
     for slug, (title, desc, body) in PAGES.items():
-        (out / slug).write_text(page(slug, title, desc, body, a.noindex), encoding="utf-8")
+        html = page(slug, title, desc, body, a.noindex)
+        for f in ("exiteight-compliance.mp4", "exiteight-tenders.mp4", "compliance-poster.jpg", "tenders-poster.jpg"):
+            html = html.replace(f"assets/{f}", f"assets/{f}?v={_mv(f)}")
+        (out / slug).write_text(html, encoding="utf-8")
     for f in ("site.css", "site.js"):
         shutil.copy(HERE / f, out / f)
     shutil.copy(VIDEO / "inter-latin-wght-normal.woff2", out / "fonts" / "inter-latin-wght-normal.woff2")
