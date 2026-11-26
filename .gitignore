@@ -9,3 +9,5 @@ portal_secret_key
 # internal strategy documents: kept out of the public repository
 docs/pivot/
 website/dist/
+# videos mid-render (renamed into place when finished)
+*.new.mp4
