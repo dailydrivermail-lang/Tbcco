@@ -32,6 +32,7 @@ TICKS = [("index.html", "No new software. No logins. We just get on with it."),
          ("index.html", "Keep ServiceM8, simPRO, AroFlo, Tradify or Fergus. We work alongside what you already use"),
          ("tenders.html", "New: tender responses, written for you on a no-win, no-fee basis"),
          ("contact.html", "Canberra based"),
+         ("compliance.html", "We check in weekly to help, not hinder"),
          ("compliance.html", "One email address, one WhatsApp number, one call a week"),
          ("compliance.html", "Every document reviewed by a person before it reaches you"),
          ("tenders.html", "We find tender opportunities online and through relationship channels"),
@@ -155,7 +156,7 @@ HOME = f"""<section class="hero"><div class="wrap">
   <div class="grid-3" style="margin-top:24px">
     <div class="card plain"><span class="step-n">One</span><h3>Email address of your own</h3><p>Forward or CC it on anything to do with compliance, and tenders you've spotted.</p></div>
     <div class="card plain"><span class="step-n">One</span><h3>WhatsApp number</h3><p>Send a photo of a licence, or a line about Monday's job.</p></div>
-    <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>Ten minutes on Friday. We tell you what needs doing, then we do it.</p></div>
+    <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>We check in weekly to help, not hinder. Ten minutes on Friday: what needs doing, then we do it.</p></div>
   </div>
 </div></section>
 
@@ -203,7 +204,7 @@ COMPLIANCE = f"""<section class="hero"><div class="wrap">
     <div class="card"><span class="tag">Always current</span><h3>Licences, tickets and insurances</h3><p>For your crew and your subcontractors. We record each one, track the expiry and chase the renewal before it lapses.</p></div>
     <div class="card"><span class="tag">Per job</span><h3>SWMS, only when you need one</h3><p>Tell us the job in your own words. We work out whether it needs a SWMS, ask only what matters, and send back a site-specific one that a person has checked.</p></div>
     <div class="card"><span class="tag">On site</span><h3>Toolbox talk memos</h3><p>A short, plain-English memo for each job on what to watch for. It goes to every worker's phone and they tap to sign. You keep the record.</p></div>
-    <div class="card"><span class="tag">Every week</span><h3>One call on Friday</h3><p>Ten minutes. What's expired, what's due, what we need from you, and next week's jobs taken off your hands.</p></div>
+    <div class="card"><span class="tag">Every week</span><h3>A weekly check-in, to help not hinder</h3><p>Ten minutes on Friday. What's expired, what's due, what we need from you, and next week's jobs taken off your hands. No audits, no lectures.</p></div>
   </div>
 </div></section>
 {HUMAN}
@@ -219,7 +220,7 @@ COMPLIANCE = f"""<section class="hero"><div class="wrap">
   <div class="grid-3" style="margin-top:24px">
     <div class="card plain"><span class="step-n">One</span><h3>Email address of your own</h3><p>Forward or CC it on any compliance problem and we sort it out.</p></div>
     <div class="card plain"><span class="step-n">One</span><h3>WhatsApp number</h3><p>For photos, quick questions and "job on Monday".</p></div>
-    <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>So you always know where you stand.</p></div>
+    <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>We check in weekly to help, not hinder. You always know where you stand.</p></div>
   </div>
 </div></section>
 {CTA}"""
