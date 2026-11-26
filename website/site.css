@@ -89,12 +89,12 @@ h2 em { font-style: normal; color: var(--blue); }
 .card li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; color: var(--ink-2); }
 .card li::before { content: ""; width: 18px; height: 18px; margin-top: 4px; border-radius: 50%; background: var(--blue-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230b5cff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 11px no-repeat; }
 .card .more { margin-top: auto; padding-top: 10px; color: var(--blue); font-weight: 600; }
-.addr { margin-top: 48px; border: 1px solid var(--blue); background: var(--blue-soft); border-radius: var(--r); padding: 32px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px 40px; align-items: center; }
+.addr { margin-top: 48px; border: 1px solid var(--blue); background: var(--blue-soft); border-radius: var(--r); padding: 32px; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 20px 48px; align-items: center; }
 .addr p { color: var(--ink-2); }
 .addr .tag { background: #fff; display: inline-block; }
-.addr-line { margin-top: 14px; font-size: clamp(1.35rem, 3.2vw, 2.3rem); font-weight: 520; letter-spacing: -.03em; color: var(--ink) !important; overflow-wrap: anywhere; line-height: 1.15; }
+.addr-line { margin-top: 14px; font-size: clamp(1.2rem, 2.5vw, 2rem); font-weight: 520; letter-spacing: -.03em; color: var(--ink) !important; white-space: nowrap; line-height: 1.15; }
 .addr-line b { color: var(--blue); font-weight: 560; }
-@media (max-width: 860px) { .addr { grid-template-columns: minmax(0, 1fr); padding: 24px; } }
+@media (max-width: 860px) { .addr { grid-template-columns: minmax(0, 1fr); padding: 24px; } .addr-line { font-size: min(2rem, 4.7vw); } }
 .names { display: flex; flex-wrap: wrap; gap: 8px; }
 .names span { font-size: .92rem; font-weight: 600; color: var(--ink); background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 5px 10px; }
 .card p b { color: var(--ink); font-weight: 600; }
