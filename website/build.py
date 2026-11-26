@@ -28,9 +28,10 @@ NAV = [("compliance.html", "Compliance"), ("tenders.html", "Tenders"), ("pricing
 
 
 TICKS = [("index.html", "No new software. No logins. We just get on with it."),
+         ("compliance.html", "Your own address: yourbusiness@wolfey.com.au. Forward or CC us on any compliance problem and we sort it out"),
          ("tenders.html", "New: tender responses, written for you on a no-win, no-fee basis"),
          ("contact.html", "Canberra based"),
-         ("compliance.html", "Compliance as a managed service: one email, one WhatsApp number, one call a week"),
+         ("compliance.html", "One email address, one WhatsApp number, one call a week"),
          ("compliance.html", "Every document reviewed by a person before it reaches you"),
          ("tenders.html", "We find tender opportunities online and through relationship channels"),
          ]
@@ -105,7 +106,7 @@ HUMAN = """<section class="band"><div class="wrap">
 HOME = f"""<section class="hero"><div class="wrap">
   <p class="eyebrow">A managed back office for Australian trade and construction businesses</p>
   <h1>No new software. <em>We just get on with it.</em></h1>
-  <p class="lede">You don't log in to anything. Send us a photo, tell us the job, take one call a week. We keep your compliance current and write your tender responses.</p>
+  <p class="lede">You don't log in to anything. Forward or CC us on a problem, send a photo, take one call a week. We keep your compliance current and write your tender responses.</p>
   <div class="cta-row"><a class="btn btn-primary" href="contact.html">Book a call</a><a class="btn btn-outline" href="pricing.html">How pricing works</a></div>
   <ul class="nos" aria-label="What you don't have to do">
     <li>No software to learn</li><li>No logins</li><li>No apps for your crew</li><li>No chasing people</li>
@@ -124,8 +125,13 @@ HOME = f"""<section class="hero"><div class="wrap">
 <section class="block"><div class="wrap">
   <h2>You already have <em>everything you need.</em></h2>
   <p class="sub">Other providers hand you a platform and leave you to run it. We do the work. The technology is ours to operate, not yours to learn.</p>
-  <div class="grid-3">
-    <div class="card plain"><span class="step-n">One</span><h3>Email address</h3><p>Forward us certificates, builder requests and tenders you've spotted.</p></div>
+  <div class="addr">
+    <div><span class="tag">Your own address</span>
+      <p class="addr-line"><b>yourbusiness</b>@wolfey.com.au</p></div>
+    <p>We set up an address for your business. Owners and operators forward or CC it on any compliance problem: a builder's request, an expiring licence, a subbie's certificate, a job that might need a SWMS. We take it from there.</p>
+  </div>
+  <div class="grid-3" style="margin-top:24px">
+    <div class="card plain"><span class="step-n">One</span><h3>Email address of your own</h3><p>Forward or CC it on anything to do with compliance, and tenders you've spotted.</p></div>
     <div class="card plain"><span class="step-n">One</span><h3>WhatsApp number</h3><p>Send a photo of a licence, or a line about Monday's job.</p></div>
     <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>Ten minutes on Friday. We tell you what needs doing, then we do it.</p></div>
   </div>
@@ -180,8 +186,13 @@ COMPLIANCE = f"""<section class="hero"><div class="wrap">
 <section class="block"><div class="wrap">
   <h2>No software. <em>No logins.</em></h2>
   <p class="sub">The technology is ours to run. You deal with people, through the channels you already use.</p>
-  <div class="grid-3">
-    <div class="card plain"><span class="step-n">One</span><h3>Email address</h3><p>For certificates, builder requests and anything longer.</p></div>
+  <div class="addr">
+    <div><span class="tag">Your own address</span>
+      <p class="addr-line"><b>yourbusiness</b>@wolfey.com.au</p></div>
+    <p>We set up an address for your business. Owners and operators forward or CC it on any compliance problem: a builder's request, an expiring licence, a subbie's certificate, a job that might need a SWMS. We take it from there.</p>
+  </div>
+  <div class="grid-3" style="margin-top:24px">
+    <div class="card plain"><span class="step-n">One</span><h3>Email address of your own</h3><p>Forward or CC it on any compliance problem and we sort it out.</p></div>
     <div class="card plain"><span class="step-n">One</span><h3>WhatsApp number</h3><p>For photos, quick questions and "job on Monday".</p></div>
     <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>So you always know where you stand.</p></div>
   </div>

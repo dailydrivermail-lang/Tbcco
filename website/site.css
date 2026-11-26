@@ -88,6 +88,12 @@ h2 em { font-style: normal; color: var(--blue); }
 .card li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; color: var(--ink-2); }
 .card li::before { content: ""; width: 18px; height: 18px; margin-top: 4px; border-radius: 50%; background: var(--blue-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230b5cff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 11px no-repeat; }
 .card .more { margin-top: auto; padding-top: 10px; color: var(--blue); font-weight: 600; }
+.addr { margin-top: 48px; border: 1px solid var(--blue); background: var(--blue-soft); border-radius: var(--r); padding: 32px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px 40px; align-items: center; }
+.addr p { color: var(--ink-2); }
+.addr .tag { background: #fff; display: inline-block; }
+.addr-line { margin-top: 14px; font-size: clamp(1.35rem, 3.2vw, 2.3rem); font-weight: 520; letter-spacing: -.03em; color: var(--ink) !important; overflow-wrap: anywhere; line-height: 1.15; }
+.addr-line b { color: var(--blue); font-weight: 560; }
+@media (max-width: 860px) { .addr { grid-template-columns: minmax(0, 1fr); padding: 24px; } }
 .tag { align-self: flex-start; font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--blue); background: var(--blue-soft); padding: 5px 11px; border-radius: 99px; }
 .step-n { font-size: .85rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
 .plain { border: 0; background: none; padding: 0; border-top: 1px solid var(--line-2); border-radius: 0; padding-top: 22px; }
