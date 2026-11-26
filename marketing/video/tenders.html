@@ -61,7 +61,9 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
 .doc { align-self: flex-start; width: 470px; border-radius: 24px; border: 2px solid #dfe4ec; background: #fff; padding: 22px 26px; display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; font-size: 25px; font-weight: 700; color: var(--text); }
 .doc small { display: block; font-size: 20px; font-weight: 500; color: var(--mute); }
 .pdf { width: 62px; height: 76px; border-radius: 10px; background: #fee4e2; color: #b42318; display: grid; place-items: center; font-size: 19px; font-weight: 800; }
-.tick { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--green); color: #fff; font-size: 22px; vertical-align: -6px; margin-right: 10px; }
+.tick { flex: none; display: grid; place-items: center; height: 1lh; margin-right: 14px; }
+.tick svg { width: 34px; height: 34px; box-sizing: border-box; padding: 7px; border-radius: 50%; background: var(--green); fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter; }
+p:has(> .tick) { display: flex; align-items: flex-start; }
 .call { width: 640px; border-radius: 40px; background: #fff; border: 2px solid #dfe4ec; box-shadow: 0 50px 90px -40px rgba(16, 24, 40, .45); padding: 40px; display: grid; gap: 20px; }
 .call-top { display: flex; align-items: center; gap: 20px; font-size: 30px; font-weight: 700; padding-bottom: 24px; border-bottom: 2px solid #eef1f5; }
 .ring { width: 76px; height: 76px; border-radius: 50%; background: #d1fadf; display: grid; place-items: center; }
@@ -165,7 +167,7 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
       <div class="step fx" style="--in:19.1s">One</div>
       <h2 class="fx" style="--in:19.3s">We find the work.</h2>
       <p class="sub fx" style="--in:20.0s">We watch the tender portals and work our relationships with builders and agencies, then bring you the ones that fit.</p>
-      <p class="sub fx" style="--in:25.0s;margin-top:28px;color:#101828;font-weight:600"><span class="tick">✓</span>You choose which ones to chase.</p>
+      <p class="sub fx" style="--in:25.0s;margin-top:28px;color:#101828;font-weight:600"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.2 4.2 8.8-9"/></svg></span>You choose which ones to chase.</p>
     </div>
     <div class="opps">
       <div class="opps-top fx" style="--in:20.6s">Opportunities this week<small>Matched to your trade and region</small></div>
@@ -185,7 +187,7 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
       <div class="step fx" style="--in:28.9s">Two</div>
       <h2 class="fx" style="--in:29.1s">We write the response.</h2>
       <p class="sub fx" style="--in:29.8s">Schedules, methodology, capability and referees, drafted in the buyer's format. Your compliance file fills in half of it.</p>
-      <p class="sub fx" style="--in:35.2s;margin-top:28px;color:#101828;font-weight:600"><span class="tick">✓</span>You set the price. We do the rest.</p>
+      <p class="sub fx" style="--in:35.2s;margin-top:28px;color:#101828;font-weight:600"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.2 4.2 8.8-9"/></svg></span>You set the price. We do the rest.</p>
     </div>
     <div class="call resp">
       <div class="call-top fx" style="--in:30.4s"><div class="pdf">RFT</div><div>Tender response<small>Stormwater renewal program</small></div></div>
@@ -206,7 +208,7 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
       <div class="step fx" style="--in:38.9s">Three</div>
       <h2 class="fx" style="--in:39.1s">You approve. We lodge.</h2>
       <p class="sub fx" style="--in:39.8s">A person reviews every response before you see it, and nothing goes in without your sign-off.</p>
-      <p class="sub fx" style="--in:44.8s;margin-top:28px;color:#101828;font-weight:600"><span class="tick">✓</span>Complete, in the right format, on time.</p>
+      <p class="sub fx" style="--in:44.8s;margin-top:28px;color:#101828;font-weight:600"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.2 4.2 8.8-9"/></svg></span>Complete, in the right format, on time.</p>
     </div>
     <div class="phone">
       <div class="phone-head"><div class="mark"><svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#0b5cff"/><path d="M5.29 16.67V7.34H11.34V8.85H7.25V11.19H11.03V12.7H7.25V15.16H11.54V16.67ZM18.71 14.04Q18.71 15.35 17.84 16.08Q16.97 16.8 15.36 16.8Q13.77 16.8 12.89 16.08Q12.01 15.36 12.01 14.05Q12.01 13.16 12.53 12.55Q13.05 11.93 13.91 11.79V11.76Q13.16 11.6 12.69 11.01Q12.23 10.43 12.23 9.67Q12.23 8.52 13.04 7.86Q13.85 7.2 15.34 7.2Q16.85 7.2 17.66 7.85Q18.47 8.49 18.47 9.68Q18.47 10.44 18.01 11.02Q17.55 11.6 16.78 11.75V11.77Q17.68 11.92 18.19 12.51Q18.71 13.11 18.71 14.04ZM16.56 9.78Q16.56 9.12 16.26 8.81Q15.95 8.5 15.34 8.5Q14.13 8.5 14.13 9.78Q14.13 11.12 15.35 11.12Q15.96 11.12 16.26 10.81Q16.56 10.5 16.56 9.78ZM16.78 13.89Q16.78 12.42 15.32 12.42Q14.65 12.42 14.29 12.81Q13.93 13.19 13.93 13.91Q13.93 14.73 14.28 15.11Q14.64 15.49 15.38 15.49Q16.1 15.49 16.44 15.11Q16.78 14.73 16.78 13.89Z" fill="#fff"/></svg></div><div>Exit Eight<small>Your tender team</small></div></div>

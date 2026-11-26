@@ -33,7 +33,7 @@ TICKS = [("index.html", "No new software. No logins. We just get on with it."),
          ("tenders.html", "New: tender responses, written for you on a no-win, no-fee basis"),
          ("contact.html", "Canberra based"),
          ("compliance.html", "We check in weekly to help, not hinder"),
-         ("compliance.html", "One email address, one WhatsApp number, one call a week"),
+         ("compliance.html", "One email address, one WhatsApp number, one check-in phone call a week"),
          ("compliance.html", "Every document reviewed by a person before it reaches you"),
          ("tenders.html", "We find tender opportunities online and through relationship channels"),
          ]
@@ -143,7 +143,7 @@ PAPERWORK = f"""<section class="block alt"><div class="wrap">
 HOME = f"""<section class="hero"><div class="wrap">
   <p class="eyebrow eyebrow-lead"><span class="for">For construction businesses</span> Compliance and tender responses, done for you from Canberra</p>
   <h1>No new software. <em>We just get on with it.</em></h1>
-  <p class="lede"><strong>We keep compliance current and write tender responses for mid-sized Australian construction businesses.</strong> You don't log in to anything. Forward or CC us on a problem, send a photo, take one call a week.</p>
+  <p class="lede"><strong>We keep compliance current and write tender responses for mid-sized Australian construction businesses.</strong> You don't log in to anything. Forward or CC us on a problem, send a photo, take one check-in phone call a week.</p>
   <div class="cta-row"><a class="btn btn-primary" href="contact.html">Book a call</a><a class="btn btn-outline" href="pricing.html">How pricing works</a></div>
   <ul class="nos" aria-label="What you don't have to do">
     <li>No software to learn</li><li>No logins</li><li>No apps for your crew</li><li>No chasing people</li>
@@ -170,7 +170,7 @@ HOME = f"""<section class="hero"><div class="wrap">
   <div class="grid-3" style="margin-top:24px">
     <div class="card plain"><span class="step-n">One</span><h3>Email address of your own</h3><p>Forward or CC it on anything to do with compliance, and tenders you've spotted.</p></div>
     <div class="card plain"><span class="step-n">One</span><h3>WhatsApp number</h3><p>Send a photo of a licence, or a line about Monday's job.</p></div>
-    <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>We check in weekly to help, not hinder. Ten minutes on Friday: what needs doing, then we do it.</p></div>
+    <div class="card plain"><span class="step-n">One</span><h3>Check-in phone call a week</h3><p>We check in weekly to help, not hinder. Ten minutes on Friday: what needs doing, then we do it.</p></div>
   </div>
 </div></section>
 
@@ -183,7 +183,7 @@ HOME = f"""<section class="hero"><div class="wrap">
   <p class="sub">Each stands on its own. Together, your compliance file does half the work of every tender.</p>
   <div class="grid-2">
     <a class="card" href="compliance.html"><span class="tag">Pillar one</span><h3>Compliance, as a managed service</h3>
-      <p>No software to learn and no logins. One email address, one WhatsApp number and one call a week.</p>
+      <p>No software to learn and no logins. One email address, one WhatsApp number and one check-in phone call a week.</p>
       <ul><li>Licences, tickets and insurances tracked and chased</li><li>A site-specific SWMS when a job needs one</li><li>Toolbox talk memos your crew sign on their phones</li></ul>
       <span class="more">See how compliance works →</span></a>
     <a class="card" href="tenders.html"><span class="tag">Pillar two</span><h3>Tender responses, no win, no fee</h3>
@@ -208,7 +208,7 @@ HOME = f"""<section class="hero"><div class="wrap">
 COMPLIANCE = f"""<section class="hero"><div class="wrap">
   <p class="eyebrow"><b>Compliance</b> · a managed service</p>
   <h1>You run a construction business. <em>Not a compliance department.</em></h1>
-  <p class="lede">Send us a photo, tell us the job, take one call on Friday. We keep the licensing and safety paperwork current and audit-ready.</p>
+  <p class="lede">Send us a photo, tell us the job, take one check-in phone call a week. We keep the licensing and safety paperwork current and audit-ready.</p>
   <div class="cta-row"><a class="btn btn-primary" href="contact.html">Book a call</a><a class="btn btn-outline" href="pricing.html">How pricing works</a></div>
 </div></section>
 <section class="stage"><div class="wrap">
@@ -236,7 +236,7 @@ COMPLIANCE = f"""<section class="hero"><div class="wrap">
   <div class="grid-3" style="margin-top:24px">
     <div class="card plain"><span class="step-n">One</span><h3>Email address of your own</h3><p>Forward or CC it on any compliance problem and we sort it out.</p></div>
     <div class="card plain"><span class="step-n">One</span><h3>WhatsApp number</h3><p>For photos, quick questions and "job on Monday".</p></div>
-    <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>We check in weekly to help, not hinder. You always know where you stand.</p></div>
+    <div class="card plain"><span class="step-n">One</span><h3>Check-in phone call a week</h3><p>We check in weekly to help, not hinder. You always know where you stand.</p></div>
   </div>
 </div></section>
 {CTA}"""
@@ -279,7 +279,7 @@ PRICING = f"""<section class="hero"><div class="wrap">
     <div class="card"><span class="tag">Compliance</span>
       <p class="price">Subscription<small>A support arrangement, billed monthly</small></p>
       <p>Ongoing support for a fixed monthly fee, set by the size of your business and what you need.</p>
-      <ul><li>Licence, ticket and insurance register, kept current</li><li>Expiry tracking and chasing</li><li>SWMS and toolbox talk memos as jobs need them</li><li>A call every Friday</li></ul>
+      <ul><li>Licence, ticket and insurance register, kept current</li><li>Expiry tracking and chasing</li><li>SWMS and toolbox talk memos as jobs need them</li><li>One check-in phone call a week</li></ul>
       <a class="more" href="contact.html">Ask for a quote →</a></div>
     <div class="card"><span class="tag">Tender responses</span>
       <p class="price">No win, no fee<small>A percentage of the bids you win</small></p>
@@ -329,7 +329,7 @@ PAGES = {
     "index.html": ("Exit Eight | No new software. We just get on with it.",
                    "We keep compliance current and write tender responses for mid-sized Australian construction businesses. No new software and no logins.", HOME),
     "compliance.html": ("Compliance as a managed service | Exit Eight",
-                        "Licences, insurances, SWMS and toolbox talks handled for trade businesses. One email, one WhatsApp number, one call a week.", COMPLIANCE),
+                        "Licences, insurances, SWMS and toolbox talks handled for trade businesses. One email, one WhatsApp number, one check-in phone call a week.", COMPLIANCE),
     "tenders.html": ("Tender responses, no win no fee | Exit Eight",
                      "We find tender opportunities, write the response and lodge it. You pay a percentage of the bids you win.", TENDERS),
     "pricing.html": ("Pricing | Exit Eight", "Compliance is a subscription support arrangement. Tender responses are a percentage of winning bids on a six-month bid support agreement.", PRICING),
