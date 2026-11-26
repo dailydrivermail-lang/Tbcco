@@ -20,6 +20,18 @@ MARK = '<span class="logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><pat
 NAV = [("compliance.html", "Compliance"), ("tenders.html", "Tenders"), ("pricing.html", "Pricing"), ("contact.html", "Contact")]
 
 
+TICKS = [("tenders.html", "New: tender responses, written for you on a no-win, no-fee basis"),
+         ("contact.html", "Canberra based"),
+         ("compliance.html", "Compliance as a managed service: one email, one WhatsApp number, one call a week"),
+         ("compliance.html", "Every document reviewed by a person before it reaches you"),
+         ("tenders.html", "We find tender opportunities online and through relationship channels"),
+         ("pricing.html", "No software to learn. No logins.")]
+TICKER = "".join(f'<a href="{h}">{t}</a><span aria-hidden="true">•</span>' for h, t in TICKS)
+# the second copy makes the loop seamless; it is hidden from screen readers and keyboard focus
+TICKER_COPY = '<span class="ticker-copy" aria-hidden="true">' + "".join(
+    f'<a href="{h}" tabindex="-1">{t}</a><span>•</span>' for h, t in TICKS) + "</span>"
+
+
 def page(slug: str, title: str, desc: str, body: str, noindex: bool) -> str:
     links = "".join(f'<a href="{h}"{" class=\"on\"" if h == slug else ""}>{t}</a>' for h, t in NAV)
     robots = '<meta name="robots" content="noindex, nofollow">\n' if noindex else ""
@@ -36,7 +48,7 @@ def page(slug: str, title: str, desc: str, body: str, noindex: bool) -> str:
 <link rel="stylesheet" href="site.css">
 </head>
 <body>
-<div class="announce"><div class="wrap"><a href="tenders.html">New: tender responses, written for you on a no-win, no-fee basis →</a></div></div>
+<div class="ticker" aria-label="Announcements"><div class="ticker-track">{TICKER}{TICKER_COPY}</div></div>
 <header class="nav"><div class="wrap">
   <a class="logo" href="index.html" aria-label="Wolfey home">{MARK}wolfey</a>
   <nav class="nav-links" aria-label="Main">{links}</nav>
@@ -220,6 +232,14 @@ CONTACT = f"""<section class="hero"><div class="wrap">
   <p class="lede">Tell us your trade, your crew size and what's taking up your time. We'll tell you plainly whether we can help and what it would cost.</p>
   <p class="contact-line" style="margin-top:36px"><a href="mailto:{EMAIL}">{EMAIL}</a></p>
   <p class="note">Email us with a good time to call and a phone number.</p>
+</div></section>
+<section class="block"><div class="wrap">
+  <h2>Canberra based. <em>Qualified people.</em></h2>
+  <p class="sub">We're a Canberra business working with trade and construction companies across the ACT and surrounding NSW.</p>
+  <div class="grid-2">
+    <div class="card"><span class="tag">Legal</span><h3>A legally trained professional, admitted in the ACT</h3><p>Every document is reviewed by someone with legal training and hands-on experience in construction compliance.</p></div>
+    <div class="card"><span class="tag">Finance</span><h3>A Chartered Accountant on staff</h3><p>Commercial and financial experience behind your tender pricing schedules and the business side of compliance.</p></div>
+  </div>
 </div></section>
 <section class="block"><div class="wrap">
   <h2>What happens next.</h2>

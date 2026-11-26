@@ -16,9 +16,15 @@ img, video { max-width: 100%; display: block; }
 :focus-visible { outline: 3px solid color-mix(in srgb, var(--blue) 45%, transparent); outline-offset: 3px; border-radius: 8px; }
 
 /* announcement + nav */
-.announce { border-bottom: 1px solid var(--line); font-size: .9rem; }
-.announce a { display: block; padding: 10px 0; color: var(--ink-2); }
-.announce a:hover { color: var(--blue); }
+.ticker { background: var(--blue); color: #fff; overflow: hidden; font-size: .92rem; font-weight: 500; white-space: nowrap; }
+.ticker-track { display: inline-flex; align-items: center; min-width: max-content; animation: ticker 48s linear infinite; }
+.ticker:hover .ticker-track, .ticker:focus-within .ticker-track { animation-play-state: paused; }
+.ticker-copy { display: inline-flex; align-items: center; }
+.ticker a { display: inline-block; padding: 10px 0; color: #fff; }
+.ticker a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ticker span > span, .ticker-track > span[aria-hidden="true"]:not(.ticker-copy) { padding: 0 22px; opacity: .55; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .ticker-track { animation: none; padding-left: 24px; } .ticker-copy { display: none; } }
 .nav { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: saturate(1.4) blur(12px); border-bottom: 1px solid var(--line); }
 .nav .wrap { display: flex; align-items: center; gap: 24px; min-height: 72px; }
 .logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 650; font-size: 1.25rem; letter-spacing: -.03em; }
