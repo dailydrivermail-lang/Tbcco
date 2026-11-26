@@ -292,11 +292,22 @@ PRICING = f"""<section class="hero"><div class="wrap">
 <section class="block"><div class="wrap">
   <h2>Common questions.</h2>
   <div style="margin-top:40px">
+    <details><summary>Do we have to install or learn anything?</summary><p>No. There's no app, no login and nothing for your crew to download. You get an email address and a WhatsApp number, and one check-in phone call a week.</p></details>
+    <details><summary>How do we get started?</summary><p>Book a call. We set up your address and WhatsApp number, you send us what you already have, such as licences, tickets and insurance certificates, and we build your register from that. Photos and forwarded emails are fine.</p></details>
+    <details><summary>What does my crew have to do?</summary><p>Very little. Send a photo of a new ticket or licence when we ask, and tap to sign a toolbox talk memo on their phone. No accounts and no training.</p></details>
+    <details><summary>Do we need a SWMS for every job?</summary><p>No. A Safe Work Method Statement is only required for high risk construction work. We check each job first and tell you why one is or isn't needed, then prepare it when it is.</p></details>
+    <details><summary>What if something comes up before the weekly call?</summary><p>Send it straight away by email or WhatsApp. The weekly call is the check-in, not the only time you can reach us.</p></details>
+    <details><summary>Who is responsible for safety on site?</summary><p>You are. Your work health and safety duties stay with your business. We take on the paperwork and administration that sits behind them, and keep it current.</p></details>
     <details><summary>Do I need both services?</summary><p>No. Each stands on its own. They work best together, because the compliance file we keep for you supplies the licences, insurances and safety evidence every tender asks for.</p></details>
     <details><summary>Why six months for tender support?</summary><p>Winning tendered work takes more than one bid. Six months lets us learn your business, build a pipeline of the right opportunities and improve each response on the last.</p></details>
     <details><summary>Do you guarantee we'll win?</summary><p>No, and nobody honestly can. What we do is make sure you bid on the right opportunities with complete, well-written responses lodged on time. If a bid doesn't win, you don't pay for it.</p></details>
+    <details><summary>How is compliance priced?</summary><p>As a fixed monthly subscription that depends on the size of your crew and how many subcontractors you use. We quote it after a short call, so you know the cost before you start.</p></details>
+    <details><summary>What percentage do you take on a winning tender?</summary><p>A percentage of the contract you win, agreed in writing before we start work on a bid. If the bid doesn't win, there's nothing to pay for that response.</p></details>
+    <details><summary>Who sets the price and lodges the tender?</summary><p>You set the price and approve the final response. Nothing is lodged without your sign-off.</p></details>
     <details><summary>Who actually reviews our documents?</summary><p>A legally trained professional with construction compliance experience reviews every document before it reaches you. Our systems do the reading, tracking and drafting, which is what keeps the service affordable.</p></details>
     <details><summary>Is this legal advice?</summary><p>No. Exit Eight is a compliance administration and tender support service. Where something needs legal advice, we'll tell you.</p></details>
+    <details><summary>Which states do you cover?</summary><p>We're based in Canberra and work with businesses in the ACT and NSW. If you work elsewhere in Australia, talk to us.</p></details>
+    <details><summary>Where is our information kept?</summary><p>In Australian-hosted storage wherever possible, with access limited to the people working on your account. We don't sell or share it.</p></details>
   </div>
 </div></section>
 {CTA}"""
