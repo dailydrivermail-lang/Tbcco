@@ -1,10 +1,10 @@
 // Render promo.html to MP4: pause every CSS animation, step time frame by frame, pipe PNG frames to ffmpeg.
-//   node render.js [seconds=62] [fps=30] [out=back-office-promo.mp4]
+//   node render.js [seconds=62] [fps=30] [out=back-office-promo.mp4] [src=promo.html]
 const { chromium } = require('playwright'); const { spawn } = require('child_process'); const path = require('path');
 (async () => {
   const secs = Number(process.argv[2] || 62), fps = Number(process.argv[3] || 30), out = process.argv[4] || path.join(__dirname, 'back-office-promo.mp4');
   const b = await chromium.launch(); const p = await (await b.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 })).newPage();
-  await p.goto('file://' + path.join(__dirname, 'promo.html')); await p.evaluate(() => document.fonts.ready);
+  await p.goto('file://' + path.join(__dirname, process.argv[5] && !process.argv[5].startsWith('--') ? process.argv[5] : 'promo.html')); await p.evaluate(() => document.fonts.ready);
   await p.evaluate(() => document.getAnimations().forEach(a => a.pause()));
   const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'medium', '-movflags', '+faststart', out], { stdio: ['pipe', 'inherit', 'inherit'] });
   const frames = secs * fps;
