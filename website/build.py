@@ -16,6 +16,10 @@ ROOT = HERE.parent
 VIDEO = ROOT / "marketing" / "video"
 EMAIL = "hello@wolfey.com.au"   # placeholder until the mailbox exists
 
+# Short hash of the stylesheet and script. It goes on their URLs, so a browser never pairs new pages with an old cached copy.
+import hashlib
+VERSION = hashlib.sha256((HERE / "site.css").read_bytes() + (HERE / "site.js").read_bytes()).hexdigest()[:10]
+
 MARK_PATH = "M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z"
 MARK = f'<span class="logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{MARK_PATH}"/></svg></span>'
 FAVICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='" + MARK_PATH.replace(" ", "%20")
@@ -49,7 +53,7 @@ def page(slug: str, title: str, desc: str, body: str, noindex: bool) -> str:
 <meta property="og:description" content="{desc}">
 <meta property="og:image" content="assets/compliance-poster.jpg">
 <link rel="icon" href="{FAVICON}">
-<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="site.css?v={VERSION}">
 </head>
 <body>
 <div class="ticker" aria-label="Announcements"><div class="ticker-track">{TICKER}{TICKER_COPY}</div></div>
@@ -69,7 +73,7 @@ def page(slug: str, title: str, desc: str, body: str, noindex: bool) -> str:
   </div>
   <p>Wolfey is a compliance administration and tender support service for Australian trade and construction businesses. We are not a law firm and do not give legal advice. Every document is reviewed by a person before it reaches you. No tender outcome is guaranteed.</p>
 </div></footer>
-<script src="site.js"></script>
+<script src="site.js?v={VERSION}"></script>
 </body>
 </html>
 """
