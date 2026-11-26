@@ -1,4 +1,4 @@
-# Publishes the Wolfey website preview at the root and the console demo (fictional data) under /demo/.
+# Publishes the Exit Eight website preview at the root and the console demo (fictional data) under /demo/.
 # One-time setup: repo Settings → Pages → Build and deployment → Source: "GitHub Actions".
 name: Publish website and demo to GitHub Pages
 
@@ -29,7 +29,7 @@ jobs:
       - run: python -m pytest -q
       - id: pages
         uses: actions/configure-pages@v5
-      - name: Build the Wolfey website (preview, not indexed) at the site root
+      - name: Build the Exit Eight website (preview, not indexed) at the site root
         run: python website/build.py --out _site --noindex
       - name: Build the internal console demo under /demo/
         run: python deploy/build_static_demo.py --base "${{ steps.pages.outputs.base_path }}/demo/" --out _site/demo
