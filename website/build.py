@@ -126,6 +126,20 @@ SOFTWARE = f"""<section class="block"><div class="wrap">
   <p class="terms">We are independent of these products. Names are used only to describe how we work alongside them, and belong to their owners. No integration, partnership or endorsement is implied.</p>
 </div></section>"""
 
+PAPERWORK = f"""<section class="block alt"><div class="wrap">
+  <h2>The paperwork <em>you'll recognise.</em></h2>
+  <p class="sub">Builders, principals and tender panels keep asking for the same documents under slightly different names. These are the ones we prepare, track and keep current.</p>
+  <div class="grid-2">
+    <div class="card"><span class="tag">Compliance, on site and on file</span><h3>What builders and regulators ask you for</h3>
+      {names("Safe Work Method Statements (SWMS)", "White Cards", "Site inductions", "Trade licences", "High risk work licences", "Certificates of currency", "Workers compensation", "Public liability", "Subcontractor statements", "Prequalification (Cm3, Avetta, Rapid Global)", "Toolbox talk records", "Plant and equipment registers", "Test and tag records", "Safety Data Sheets (SDS)", "Hazardous chemicals register", "Asbestos and silica awareness training", "First aid certificates", "Incident and hazard reports", "Emergency plans")}
+      <p class="fine">A SWMS is only needed for high risk construction work. We check each job first, and only write one when the job calls for it.</p></div>
+    <div class="card"><span class="tag">Tenders, the returnable schedules</span><h3>What goes in with the bid</h3>
+      {names("Tender form and returnable schedules", "Capability statement", "Construction methodology", "Construction program", "Key personnel and CVs", "Relevant experience and referees", "Risk management plan", "Risk register", "WHS management plan", "Quality management plan", "Inspection and Test Plans (ITPs)", "Construction Environmental Management Plan (CEMP)", "Traffic management plan", "Insurance certificates of currency", "Financial capacity statement", "Statement of departures", "Conflict of interest declaration", "Statutory declarations", "Modern slavery questionnaire", "Indigenous participation plan", "Local industry participation plan", "Secure Local Jobs Code certificate (ACT)", "Government prequalification")}
+      <p class="fine">Pricing stays yours. We format the schedules around your numbers.</p></div>
+  </div>
+  <p class="fine" style="margin-top:20px">What applies to you depends on the work, the state or territory and the contract. We tell you which ones you need, and which you don't. This is an administration service, not legal advice.</p>
+</div></section>"""
+
 HOME = f"""<section class="hero"><div class="wrap">
   <p class="eyebrow eyebrow-lead"><span class="for">For construction businesses</span> Compliance and tender responses, done for you from Canberra</p>
   <h1>No new software. <em>We just get on with it.</em></h1>
@@ -159,6 +173,8 @@ HOME = f"""<section class="hero"><div class="wrap">
     <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>We check in weekly to help, not hinder. Ten minutes on Friday: what needs doing, then we do it.</p></div>
   </div>
 </div></section>
+
+{PAPERWORK}
 
 {SOFTWARE}
 
