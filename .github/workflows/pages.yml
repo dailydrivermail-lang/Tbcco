@@ -1,11 +1,11 @@
-# Publishes the static portal demo (fictional data only) to GitHub Pages.
+# Publishes the Wolfey website preview at the root and the console demo (fictional data) under /demo/.
 # One-time setup: repo Settings → Pages → Build and deployment → Source: "GitHub Actions".
-name: Publish portal demo to GitHub Pages
+name: Publish website and demo to GitHub Pages
 
 on:
   push:
     branches: [main, claude/trade-compliance-service-9jnkng]
-    paths: ["portal/**", "engine/**", "examples/**", "deploy/**", "rules/**", "templates/**", "intake/**", ".github/workflows/pages.yml"]
+    paths: ["website/**", "marketing/**", "portal/**", "engine/**", "examples/**", "deploy/**", "rules/**", "templates/**", "intake/**", "swms/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -29,8 +29,10 @@ jobs:
       - run: python -m pytest -q
       - id: pages
         uses: actions/configure-pages@v5
-      - name: Build static demo for this Pages URL
-        run: python deploy/build_static_demo.py --base "${{ steps.pages.outputs.base_path }}/" --out _site
+      - name: Build the Wolfey website (preview, not indexed) at the site root
+        run: python website/build.py --out _site --noindex
+      - name: Build the internal console demo under /demo/
+        run: python deploy/build_static_demo.py --base "${{ steps.pages.outputs.base_path }}/demo/" --out _site/demo
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
