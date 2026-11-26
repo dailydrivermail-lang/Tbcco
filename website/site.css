@@ -1,8 +1,8 @@
-/* Wolfey marketing site. Warm off-white ground, near-black ink, one bright blue. Video is the centrepiece. */
+/* Exit Eight marketing site. Off-white ground, black, and one bright blue. No navy, no yellow. Video is the centrepiece. */
 @font-face { font-family: "Inter"; src: url("fonts/inter-latin-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; }
 :root {
-  --bg: #fdfcf9; --bg-2: #f6f4ee; --ink: #0d1117; --ink-2: #3c424d; --mute: #6b717d; --line: #e6e2d8; --line-2: #d8d3c6;
-  --blue: #0b5cff; --blue-d: #0848cc; --blue-soft: #eaf1ff; --night: #0b1220; --night-2: #121b2e; --night-line: #22304a;
+  --bg: #ffffff; --bg-2: #f4f5f7; --ink: #0a0a0a; --ink-2: #3a3a3a; --mute: #6e6e6e; --line: #e8e8e8; --line-2: #d6d6d6;
+  --blue: #0b5cff; --blue-d: #0848cc; --blue-soft: #eaf1ff; --night: #0a0a0a; --night-2: #161616; --night-line: #2c2c2c;
   --green: #0a7d4f; --amber: #b25e09;
   --w: 1180px; --r: 22px;
 }
@@ -38,7 +38,7 @@ img, video { max-width: 100%; display: block; }
 .btn-primary { background: var(--blue); color: #fff; } .btn-primary:hover { background: var(--blue-d); transform: translateY(-1px); }
 .btn-outline { border-color: var(--line-2); color: var(--ink); background: transparent; } .btn-outline:hover { border-color: var(--ink); }
 .btn-sm { min-height: 42px; padding: 0 20px; font-size: .95rem; }
-.btn-light { background: #fff; color: var(--night); } .btn-light:hover { background: #e9efff; }
+.btn-light { background: #fff; color: #0a0a0a; } .btn-light:hover { background: #eaf1ff; }
 .menu-btn { display: none; }
 @media (max-width: 860px) {
   .nav-links { display: none; position: absolute; left: 0; right: 0; top: 72px; background: var(--bg); border-bottom: 1px solid var(--line); flex-direction: column; padding: 12px 24px 20px; margin: 0; }
@@ -105,13 +105,13 @@ h2 em { font-style: normal; color: var(--blue); }
 
 /* dark band */
 .band { background: var(--night); color: #fff; padding: 104px 0; }
-.band h2 { color: #fff; max-width: 22ch; } .band h2 em { color: #ffc266; }
-.band .sub { color: #a9b8d1; }
+.band h2 { color: #fff; max-width: 22ch; } .band h2 em { color: #5b93ff; }
+.band .sub { color: #a8a8a8; }
 .band .card { background: var(--night-2); border-color: var(--night-line); }
-.band .card h3 { color: #fff; } .band .card p, .band .card li { color: #c3cfe4; }
-.band .card.hl { border-color: #ffc266; box-shadow: 0 0 0 1px #ffc266; }
-.band .tag { background: #1a2742; color: #9dbcff; } .band .hl .tag { background: #3a2c10; color: #ffc266; }
-.band .card li::before { background-color: #1a2742; }
+.band .card h3 { color: #fff; } .band .card p, .band .card li { color: #d4d4d4; }
+.band .card.hl { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+.band .tag { background: #222; color: #d4d4d4; } .band .hl .tag { background: var(--blue); color: #fff; }
+.band .card li::before { background-color: #222; }
 
 /* pricing */
 .price { font-size: 2.3rem; font-weight: 540; letter-spacing: -.04em; line-height: 1.1; }

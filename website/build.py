@@ -1,4 +1,4 @@
-"""Build the Wolfey marketing site (static, five pages) into website/dist/ or --out.
+"""Build the Exit Eight marketing site (static, five pages) into website/dist/ or --out.
 
     python website/build.py [--out DIR] [--noindex]
 
@@ -14,7 +14,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 VIDEO = ROOT / "marketing" / "video"
-EMAIL = "hello@wolfey.com.au"   # placeholder until the mailbox exists
+EMAIL = "hello@exiteight.com.au"   # placeholder until the mailbox exists
 
 # Short hash of the stylesheet and script. It goes on their URLs, so a browser never pairs new pages with an old cached copy.
 import hashlib
@@ -28,7 +28,7 @@ NAV = [("compliance.html", "Compliance"), ("tenders.html", "Tenders"), ("pricing
 
 
 TICKS = [("index.html", "No new software. No logins. We just get on with it."),
-         ("compliance.html", "Your own address: yourbusiness@wolfey.com.au. Forward or CC us on any compliance problem and we sort it out"),
+         ("compliance.html", "Your own address: yourbusiness@exiteight.com.au. Forward or CC us on any compliance problem and we sort it out"),
          ("index.html", "Keep ServiceM8, simPRO, AroFlo, Tradify or Fergus. We work alongside what you already use"),
          ("tenders.html", "New: tender responses, written for you on a no-win, no-fee basis"),
          ("contact.html", "Canberra based"),
@@ -62,7 +62,7 @@ def page(slug: str, title: str, desc: str, body: str, noindex: bool) -> str:
 <body>
 <div class="ticker" aria-label="Announcements"><div class="ticker-track">{TICKER}{TICKER_COPY}</div></div>
 <header class="nav"><div class="wrap">
-  <a class="logo" href="index.html" aria-label="Wolfey home">{MARK}wolfey</a>
+  <a class="logo" href="index.html" aria-label="Exit Eight home">{MARK}Exit Eight</a>
   <nav class="nav-links" aria-label="Main">{links}</nav>
   <a class="btn btn-primary btn-sm" href="contact.html">Book a call</a>
   <button class="menu-btn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -72,10 +72,10 @@ def page(slug: str, title: str, desc: str, body: str, noindex: bool) -> str:
 </main>
 <footer><div class="wrap">
   <div class="foot-top">
-    <a class="logo" href="index.html">{MARK}wolfey</a>
+    <a class="logo" href="index.html">{MARK}Exit Eight</a>
     <div class="foot-links">{"".join(f'<a href="{h}">{t}</a>' for h, t in NAV)}</div>
   </div>
-  <p>Wolfey keeps compliance current and writes tender responses for mid-sized Australian construction businesses. It is a compliance administration and tender support service. We are not a law firm and do not give legal advice. Every document is reviewed by a person before it reaches you. No tender outcome is guaranteed.</p>
+  <p>Exit Eight keeps compliance current and writes tender responses for mid-sized Australian construction businesses. It is a compliance administration and tender support service. We are not a law firm and do not give legal advice. Every document is reviewed by a person before it reaches you. No tender outcome is guaranteed.</p>
 </div></footer>
 <script src="site.js?v={VERSION}"></script>
 </body>
@@ -138,10 +138,10 @@ HOME = f"""<section class="hero"><div class="wrap">
 
 <section class="stage"><div class="wrap">
   <div class="tabs" role="tablist" aria-label="Choose a video">
-    <button role="tab" aria-selected="true" data-video="assets/wolfey-compliance.mp4" data-poster="assets/compliance-poster.jpg" data-text="Licences, insurances, SWMS and toolbox talks, as one managed service." data-href="compliance.html" data-link="More on compliance">Compliance</button>
-    <button role="tab" aria-selected="false" data-video="assets/wolfey-tenders.mp4" data-poster="assets/tenders-poster.jpg" data-text="We find the opportunities, write the response and lodge it. You pay only when you win." data-href="tenders.html" data-link="More on tenders">Tender responses</button>
+    <button role="tab" aria-selected="true" data-video="assets/exiteight-compliance.mp4" data-poster="assets/compliance-poster.jpg" data-text="Licences, insurances, SWMS and toolbox talks, as one managed service." data-href="compliance.html" data-link="More on compliance">Compliance</button>
+    <button role="tab" aria-selected="false" data-video="assets/exiteight-tenders.mp4" data-poster="assets/tenders-poster.jpg" data-text="We find the opportunities, write the response and lodge it. You pay only when you win." data-href="tenders.html" data-link="More on tenders">Tender responses</button>
   </div>
-  {video("wolfey-compliance.mp4", "compliance-poster.jpg", "Wolfey explainer video", player=True)}
+  {video("exiteight-compliance.mp4", "compliance-poster.jpg", "Exit Eight explainer video", player=True)}
   <div class="stage-foot"><span data-caption>Licences, insurances, SWMS and toolbox talks, as one managed service.</span><a data-more href="compliance.html">More on compliance →</a></div>
 </div></section>
 
@@ -150,7 +150,7 @@ HOME = f"""<section class="hero"><div class="wrap">
   <p class="sub">Other providers hand you a platform and leave you to run it. We do the work. The technology is ours to operate, not yours to learn.</p>
   <div class="addr">
     <div><span class="tag">Your own address</span>
-      <p class="addr-line"><b>yourbusiness</b>@wolfey.com.au</p></div>
+      <p class="addr-line"><b>yourbusiness</b>@exiteight.com.au</p></div>
     <p>We set up an address for your business. Owners and operators forward or CC it on any compliance problem: a builder's request, an expiring licence, a subbie's certificate, a job that might need a SWMS. We take it from there.</p>
   </div>
   <div class="grid-3" style="margin-top:24px">
@@ -196,7 +196,7 @@ COMPLIANCE = f"""<section class="hero"><div class="wrap">
   <div class="cta-row"><a class="btn btn-primary" href="contact.html">Book a call</a><a class="btn btn-outline" href="pricing.html">How pricing works</a></div>
 </div></section>
 <section class="stage"><div class="wrap">
-  {video("wolfey-compliance.mp4", "compliance-poster.jpg", "Wolfey compliance explainer video")}
+  {video("exiteight-compliance.mp4", "compliance-poster.jpg", "Exit Eight compliance explainer video")}
 </div></section>
 <section class="block"><div class="wrap">
   <h2>What we look after.</h2>
@@ -214,7 +214,7 @@ COMPLIANCE = f"""<section class="hero"><div class="wrap">
   <p class="sub">The technology is ours to run. You deal with people, through the channels you already use.</p>
   <div class="addr">
     <div><span class="tag">Your own address</span>
-      <p class="addr-line"><b>yourbusiness</b>@wolfey.com.au</p></div>
+      <p class="addr-line"><b>yourbusiness</b>@exiteight.com.au</p></div>
     <p>We set up an address for your business. Owners and operators forward or CC it on any compliance problem: a builder's request, an expiring licence, a subbie's certificate, a job that might need a SWMS. We take it from there.</p>
   </div>
   <div class="grid-3" style="margin-top:24px">
@@ -232,7 +232,7 @@ TENDERS = f"""<section class="hero"><div class="wrap">
   <div class="cta-row"><a class="btn btn-primary" href="contact.html">Book a call</a><a class="btn btn-outline" href="pricing.html">How pricing works</a></div>
 </div></section>
 <section class="stage"><div class="wrap">
-  {video("wolfey-tenders.mp4", "tenders-poster.jpg", "Wolfey tender responses explainer video")}
+  {video("exiteight-tenders.mp4", "tenders-poster.jpg", "Exit Eight tender responses explainer video")}
 </div></section>
 <section class="block"><div class="wrap">
   <h2>From spotting it <em>to lodging it.</em></h2>
@@ -280,7 +280,7 @@ PRICING = f"""<section class="hero"><div class="wrap">
     <details><summary>Why six months for tender support?</summary><p>Winning tendered work takes more than one bid. Six months lets us learn your business, build a pipeline of the right opportunities and improve each response on the last.</p></details>
     <details><summary>Do you guarantee we'll win?</summary><p>No, and nobody honestly can. What we do is make sure you bid on the right opportunities with complete, well-written responses lodged on time. If a bid doesn't win, you don't pay for it.</p></details>
     <details><summary>Who actually reviews our documents?</summary><p>A legally trained professional with construction compliance experience reviews every document before it reaches you. Our systems do the reading, tracking and drafting, which is what keeps the service affordable.</p></details>
-    <details><summary>Is this legal advice?</summary><p>No. Wolfey is a compliance administration and tender support service. Where something needs legal advice, we'll tell you.</p></details>
+    <details><summary>Is this legal advice?</summary><p>No. Exit Eight is a compliance administration and tender support service. Where something needs legal advice, we'll tell you.</p></details>
   </div>
 </div></section>
 {CTA}"""
@@ -310,14 +310,14 @@ CONTACT = f"""<section class="hero"><div class="wrap">
 </div></section>"""
 
 PAGES = {
-    "index.html": ("Wolfey | No new software. We just get on with it.",
+    "index.html": ("Exit Eight | No new software. We just get on with it.",
                    "We keep compliance current and write tender responses for mid-sized Australian construction businesses. No new software and no logins.", HOME),
-    "compliance.html": ("Compliance as a managed service | Wolfey",
+    "compliance.html": ("Compliance as a managed service | Exit Eight",
                         "Licences, insurances, SWMS and toolbox talks handled for trade businesses. One email, one WhatsApp number, one call a week.", COMPLIANCE),
-    "tenders.html": ("Tender responses, no win no fee | Wolfey",
+    "tenders.html": ("Tender responses, no win no fee | Exit Eight",
                      "We find tender opportunities, write the response and lodge it. You pay a percentage of the bids you win.", TENDERS),
-    "pricing.html": ("Pricing | Wolfey", "Compliance is a subscription support arrangement. Tender responses are a percentage of winning bids on a six-month bid support agreement.", PRICING),
-    "contact.html": ("Contact | Wolfey", "Book a 20-minute call with Wolfey.", CONTACT),
+    "pricing.html": ("Pricing | Exit Eight", "Compliance is a subscription support arrangement. Tender responses are a percentage of winning bids on a six-month bid support agreement.", PRICING),
+    "contact.html": ("Contact | Exit Eight", "Book a 20-minute call with Exit Eight.", CONTACT),
 }
 
 
@@ -334,7 +334,7 @@ def main():
     for f in ("site.css", "site.js"):
         shutil.copy(HERE / f, out / f)
     shutil.copy(VIDEO / "inter-latin-wght-normal.woff2", out / "fonts" / "inter-latin-wght-normal.woff2")
-    for f in ("wolfey-compliance.mp4", "wolfey-tenders.mp4", "compliance-poster.jpg", "tenders-poster.jpg"):
+    for f in ("exiteight-compliance.mp4", "exiteight-tenders.mp4", "compliance-poster.jpg", "tenders-poster.jpg"):
         shutil.copy(VIDEO / f, out / "assets" / f)
     print(f"Site written to {out} ({len(PAGES)} pages)")
 
