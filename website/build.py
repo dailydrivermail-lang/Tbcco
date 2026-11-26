@@ -112,7 +112,7 @@ def names(*items):
 SOFTWARE = f"""<section class="block"><div class="wrap">
   <h2>Keep the software <em>you already use.</em></h2>
   <p class="sub">Most trade businesses already run a job app, an accounting package and a builder's portal or two. We don't replace any of them, and there's nothing to connect or install. We work alongside what you have.</p>
-  <div class="grid-3">
+  <div class="grid-3 rows-4">
     <div class="card"><span class="tag">Job management</span><h3>Your job app stays the source of truth</h3>
       {names("ServiceM8", "simPRO", "AroFlo", "Tradify", "Fergus")}
       <p><b>How we work with it:</b> forward or CC us the job or quote email it already sends, or send an export. We pick up the site, scope and dates from that, so nobody types a job in twice.</p></div>

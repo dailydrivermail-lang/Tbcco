@@ -140,3 +140,4 @@ section.block.alt { background: var(--bg-2); }
 section.block.alt .names span { background: #fff; }
 .fine { font-size: .9rem; color: var(--mute); margin-top: 16px; }
 .card .names { margin-top: 16px; }
+@media (min-width: 861px) { .rows-4 { grid-template-rows: repeat(4, auto); row-gap: 0; } .rows-4 > .card { display: grid; grid-template-rows: subgrid; grid-row: span 4; align-items: start; justify-items: start; } }
