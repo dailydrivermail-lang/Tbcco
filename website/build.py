@@ -73,7 +73,7 @@ def page(slug: str, title: str, desc: str, body: str, noindex: bool) -> str:
     <a class="logo" href="index.html">{MARK}wolfey</a>
     <div class="foot-links">{"".join(f'<a href="{h}">{t}</a>' for h, t in NAV)}</div>
   </div>
-  <p>Wolfey is a compliance administration and tender support service for Australian trade and construction businesses. We are not a law firm and do not give legal advice. Every document is reviewed by a person before it reaches you. No tender outcome is guaranteed.</p>
+  <p>Wolfey keeps compliance current and writes tender responses for mid-sized Australian construction businesses. It is a compliance administration and tender support service. We are not a law firm and do not give legal advice. Every document is reviewed by a person before it reaches you. No tender outcome is guaranteed.</p>
 </div></footer>
 <script src="site.js?v={VERSION}"></script>
 </body>
@@ -104,9 +104,9 @@ HUMAN = """<section class="band"><div class="wrap">
 </div></section>"""
 
 HOME = f"""<section class="hero"><div class="wrap">
-  <p class="eyebrow">A managed back office for Australian trade and construction businesses</p>
+  <p class="eyebrow">A managed back office, based in Canberra</p>
   <h1>No new software. <em>We just get on with it.</em></h1>
-  <p class="lede">You don't log in to anything. Forward or CC us on a problem, send a photo, take one call a week. We keep your compliance current and write your tender responses.</p>
+  <p class="lede"><strong>We keep compliance current and write tender responses for mid-sized Australian construction businesses.</strong> You don't log in to anything. Forward or CC us on a problem, send a photo, take one call a week.</p>
   <div class="cta-row"><a class="btn btn-primary" href="contact.html">Book a call</a><a class="btn btn-outline" href="pricing.html">How pricing works</a></div>
   <ul class="nos" aria-label="What you don't have to do">
     <li>No software to learn</li><li>No logins</li><li>No apps for your crew</li><li>No chasing people</li>
@@ -285,7 +285,7 @@ CONTACT = f"""<section class="hero"><div class="wrap">
 
 PAGES = {
     "index.html": ("Wolfey | No new software. We just get on with it.",
-                   "A managed back office for Australian trade businesses. No software and no logins: we keep your compliance current and write your tender responses.", HOME),
+                   "We keep compliance current and write tender responses for mid-sized Australian construction businesses. No new software and no logins.", HOME),
     "compliance.html": ("Compliance as a managed service | Wolfey",
                         "Licences, insurances, SWMS and toolbox talks handled for trade businesses. One email, one WhatsApp number, one call a week.", COMPLIANCE),
     "tenders.html": ("Tender responses, no win no fee | Wolfey",
