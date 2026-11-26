@@ -29,6 +29,7 @@ NAV = [("compliance.html", "Compliance"), ("tenders.html", "Tenders"), ("pricing
 
 TICKS = [("index.html", "No new software. No logins. We just get on with it."),
          ("compliance.html", "Your own address: yourbusiness@wolfey.com.au. Forward or CC us on any compliance problem and we sort it out"),
+         ("index.html", "Keep ServiceM8, simPRO, AroFlo, Tradify or Fergus. We work alongside what you already use"),
          ("tenders.html", "New: tender responses, written for you on a no-win, no-fee basis"),
          ("contact.html", "Canberra based"),
          ("compliance.html", "One email address, one WhatsApp number, one call a week"),
@@ -103,6 +104,27 @@ HUMAN = """<section class="band"><div class="wrap">
   </div>
 </div></section>"""
 
+def names(*items):
+    return '<div class="names">' + "".join(f"<span>{i}</span>" for i in items) + "</div>"
+
+
+SOFTWARE = f"""<section class="block"><div class="wrap">
+  <h2>Keep the software <em>you already use.</em></h2>
+  <p class="sub">Most trade businesses already run a job app, an accounting package and a builder's portal or two. We don't replace any of them, and there's nothing to connect or install. We work alongside what you have.</p>
+  <div class="grid-3">
+    <div class="card"><span class="tag">Job management</span><h3>Your job app stays the source of truth</h3>
+      {names("ServiceM8", "simPRO", "AroFlo", "Tradify", "Fergus")}
+      <p><b>How we work with it:</b> forward or CC us the job or quote email it already sends, or send an export. We pick up the site, scope and dates from that, so nobody types a job in twice.</p></div>
+    <div class="card"><span class="tag">Builder portals</span><h3>We prepare what they ask for</h3>
+      {names("Cm3", "Avetta", "Rapid Global", "HammerTech", "Procore")}
+      <p><b>How we work with it:</b> forward us the request. We put together the insurances, licences, SWMS and policies it needs, current and in the format asked for, ready to upload.</p></div>
+    <div class="card"><span class="tag">Accounts and site apps</span><h3>Nothing changes</h3>
+      {names("Xero", "MYOB", "SafetyCulture")}
+      <p><b>How we work with it:</b> you keep using them as you do now. If records we need already live there, send us a copy and we work from it.</p></div>
+  </div>
+  <p class="terms">We are independent of these products. Names are used only to describe how we work alongside them, and belong to their owners. No integration, partnership or endorsement is implied.</p>
+</div></section>"""
+
 HOME = f"""<section class="hero"><div class="wrap">
   <p class="eyebrow">A managed back office, based in Canberra</p>
   <h1>No new software. <em>We just get on with it.</em></h1>
@@ -136,6 +158,8 @@ HOME = f"""<section class="hero"><div class="wrap">
     <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>Ten minutes on Friday. We tell you what needs doing, then we do it.</p></div>
   </div>
 </div></section>
+
+{SOFTWARE}
 
 <section class="block"><div class="wrap">
   <h2>Two things we take <em>off your plate.</em></h2>
@@ -183,8 +207,9 @@ COMPLIANCE = f"""<section class="hero"><div class="wrap">
   </div>
 </div></section>
 {HUMAN}
+{SOFTWARE}
 <section class="block"><div class="wrap">
-  <h2>No software. <em>No logins.</em></h2>
+  <h2>No new software. <em>No logins.</em></h2>
   <p class="sub">The technology is ours to run. You deal with people, through the channels you already use.</p>
   <div class="addr">
     <div><span class="tag">Your own address</span>
