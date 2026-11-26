@@ -20,10 +20,10 @@ EMAIL = "hello@exiteight.com.au"   # placeholder until the mailbox exists
 import hashlib
 VERSION = hashlib.sha256((HERE / "site.css").read_bytes() + (HERE / "site.js").read_bytes()).hexdigest()[:10]
 
-MARK_PATH = "M20.885 7.411A10 10 0 1 0 20.885 16.589A4.6 4.6 0 0 1 20.885 7.411Z"
-MARK = f'<span class="logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{MARK_PATH}"/></svg></span>'
-FAVICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='" + MARK_PATH.replace(" ", "%20")
-           + "' fill='%230b5cff'/%3E%3C/svg%3E")
+# The Exit Eight mark: a blue rounded square with "E8" drawn in white strokes (an original monogram).
+MARK_INNER = '<rect x="1" y="1" width="22" height="22" rx="6.5" fill="#0b5cff"/><g fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 7.2H5.6v9.6h5M5.6 12h4"/><circle cx="16.3" cy="9.5" r="2.35"/><circle cx="16.3" cy="14.55" r="2.75"/></g>'
+MARK = f'<span class="logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true">{MARK_INNER}</svg></span>'
+FAVICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='1' y='1' width='22' height='22' rx='6.5' fill='%230b5cff'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.6 7.2H5.6v9.6h5M5.6 12h4'/%3E%3Ccircle cx='16.3' cy='9.5' r='2.35'/%3E%3Ccircle cx='16.3' cy='14.55' r='2.75'/%3E%3C/g%3E%3C/svg%3E"
 NAV = [("compliance.html", "Compliance"), ("tenders.html", "Tenders"), ("pricing.html", "Pricing"), ("contact.html", "Contact")]
 
 
