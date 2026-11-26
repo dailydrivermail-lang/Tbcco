@@ -1,4 +1,4 @@
-"""Build the Exit Eight marketing site (static, five pages) into website/dist/ or --out.
+"""Build the Wolf marketing site (static, five pages) into website/dist/ or --out.
 
     python website/build.py [--out DIR] [--noindex]
 
@@ -14,7 +14,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 VIDEO = ROOT / "marketing" / "video"
-EMAIL = "hello@exiteight.com.au"   # placeholder until the mailbox exists
+EMAIL = "hello@wolf.com.au"   # placeholder until the mailbox exists
 
 # Short hash of the stylesheet and script. It goes on their URLs, so a browser never pairs new pages with an old cached copy.
 import hashlib
@@ -25,15 +25,15 @@ def _mv(name):
 
 VERSION = hashlib.sha256((HERE / "site.css").read_bytes() + (HERE / "site.js").read_bytes()).hexdigest()[:10]
 
-# The Exit Eight mark: a blue rounded square with "E8" drawn in white strokes (an original monogram).
-MARK_INNER = '<rect width="24" height="24" fill="#0b5cff"/><path d="M5.29 16.67V7.34H11.34V8.85H7.25V11.19H11.03V12.7H7.25V15.16H11.54V16.67ZM18.71 14.04Q18.71 15.35 17.84 16.08Q16.97 16.8 15.36 16.8Q13.77 16.8 12.89 16.08Q12.01 15.36 12.01 14.05Q12.01 13.16 12.53 12.55Q13.05 11.93 13.91 11.79V11.76Q13.16 11.6 12.69 11.01Q12.23 10.43 12.23 9.67Q12.23 8.52 13.04 7.86Q13.85 7.2 15.34 7.2Q16.85 7.2 17.66 7.85Q18.47 8.49 18.47 9.68Q18.47 10.44 18.01 11.02Q17.55 11.6 16.78 11.75V11.77Q17.68 11.92 18.19 12.51Q18.71 13.11 18.71 14.04ZM16.56 9.78Q16.56 9.12 16.26 8.81Q15.95 8.5 15.34 8.5Q14.13 8.5 14.13 9.78Q14.13 11.12 15.35 11.12Q15.96 11.12 16.26 10.81Q16.56 10.5 16.56 9.78ZM16.78 13.89Q16.78 12.42 15.32 12.42Q14.65 12.42 14.29 12.81Q13.93 13.19 13.93 13.91Q13.93 14.73 14.28 15.11Q14.64 15.49 15.38 15.49Q16.1 15.49 16.44 15.11Q16.78 14.73 16.78 13.89Z" fill="#fff"/>'
+# The Wolf mark: a blue shield with wolf ears.
+MARK_INNER = '<path d="M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z" fill="#0b5cff" stroke="#0b5cff" stroke-width="1.6" stroke-linejoin="round"/>'
 MARK = f'<span class="logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true">{MARK_INNER}</svg></span>'
-FAVICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%230b5cff'/%3E%3Cpath d='M5.29 16.67V7.34H11.34V8.85H7.25V11.19H11.03V12.7H7.25V15.16H11.54V16.67ZM18.71 14.04Q18.71 15.35 17.84 16.08Q16.97 16.8 15.36 16.8Q13.77 16.8 12.89 16.08Q12.01 15.36 12.01 14.05Q12.01 13.16 12.53 12.55Q13.05 11.93 13.91 11.79V11.76Q13.16 11.6 12.69 11.01Q12.23 10.43 12.23 9.67Q12.23 8.52 13.04 7.86Q13.85 7.2 15.34 7.2Q16.85 7.2 17.66 7.85Q18.47 8.49 18.47 9.68Q18.47 10.44 18.01 11.02Q17.55 11.6 16.78 11.75V11.77Q17.68 11.92 18.19 12.51Q18.71 13.11 18.71 14.04ZM16.56 9.78Q16.56 9.12 16.26 8.81Q15.95 8.5 15.34 8.5Q14.13 8.5 14.13 9.78Q14.13 11.12 15.35 11.12Q15.96 11.12 16.26 10.81Q16.56 10.5 16.56 9.78ZM16.78 13.89Q16.78 12.42 15.32 12.42Q14.65 12.42 14.29 12.81Q13.93 13.19 13.93 13.91Q13.93 14.73 14.28 15.11Q14.64 15.49 15.38 15.49Q16.1 15.49 16.44 15.11Q16.78 14.73 16.78 13.89Z' fill='%23fff'/%3E%3C/svg%3E"
+FAVICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z' fill='%230b5cff' stroke='%230b5cff' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E"
 NAV = [("compliance.html", "Compliance"), ("tenders.html", "Tenders"), ("pricing.html", "Pricing"), ("contact.html", "Contact")]
 
 
 TICKS = [("index.html", "No new software. No logins. We just get on with it."),
-         ("compliance.html", "Your own address: yourbusiness@exiteight.com.au. Forward or CC us on any compliance problem and we sort it out"),
+         ("compliance.html", "Your own address: yourbusiness@wolf.com.au. Forward or CC us on any compliance problem and we sort it out"),
          ("index.html", "Keep ServiceM8, simPRO, AroFlo, Tradify or Fergus. We work alongside what you already use"),
          ("tenders.html", "New: tender responses, written for you on a no-win, no-fee basis"),
          ("contact.html", "Canberra based"),
@@ -67,7 +67,7 @@ def page(slug: str, title: str, desc: str, body: str, noindex: bool) -> str:
 <body>
 <div class="ticker" aria-label="Announcements"><div class="ticker-track">{TICKER}{TICKER_COPY}</div></div>
 <header class="nav"><div class="wrap">
-  <a class="logo" href="index.html" aria-label="Exit Eight home">{MARK}Exit Eight</a>
+  <a class="logo" href="index.html" aria-label="Wolf home">{MARK}Wolf</a>
   <nav class="nav-links" aria-label="Main">{links}</nav>
   <a class="btn btn-primary btn-sm" href="contact.html">Book a call</a>
   <button class="menu-btn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -77,10 +77,10 @@ def page(slug: str, title: str, desc: str, body: str, noindex: bool) -> str:
 </main>
 <footer><div class="wrap">
   <div class="foot-top">
-    <a class="logo" href="index.html">{MARK}Exit Eight</a>
+    <a class="logo" href="index.html">{MARK}Wolf</a>
     <div class="foot-links">{"".join(f'<a href="{h}">{t}</a>' for h, t in NAV)}</div>
   </div>
-  <p>Exit Eight keeps compliance current and writes tender responses for mid-sized Australian construction businesses. It is a compliance administration and tender support service. We are not a law firm and do not give legal advice. Every document is reviewed by a person before it reaches you. No tender outcome is guaranteed.</p>
+  <p>Wolf keeps compliance current and writes tender responses for mid-sized Australian construction businesses. It is a compliance administration and tender support service. We are not a law firm and do not give legal advice. Every document is reviewed by a person before it reaches you. No tender outcome is guaranteed.</p>
 </div></footer>
 <script src="site.js?v={VERSION}"></script>
 </body>
@@ -157,10 +157,10 @@ HOME = f"""<section class="hero"><div class="wrap">
 
 <section class="stage"><div class="wrap">
   <div class="tabs" role="tablist" aria-label="Choose a video">
-    <button role="tab" aria-selected="true" data-video="assets/exiteight-compliance.mp4" data-poster="assets/compliance-poster.jpg" data-text="Licences, insurances, SWMS and toolbox talks, as one managed service." data-href="compliance.html" data-link="More on compliance">Compliance</button>
-    <button role="tab" aria-selected="false" data-video="assets/exiteight-tenders.mp4" data-poster="assets/tenders-poster.jpg" data-text="We find the opportunities, write the response and lodge it. You pay only when you win." data-href="tenders.html" data-link="More on tenders">Tender responses</button>
+    <button role="tab" aria-selected="true" data-video="assets/wolf-compliance.mp4" data-poster="assets/compliance-poster.jpg" data-text="Licences, insurances, SWMS and toolbox talks, as one managed service." data-href="compliance.html" data-link="More on compliance">Compliance</button>
+    <button role="tab" aria-selected="false" data-video="assets/wolf-tenders.mp4" data-poster="assets/tenders-poster.jpg" data-text="We find the opportunities, write the response and lodge it. You pay only when you win." data-href="tenders.html" data-link="More on tenders">Tender responses</button>
   </div>
-  {video("exiteight-compliance.mp4", "compliance-poster.jpg", "Exit Eight explainer video", player=True)}
+  {video("wolf-compliance.mp4", "compliance-poster.jpg", "Wolf explainer video", player=True)}
   <div class="stage-foot"><span data-caption>Licences, insurances, SWMS and toolbox talks, as one managed service.</span><a data-more href="compliance.html">More on compliance →</a></div>
 </div></section>
 
@@ -169,7 +169,7 @@ HOME = f"""<section class="hero"><div class="wrap">
   <p class="sub">Other providers hand you a platform and leave you to run it. We do the work. The technology is ours to operate, not yours to learn.</p>
   <div class="addr">
     <div><span class="tag">Your own address</span>
-      <p class="addr-line"><b>yourbusiness</b>@exiteight.com.au</p></div>
+      <p class="addr-line"><b>yourbusiness</b>@wolf.com.au</p></div>
     <p>We set up an address for your business. Owners and operators forward or CC it on any compliance problem: a builder's request, an expiring licence, a subbie's certificate, a job that might need a SWMS. We take it from there.</p>
   </div>
   <div class="grid-3" style="margin-top:24px">
@@ -217,7 +217,7 @@ COMPLIANCE = f"""<section class="hero"><div class="wrap">
   <div class="cta-row"><a class="btn btn-primary" href="contact.html">Book a call</a><a class="btn btn-outline" href="pricing.html">How pricing works</a></div>
 </div></section>
 <section class="stage"><div class="wrap">
-  {video("exiteight-compliance.mp4", "compliance-poster.jpg", "Exit Eight compliance explainer video")}
+  {video("wolf-compliance.mp4", "compliance-poster.jpg", "Wolf compliance explainer video")}
 </div></section>
 <section class="block"><div class="wrap">
   <h2>What we look after.</h2>
@@ -235,7 +235,7 @@ COMPLIANCE = f"""<section class="hero"><div class="wrap">
   <p class="sub">The technology is ours to run. You deal with people, through the channels you already use.</p>
   <div class="addr">
     <div><span class="tag">Your own address</span>
-      <p class="addr-line"><b>yourbusiness</b>@exiteight.com.au</p></div>
+      <p class="addr-line"><b>yourbusiness</b>@wolf.com.au</p></div>
     <p>We set up an address for your business. Owners and operators forward or CC it on any compliance problem: a builder's request, an expiring licence, a subbie's certificate, a job that might need a SWMS. We take it from there.</p>
   </div>
   <div class="grid-3" style="margin-top:24px">
@@ -253,7 +253,7 @@ TENDERS = f"""<section class="hero"><div class="wrap">
   <div class="cta-row"><a class="btn btn-primary" href="contact.html">Book a call</a><a class="btn btn-outline" href="pricing.html">How pricing works</a></div>
 </div></section>
 <section class="stage"><div class="wrap">
-  {video("exiteight-tenders.mp4", "tenders-poster.jpg", "Exit Eight tender responses explainer video")}
+  {video("wolf-tenders.mp4", "tenders-poster.jpg", "Wolf tender responses explainer video")}
 </div></section>
 <section class="block"><div class="wrap">
   <h2>From spotting it <em>to lodging it.</em></h2>
@@ -310,7 +310,7 @@ PRICING = f"""<section class="hero"><div class="wrap">
     <details><summary>What percentage do you take on a winning tender?</summary><p>A percentage of the contract you win, agreed in writing before we start work on a bid. If the bid doesn't win, there's nothing to pay for that response.</p></details>
     <details><summary>Who sets the price and lodges the tender?</summary><p>You set the price and approve the final response. Nothing is lodged without your sign-off.</p></details>
     <details><summary>Who actually reviews our documents?</summary><p>A legally trained professional with construction compliance experience reviews every document before it reaches you. Our systems do the reading, tracking and drafting, which is what keeps the service affordable.</p></details>
-    <details><summary>Is this legal advice?</summary><p>No. Exit Eight is a compliance administration and tender support service. Where something needs legal advice, we'll tell you.</p></details>
+    <details><summary>Is this legal advice?</summary><p>No. Wolf is a compliance administration and tender support service. Where something needs legal advice, we'll tell you.</p></details>
     <details><summary>Which states do you cover?</summary><p>We're based in Canberra and work with businesses in the ACT and NSW. If you work elsewhere in Australia, talk to us.</p></details>
     <details><summary>Where is our information kept?</summary><p>In Australian-hosted storage wherever possible, with access limited to the people working on your account. We don't sell or share it.</p></details>
   </div>
@@ -342,14 +342,14 @@ CONTACT = f"""<section class="hero"><div class="wrap">
 </div></section>"""
 
 PAGES = {
-    "index.html": ("Exit Eight | No new software. We just get on with it.",
+    "index.html": ("Wolf | No new software. We just get on with it.",
                    "We keep compliance current and write tender responses for mid-sized Australian construction businesses. No new software and no logins.", HOME),
-    "compliance.html": ("Compliance as a managed service | Exit Eight",
+    "compliance.html": ("Compliance as a managed service | Wolf",
                         "Licences, insurances, SWMS and toolbox talks handled for trade businesses. One email, one WhatsApp number, one check-in phone call a week.", COMPLIANCE),
-    "tenders.html": ("Tender responses, no win no fee | Exit Eight",
+    "tenders.html": ("Tender responses, no win no fee | Wolf",
                      "We find tender opportunities, write the response and lodge it. You pay a percentage of the bids you win.", TENDERS),
-    "pricing.html": ("Pricing | Exit Eight", "Compliance is a subscription support arrangement. Tender responses are a percentage of winning bids on a six-month bid support agreement.", PRICING),
-    "contact.html": ("Contact | Exit Eight", "Book a 20-minute call with Exit Eight.", CONTACT),
+    "pricing.html": ("Pricing | Wolf", "Compliance is a subscription support arrangement. Tender responses are a percentage of winning bids on a six-month bid support agreement.", PRICING),
+    "contact.html": ("Contact | Wolf", "Book a 20-minute call with Wolf.", CONTACT),
 }
 
 
@@ -363,13 +363,13 @@ def main():
     (out / "fonts").mkdir(exist_ok=True)
     for slug, (title, desc, body) in PAGES.items():
         html = page(slug, title, desc, body, a.noindex)
-        for f in ("exiteight-compliance.mp4", "exiteight-tenders.mp4", "compliance-poster.jpg", "tenders-poster.jpg"):
+        for f in ("wolf-compliance.mp4", "wolf-tenders.mp4", "compliance-poster.jpg", "tenders-poster.jpg"):
             html = html.replace(f"assets/{f}", f"assets/{f}?v={_mv(f)}")
         (out / slug).write_text(html, encoding="utf-8")
     for f in ("site.css", "site.js"):
         shutil.copy(HERE / f, out / f)
     shutil.copy(VIDEO / "inter-latin-wght-normal.woff2", out / "fonts" / "inter-latin-wght-normal.woff2")
-    for f in ("exiteight-compliance.mp4", "exiteight-tenders.mp4", "compliance-poster.jpg", "tenders-poster.jpg"):
+    for f in ("wolf-compliance.mp4", "wolf-tenders.mp4", "compliance-poster.jpg", "tenders-poster.jpg"):
         shutil.copy(VIDEO / f, out / "assets" / f)
     print(f"Site written to {out} ({len(PAGES)} pages)")
 
