@@ -16,7 +16,10 @@ ROOT = HERE.parent
 VIDEO = ROOT / "marketing" / "video"
 EMAIL = "hello@wolfey.com.au"   # placeholder until the mailbox exists
 
-MARK = '<span class="logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6l4 12 4-9 4 9 4-12"/></svg></span>'
+MARK_PATH = "M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z"
+MARK = f'<span class="logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{MARK_PATH}"/></svg></span>'
+FAVICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='" + MARK_PATH.replace(" ", "%20")
+           + "' fill='%230b5cff' stroke='%230b5cff' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E")
 NAV = [("compliance.html", "Compliance"), ("tenders.html", "Tenders"), ("pricing.html", "Pricing"), ("contact.html", "Contact")]
 
 
@@ -45,6 +48,7 @@ def page(slug: str, title: str, desc: str, body: str, noindex: bool) -> str:
 {robots}<meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:image" content="assets/compliance-poster.jpg">
+<link rel="icon" href="{FAVICON}">
 <link rel="stylesheet" href="site.css">
 </head>
 <body>
