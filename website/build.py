@@ -20,10 +20,10 @@ EMAIL = "hello@exiteight.com.au"   # placeholder until the mailbox exists
 import hashlib
 VERSION = hashlib.sha256((HERE / "site.css").read_bytes() + (HERE / "site.js").read_bytes()).hexdigest()[:10]
 
-MARK_PATH = "M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z"
+MARK_PATH = "M20.93 7.51A10 10 0 1 1 17.98 3.98L10.14 10.56A2.3 2.3 0 0 0 13.10 14.08Z"
 MARK = f'<span class="logo-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{MARK_PATH}"/></svg></span>'
 FAVICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='" + MARK_PATH.replace(" ", "%20")
-           + "' fill='%230b5cff' stroke='%230b5cff' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E")
+           + "' fill='%230b5cff'/%3E%3C/svg%3E")
 NAV = [("compliance.html", "Compliance"), ("tenders.html", "Tenders"), ("pricing.html", "Pricing"), ("contact.html", "Contact")]
 
 

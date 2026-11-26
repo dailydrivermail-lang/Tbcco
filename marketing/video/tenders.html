@@ -37,10 +37,10 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
 .brand { display: flex; align-items: center; gap: 26px; font-size: 84px; font-weight: 700; letter-spacing: -.035em; }
 .brand span { color: #9a9a9a; font-weight: 500; }
 .mark { width: 104px; height: 104px; display: grid; place-items: center; filter: drop-shadow(0 18px 30px rgba(47, 107, 240, .45)); }
-.mark svg { width: 100%; height: 100%; fill: #2f74ff; stroke: #2f74ff; stroke-width: 1.6; stroke-linejoin: round; }
+.mark svg { width: 100%; height: 100%; fill: #2f74ff; stroke: none; }
 .brand.small { font-size: 34px; gap: 14px; position: absolute; left: 80px; top: 64px; color: var(--text); }
 .brand.small span { color: var(--mute); }
-.brand.small .mark { width: 46px; height: 46px; filter: none; } .brand.small .mark svg, .phone-head .mark svg { fill: #0b5cff; stroke: #0b5cff; }
+.brand.small .mark { width: 46px; height: 46px; filter: none; } .brand.small .mark svg, .phone-head .mark svg { fill: #0b5cff; }
 
 /* feature scenes */
 .split { width: 1640px; display: grid; grid-template-columns: 1fr 640px; gap: 110px; align-items: center; }
@@ -152,14 +152,14 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
 <section class="scene" style="--in:13.5s;--out:18.4s">
   <div class="stack">
     <div class="sub fx" style="--in:13.9s">What if someone wrote them for you?</div>
-    <div class="brand fx" style="--in:15.0s"><div class="mark"><svg viewBox="0 0 24 24"><path d="M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z"/></svg></div><div>Exit Eight</div></div>
+    <div class="brand fx" style="--in:15.0s"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20.93 7.51A10 10 0 1 1 17.98 3.98L10.14 10.56A2.3 2.3 0 0 0 13.10 14.08Z"/></svg></div><div>Exit Eight</div></div>
     <div class="sub fx accent" style="--in:16.2s">Tender responses, written for you. No win, no fee.</div>
   </div>
 </section>
 
 <!-- 4. find -->
 <section class="scene light" style="--in:18.7s;--out:28.2s">
-  <div class="brand small"><div class="mark"><svg viewBox="0 0 24 24"><path d="M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z"/></svg></div><div>Exit Eight</div></div>
+  <div class="brand small"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20.93 7.51A10 10 0 1 1 17.98 3.98L10.14 10.56A2.3 2.3 0 0 0 13.10 14.08Z"/></svg></div><div>Exit Eight</div></div>
   <div class="split">
     <div>
       <div class="step fx" style="--in:19.1s">One</div>
@@ -179,7 +179,7 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
 
 <!-- 5. write -->
 <section class="scene light" style="--in:28.5s;--out:38.2s">
-  <div class="brand small"><div class="mark"><svg viewBox="0 0 24 24"><path d="M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z"/></svg></div><div>Exit Eight</div></div>
+  <div class="brand small"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20.93 7.51A10 10 0 1 1 17.98 3.98L10.14 10.56A2.3 2.3 0 0 0 13.10 14.08Z"/></svg></div><div>Exit Eight</div></div>
   <div class="split">
     <div>
       <div class="step fx" style="--in:28.9s">Two</div>
@@ -200,7 +200,7 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
 
 <!-- 6. approve and lodge -->
 <section class="scene light" style="--in:38.5s;--out:47.2s">
-  <div class="brand small"><div class="mark"><svg viewBox="0 0 24 24"><path d="M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z"/></svg></div><div>Exit Eight</div></div>
+  <div class="brand small"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20.93 7.51A10 10 0 1 1 17.98 3.98L10.14 10.56A2.3 2.3 0 0 0 13.10 14.08Z"/></svg></div><div>Exit Eight</div></div>
   <div class="split">
     <div>
       <div class="step fx" style="--in:38.9s">Three</div>
@@ -209,7 +209,7 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
       <p class="sub fx" style="--in:44.8s;margin-top:28px;color:#101828;font-weight:600"><span class="tick">✓</span>Complete, in the right format, on time.</p>
     </div>
     <div class="phone">
-      <div class="phone-head"><div class="mark"><svg viewBox="0 0 24 24"><path d="M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z"/></svg></div><div>Exit Eight<small>Your tender team</small></div></div>
+      <div class="phone-head"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20.93 7.51A10 10 0 1 1 17.98 3.98L10.14 10.56A2.3 2.3 0 0 0 13.10 14.08Z"/></svg></div><div>Exit Eight<small>Your tender team</small></div></div>
       <div class="b us fx" style="--in:40.4s">The council stormwater tender is ready for you to review. It closes <b>Friday 2 pm</b>.</div>
       <div class="doc fx" style="--in:41.4s"><div class="pdf">PDF</div><div>Tender response<small>38 pages · reviewed</small></div></div>
       <div class="b me fx" style="--in:42.8s">Looks good. Lodge it.</div>
@@ -246,7 +246,7 @@ h2 { font-size: 76px; font-weight: 700; letter-spacing: -.03em; line-height: 1.0
 <!-- 9. end card -->
 <section class="scene" style="--in:65.5s;--out:99s">
   <div class="stack">
-    <div class="brand fx" style="--in:65.9s"><div class="mark"><svg viewBox="0 0 24 24"><path d="M3.5 3.2 9 7.6 12 6l3 1.6 5.5-4.4v10C20.5 18.6 16.6 21.4 12 22.6 7.4 21.4 3.5 18.6 3.5 13.2z"/></svg></div><div>Exit Eight</div></div>
+    <div class="brand fx" style="--in:65.9s"><div class="mark"><svg viewBox="0 0 24 24"><path d="M20.93 7.51A10 10 0 1 1 17.98 3.98L10.14 10.56A2.3 2.3 0 0 0 13.10 14.08Z"/></svg></div><div>Exit Eight</div></div>
     <h1 class="fx" style="--in:66.8s;font-size:92px">Win bigger work.</h1>
     <div class="sub fx" style="--in:67.8s">We'll handle the paperwork.</div>
     <div class="url fx" style="--in:68.8s">exiteight.com.au</div>
