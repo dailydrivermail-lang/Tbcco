@@ -27,12 +27,13 @@ FAVICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox
 NAV = [("compliance.html", "Compliance"), ("tenders.html", "Tenders"), ("pricing.html", "Pricing"), ("contact.html", "Contact")]
 
 
-TICKS = [("tenders.html", "New: tender responses, written for you on a no-win, no-fee basis"),
+TICKS = [("index.html", "No new software. No logins. We just get on with it."),
+         ("tenders.html", "New: tender responses, written for you on a no-win, no-fee basis"),
          ("contact.html", "Canberra based"),
          ("compliance.html", "Compliance as a managed service: one email, one WhatsApp number, one call a week"),
          ("compliance.html", "Every document reviewed by a person before it reaches you"),
          ("tenders.html", "We find tender opportunities online and through relationship channels"),
-         ("pricing.html", "No software to learn. No logins.")]
+         ]
 TICKER = "".join(f'<a href="{h}">{t}</a><span aria-hidden="true">•</span>' for h, t in TICKS)
 # the second copy makes the loop seamless; it is hidden from screen readers and keyboard focus
 TICKER_COPY = '<span class="ticker-copy" aria-hidden="true">' + "".join(
@@ -102,10 +103,13 @@ HUMAN = """<section class="band"><div class="wrap">
 </div></section>"""
 
 HOME = f"""<section class="hero"><div class="wrap">
-  <p class="eyebrow">For Australian trade and construction businesses</p>
-  <h1>Compliance handled. <em>Tenders written.</em></h1>
-  <p class="lede">Wolfey is a managed back office for trade businesses. We keep your licensing and safety paperwork current, and we write your tender responses on a no-win, no-fee basis.</p>
+  <p class="eyebrow">A managed back office for Australian trade and construction businesses</p>
+  <h1>No new software. <em>We just get on with it.</em></h1>
+  <p class="lede">You don't log in to anything. Send us a photo, tell us the job, take one call a week. We keep your compliance current and write your tender responses.</p>
   <div class="cta-row"><a class="btn btn-primary" href="contact.html">Book a call</a><a class="btn btn-outline" href="pricing.html">How pricing works</a></div>
+  <ul class="nos" aria-label="What you don't have to do">
+    <li>No software to learn</li><li>No logins</li><li>No apps for your crew</li><li>No chasing people</li>
+  </ul>
 </div></section>
 
 <section class="stage"><div class="wrap">
@@ -115,6 +119,16 @@ HOME = f"""<section class="hero"><div class="wrap">
   </div>
   {video("wolfey-compliance.mp4", "compliance-poster.jpg", "Wolfey explainer video", player=True)}
   <div class="stage-foot"><span data-caption>Licences, insurances, SWMS and toolbox talks, as one managed service.</span><a data-more href="compliance.html">More on compliance →</a></div>
+</div></section>
+
+<section class="block"><div class="wrap">
+  <h2>You already have <em>everything you need.</em></h2>
+  <p class="sub">Other providers hand you a platform and leave you to run it. We do the work. The technology is ours to operate, not yours to learn.</p>
+  <div class="grid-3">
+    <div class="card plain"><span class="step-n">One</span><h3>Email address</h3><p>Forward us certificates, builder requests and tenders you've spotted.</p></div>
+    <div class="card plain"><span class="step-n">One</span><h3>WhatsApp number</h3><p>Send a photo of a licence, or a line about Monday's job.</p></div>
+    <div class="card plain"><span class="step-n">One</span><h3>Call a week</h3><p>Ten minutes on Friday. We tell you what needs doing, then we do it.</p></div>
+  </div>
 </div></section>
 
 <section class="block"><div class="wrap">
@@ -259,8 +273,8 @@ CONTACT = f"""<section class="hero"><div class="wrap">
 </div></section>"""
 
 PAGES = {
-    "index.html": ("Wolfey | Compliance handled. Tenders written.",
-                   "A managed back office for Australian trade businesses: licensing and safety compliance as a service, and tender responses on a no-win, no-fee basis.", HOME),
+    "index.html": ("Wolfey | No new software. We just get on with it.",
+                   "A managed back office for Australian trade businesses. No software and no logins: we keep your compliance current and write your tender responses.", HOME),
     "compliance.html": ("Compliance as a managed service | Wolfey",
                         "Licences, insurances, SWMS and toolbox talks handled for trade businesses. One email, one WhatsApp number, one call a week.", COMPLIANCE),
     "tenders.html": ("Tender responses, no win no fee | Wolfey",
